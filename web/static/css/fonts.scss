@@ -1,0 +1,7 @@
+$font-family-sans-serif: Lato, 'DejaVu Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+/* BUG: For reasons unknown this file does not get compiled if it does not
+   contain at least one rule. */
+body {
+  font-family: $font-family-sans-serif;
+}
