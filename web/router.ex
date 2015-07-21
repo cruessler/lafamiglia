@@ -15,6 +15,8 @@ defmodule LaFamiglia.Router do
   scope "/", LaFamiglia do
     pipe_through :browser # Use the default browser stack
 
+    resources "/players", PlayerController, only: [ :create, :new ]
+
     get "/", PageController, :index
   end
 

@@ -1,0 +1,20 @@
+.form-signin, .form-account {
+  max-width: 350px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-signin .form-control,
+.form-account .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-signin button[type="submit"],
+.form-account button[type="submit"] {
+  margin-top: 20px;
+  margin-bottom: 35px;
+}
