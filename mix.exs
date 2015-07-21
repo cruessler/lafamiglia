@@ -18,7 +18,7 @@ defmodule LaFamiglia.Mixfile do
   def application do
     [mod: {LaFamiglia, []},
      applications: [:phoenix, :phoenix_html, :cowboy, :logger,
-                    :phoenix_ecto, :mariaex]]
+                    :phoenix_ecto, :mariaex, :comeonin]]
   end
 
   # Specifies which paths to compile per environment
@@ -34,6 +34,8 @@ defmodule LaFamiglia.Mixfile do
      {:mariaex, ">= 0.0.0"},
      {:phoenix_html, "~> 1.1"},
      {:phoenix_live_reload, "~> 0.4", only: :dev},
+     # https://github.com/elixircnx/comeonin
+     {:comeonin, "~> 1.0"},
      {:cowboy, "~> 1.0"}]
   end
 end
