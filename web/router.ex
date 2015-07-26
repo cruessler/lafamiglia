@@ -15,7 +15,9 @@ defmodule LaFamiglia.Router do
   scope "/", LaFamiglia do
     pipe_through :browser # Use the default browser stack
 
-    resources "/sessions", SessionController, only: [ :create, :new ]
+    resources "/session", SessionController,
+                           only: [ :create, :new, :delete ],
+                           singleton: true
 
     resources "/players", PlayerController, only: [ :create, :new ]
 

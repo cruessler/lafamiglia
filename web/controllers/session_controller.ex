@@ -3,7 +3,7 @@ defmodule LaFamiglia.SessionController do
 
   alias LaFamiglia.Session
 
-  plug :authenticate
+  plug :authenticate when not action in [ :delete ]
 
   def new(conn, _params) do
     render conn, "new.html"
@@ -21,6 +21,13 @@ defmodule LaFamiglia.SessionController do
         |> put_flash(:error, "Wrong email or password")
         |> render("new.html")
     end
+  end
+
+  def delete(conn, _params) do
+    conn
+    |> delete_session(:current_player)
+    |> put_flash(:info, "Logged out")
+    |> redirect(to: page_path(conn, :index))
   end
 
   defp authenticate(conn, _) do
