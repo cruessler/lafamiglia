@@ -9,3 +9,14 @@ body {
 
 /* Phoenix flash messages */
 .alert:empty { display: none; }
+
+ul.dropdown-menu .link > a {
+  display: block;
+  padding: 3px 20px;
+  color: #333;
+  text-decoration: none;
+
+  &:hover {
+    background-color: #E2E2E2;
+  }
+}
