@@ -41,10 +41,11 @@ defmodule LaFamiglia.Player do
     %{ changes: changes } = changeset
 
     if Map.has_key?(changes, :password) do
-      hashed_password = Map.get(changes, :password) |> Bcrypt.hashpwsalt
-      %{ changeset | changes: changes
-                              |> Map.delete(:password)
-                              |> Map.put(:hashed_password, hashed_password) }
+      hashed_password = changes.password |> Bcrypt.hashpwsalt
+
+      changeset
+      |> delete_change(:password)
+      |> put_change(:hashed_password, hashed_password)
     else
       changeset
     end
