@@ -1,0 +1,1 @@
+<p>The villa bearing the name <%= @conn.assigns.current_villa.name %> is at your service.</p>

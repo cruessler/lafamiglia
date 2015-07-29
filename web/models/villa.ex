@@ -79,4 +79,8 @@ defmodule LaFamiglia.Villa do
       _ -> nil
     end
   end
+
+  def to_string(%Villa{name: name, x: x, y: y}) do
+    "#{name} (#{x}|#{y})"
+  end
 end

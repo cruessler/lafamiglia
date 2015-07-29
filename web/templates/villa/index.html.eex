@@ -1,0 +1,7 @@
+<h1>Your villas are at your service</h1>
+
+<ul>
+  <%= for v <- @villas do %>
+    <li><a href="<%= villa_path(@conn, :show, v) %>"><%= Villa.to_string(v) %></a></li>
+  <% end %>
+</ul>

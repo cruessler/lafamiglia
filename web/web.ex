@@ -49,8 +49,12 @@ defmodule LaFamiglia.Web do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
+      alias LaFamiglia.Session
+      alias LaFamiglia.Villa
+
       # Import session related functions
-      import LaFamiglia.Session, only: [ current_player: 1, player_logged_in?: 1 ]
+      import Session, only: [ current_player: 1, player_logged_in?: 1 ]
+      import Villa, only: [ to_string: 1 ]
     end
   end
 

@@ -16,10 +16,11 @@ defmodule LaFamiglia.Router do
     pipe_through :browser # Use the default browser stack
 
     resources "/session", SessionController,
-                           only: [ :create, :new, :delete ],
-                           singleton: true
+                          only: [ :create, :new, :delete ],
+                          singleton: true
 
     resources "/players", PlayerController, only: [ :create, :new ]
+    resources "/villas", VillaController, only: [ :index, :show ]
 
     get "/", PageController, :index
   end
