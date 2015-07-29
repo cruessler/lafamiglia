@@ -1,6 +1,8 @@
 defmodule LaFamiglia.Player do
   use LaFamiglia.Web, :model
+
   alias LaFamiglia.Repo
+  alias LaFamiglia.Villa
   alias Comeonin.Bcrypt
 
   schema "players" do
@@ -11,6 +13,8 @@ defmodule LaFamiglia.Player do
 
     field :name, :string
     field :points, :integer
+
+    has_many :villas, Villa
 
     timestamps
   end
