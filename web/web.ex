@@ -53,6 +53,8 @@ defmodule LaFamiglia.Web do
       alias LaFamiglia.Villa
 
       import Villa, only: [ to_string: 1 ]
+
+      import LaFamiglia.AppView
     end
   end
 

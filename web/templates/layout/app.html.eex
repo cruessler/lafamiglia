@@ -25,6 +25,15 @@
             <a class="navbar-brand" href="#">La Famiglia</a>
           </div>
           <div class="navbar-collapse collapse">
+            <%= if @conn.assigns.current_villa do %>
+              <ul class="nav navbar-nav">
+                <li><%= link coordinates(@conn.assigns.current_villa), to: villa_path(@conn, :show, @conn.assigns.current_villa)%></li>
+                <li><%= link "Villas", to: villa_path(@conn, :index) %></li>
+
+                <li><%= resources @conn.assigns.current_villa %></li>
+              </ul>
+            <% end %>
+
             <ul class="nav navbar-nav navbar-right">
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
