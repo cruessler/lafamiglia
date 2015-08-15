@@ -1,5 +1,4 @@
 defmodule LaFamiglia.Plugs.VillaChecker do
-  import Plug.Conn
   import Phoenix.Controller
 
   def init(error_page_path), do: error_page_path
