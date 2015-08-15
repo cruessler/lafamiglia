@@ -17,14 +17,17 @@ defmodule LaFamiglia.Mixfile do
   # Type `mix help compile.app` for more information
   def application do
     [mod: {LaFamiglia, []},
-     applications: [:phoenix, :phoenix_html, :cowboy, :logger,
-                    :phoenix_ecto, :mariaex, :comeonin,
-                    :blacksmith, :faker]]
+     applications: applications(Mix.env)]
   end
 
   # Specifies which paths to compile per environment
   defp elixirc_paths(:test), do: ["lib", "web", "test/support"]
   defp elixirc_paths(_),     do: ["lib", "web"]
+
+  defp applications(:test), do: applications(:all) ++ [:blacksmith, :faker]
+  defp applications(_),     do: [:phoenix, :phoenix_html, :cowboy, :logger,
+                                 :phoenix_ecto, :mariaex, :comeonin]
+
 
   # Specifies your project dependencies
   #
