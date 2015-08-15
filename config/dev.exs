@@ -32,4 +32,4 @@ config :la_famiglia, LaFamiglia.Repo,
   username: "root",
   password: "",
   database: "la_famiglia_dev",
-  size: 10 # The amount of database connections in the pool
+  pool_size: 10

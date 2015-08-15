@@ -16,4 +16,4 @@ config :la_famiglia, LaFamiglia.Repo,
   password: "",
   database: "la_famiglia_test",
   pool: Ecto.Adapters.SQL.Sandbox, # Use a sandbox for transactional testing
-  size: 1
+  pool_size: 1
