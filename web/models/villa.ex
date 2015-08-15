@@ -38,6 +38,7 @@ defmodule LaFamiglia.Villa do
     model
     |> cast(params, @required_fields, @optional_fields)
     |> validate_length(:name, min: 3)
+    |> unique_constraint(:x, name: :villas_x_y_index)
   end
 
   @max_x 10
