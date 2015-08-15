@@ -1,7 +1,6 @@
 defmodule LaFamiglia.VillaTest do
   use LaFamiglia.ModelCase
 
-  alias LaFamiglia.Player
   alias LaFamiglia.Villa
 
   @valid_attrs %{ name: "New villa", x: 0, y: 0, player_id: 1,
@@ -25,8 +24,7 @@ defmodule LaFamiglia.VillaTest do
   end
 
   test "should create new villas" do
-    changeset = Player.changeset(%Player{}, %{name: "Name", email: "e@ma.il", password: "password"})
-    player = Repo.insert!(changeset)
+    player = Forge.saved_player(Repo)
 
     villas_count     = assoc(player, :villas) |> Repo.all |> Enum.count
     number_to_create = 121
