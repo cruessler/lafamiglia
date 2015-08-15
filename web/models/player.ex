@@ -36,6 +36,7 @@ defmodule LaFamiglia.Player do
     |> validate_confirmation(:password)
     |> validate_length(:name, min: 3, max: 32)
     |> unique_constraint(:name)
+    |> update_change(:email, &String.downcase/1)
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
     |> encrypt_password
