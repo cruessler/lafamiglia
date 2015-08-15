@@ -15,7 +15,7 @@ defmodule LaFamiglia.SessionController do
         conn
         |> put_session(:current_player_id, player.id)
         |> put_flash(:info, "You are now logged in")
-        |> redirect(to: page_path(conn, :index))
+        |> redirect(to: villa_path(conn, :index))
       :error ->
         conn
         |> put_flash(:error, "Wrong email or password")
