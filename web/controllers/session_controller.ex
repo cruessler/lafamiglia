@@ -3,7 +3,7 @@ defmodule LaFamiglia.SessionController do
 
   alias LaFamiglia.Session
 
-  plug :authenticate when not action in [ :delete ]
+  plug :redirect_if_logged_in when not action in [ :delete ]
 
   def new(conn, _params) do
     render conn, "new.html"
@@ -30,7 +30,7 @@ defmodule LaFamiglia.SessionController do
     |> redirect(to: page_path(conn, :index))
   end
 
-  defp authenticate(conn, _) do
+  defp redirect_if_logged_in(conn, _) do
     if(conn.assigns[:current_player]) do
       conn |> redirect(to: page_path(conn, :index)) |> halt
     else
