@@ -1,6 +1,8 @@
 defmodule LaFamiglia.Endpoint do
   use Phoenix.Endpoint, otp_app: :la_famiglia
 
+  socket "/ws", LaFamiglia.UserSocket
+
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phoenix.digest
@@ -12,6 +14,7 @@ defmodule LaFamiglia.Endpoint do
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
+    socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
     plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
   end
@@ -32,5 +35,5 @@ defmodule LaFamiglia.Endpoint do
     key: "_la_famiglia_key",
     signing_salt: "8xV7IxQC"
 
-  plug :router, LaFamiglia.Router
+  plug LaFamiglia.Router
 end

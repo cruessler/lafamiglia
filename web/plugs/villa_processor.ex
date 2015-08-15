@@ -1,8 +1,6 @@
 defmodule LaFamiglia.Plugs.VillaProcessor do
   import Plug.Conn
 
-  use Ecto.Model
-
   alias LaFamiglia.Villa
 
   def init(default), do: default

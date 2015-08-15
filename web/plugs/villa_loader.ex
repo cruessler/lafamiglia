@@ -8,8 +8,6 @@ defmodule LaFamiglia.Plugs.VillaLoader do
 
   import Plug.Conn
 
-  use Ecto.Model
-
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
 

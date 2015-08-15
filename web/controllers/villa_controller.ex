@@ -1,6 +1,5 @@
 defmodule LaFamiglia.VillaController do
   use LaFamiglia.Web, :controller
-  use Ecto.Model
 
   def index(conn, _params) do
     conn
