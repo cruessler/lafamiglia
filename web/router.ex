@@ -12,6 +12,13 @@ defmodule LaFamiglia.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :ingame do
+    plug LaFamiglia.Plugs.Authentication, "/"
+    plug LaFamiglia.Plugs.VillaLoader
+    plug LaFamiglia.Plugs.VillaChecker
+    plug LaFamiglia.Plugs.VillaProcessor
+  end
+
   scope "/", LaFamiglia do
     pipe_through :browser # Use the default browser stack
 
@@ -19,8 +26,12 @@ defmodule LaFamiglia.Router do
                           only: [ :create, :new, :delete ],
                           singleton: true
 
-    resources "/players", PlayerController, only: [ :create, :new ]
-    resources "/villas", VillaController, only: [ :index, :show ]
+    scope "" do
+      pipe_through :ingame
+
+      resources "/players", PlayerController, only: [ :create, :new ]
+      resources "/villas", VillaController, only: [ :index, :show ]
+    end
 
     get "/", PageController, :index
   end

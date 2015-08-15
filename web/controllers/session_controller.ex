@@ -13,7 +13,7 @@ defmodule LaFamiglia.SessionController do
     case Session.login(session_params) do
       { :ok, player } ->
         conn
-        |> put_session(:current_player, player.id)
+        |> put_session(:current_player_id, player.id)
         |> put_flash(:info, "You are now logged in")
         |> redirect(to: page_path(conn, :index))
       :error ->
@@ -25,7 +25,7 @@ defmodule LaFamiglia.SessionController do
 
   def delete(conn, _params) do
     conn
-    |> delete_session(:current_player)
+    |> delete_session(:current_player_id)
     |> put_flash(:info, "Logged out")
     |> redirect(to: page_path(conn, :index))
   end

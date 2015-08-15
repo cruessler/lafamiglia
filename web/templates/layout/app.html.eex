@@ -12,7 +12,7 @@
   </head>
 
   <body>
-    <%= if player_logged_in?(@conn) do %>
+    <%= if @conn.assigns[:current_player] do %>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
           <div class="navbar-header">
