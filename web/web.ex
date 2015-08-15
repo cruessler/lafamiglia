@@ -52,8 +52,6 @@ defmodule LaFamiglia.Web do
       alias LaFamiglia.Session
       alias LaFamiglia.Villa
 
-      # Import session related functions
-      import Session, only: [ current_player: 1, player_logged_in?: 1 ]
       import Villa, only: [ to_string: 1 ]
     end
   end

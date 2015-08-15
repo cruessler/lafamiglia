@@ -31,7 +31,7 @@ defmodule LaFamiglia.SessionController do
   end
 
   defp authenticate(conn, _) do
-    if(Session.player_logged_in?(conn)) do
+    if(conn.assigns[:current_player]) do
       conn |> redirect(to: page_path(conn, :index)) |> halt
     else
       conn
