@@ -1,7 +1,6 @@
 defmodule LaFamiglia.Player do
   use LaFamiglia.Web, :model
 
-  alias LaFamiglia.Repo
   alias LaFamiglia.Villa
   alias Comeonin.Bcrypt
 
