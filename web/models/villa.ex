@@ -18,6 +18,9 @@ defmodule LaFamiglia.Villa do
 
     field :storage_capacity, :integer
 
+    field :building_1, :integer
+    field :building_2, :integer
+
     field :processed_until, Ecto.DateTime
 
     belongs_to :player, Player
@@ -25,7 +28,7 @@ defmodule LaFamiglia.Villa do
     timestamps
   end
 
-  @required_fields ~w(name x y resource_1 resource_2 resource_3 storage_capacity processed_until player_id)
+  @required_fields ~w(name x y resource_1 resource_2 resource_3 storage_capacity building_1 building_2 processed_until player_id)
   @optional_fields ~w()
 
   @doc """
@@ -87,6 +90,7 @@ defmodule LaFamiglia.Villa do
                                        y: y,
                                        resource_1: 0, resource_2: 0, resource_3: 0,
                                        storage_capacity: 100,
+                                       building_1: 1, building_2: 0,
                                        processed_until: Ecto.DateTime.local,
                                        player_id: player.id })
         Repo.insert!(changeset)

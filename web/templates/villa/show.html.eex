@@ -1,1 +1,30 @@
-<p>The villa bearing the name <%= @conn.assigns.current_villa.name %> is at your service.</p>
+<p>The villa bearing the name <%= @current_villa.name %> is at your service.</p>
+
+<h2>
+  <%= @current_villa.name %> <%= coordinates @current_villa %>
+</h2>
+
+<h3>
+  Buildings
+</h3>
+
+<table class="col-md-8 table table-striped">
+  <tr>
+    <th></th>
+    <th>Level</th>
+    <th>Points</th>
+    <th>Costs</th>
+    <th>Build time</th>
+    <th>Build</th>
+  </tr>
+  <%= Enum.map Application.get_env(:la_famiglia, :buildings), fn({k, b}) -> %>
+    <tr>
+      <td><%= k %></td>
+      <td><%= @current_villa |> Map.get(k) %></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  <% end %>
+</table>
