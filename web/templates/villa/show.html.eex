@@ -21,9 +21,9 @@
     <tr>
       <td><%= k %></td>
       <td><%= @current_villa |> Map.get(k) %></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td><%= @current_villa |> Map.get(k) |> b.points.() %></td>
+      <td><%= @current_villa |> Map.get(k) |> b.costs.() |> resources %></td>
+      <td><%= @current_villa |> Map.get(k) |> b.build_time.() %></td>
       <td></td>
     </tr>
   <% end %>
