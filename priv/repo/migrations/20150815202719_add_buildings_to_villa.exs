@@ -1,4 +1,4 @@
-defmodule LaFamiglia.Repo.Migrations.AddBuildingsToVillas do
+defmodule LaFamiglia.Repo.Migrations.AddBuildingsToVilla do
   use Ecto.Migration
 
   def change do
