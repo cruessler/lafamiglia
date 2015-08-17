@@ -5,6 +5,7 @@ defmodule LaFamiglia.VillaTest do
 
   @valid_attrs %{ name: "New villa", x: 0, y: 0, player_id: 1,
                   resource_1: 0, resource_2: 0, resource_3: 0,
+                  building_1: 1, building_2: 0,
                   storage_capacity: 100,
                   processed_until: Ecto.DateTime.local }
   @invalid_attrs %{ name: "Ne" }
