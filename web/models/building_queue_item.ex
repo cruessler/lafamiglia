@@ -1,6 +1,9 @@
 defmodule LaFamiglia.BuildingQueueItem do
   use LaFamiglia.Web, :model
 
+  alias LaFamiglia.Repo
+  alias LaFamiglia.Villa
+
   schema "building_queue_items" do
     field :building_id, :integer
     field :completed_at, Ecto.DateTime
@@ -22,5 +25,32 @@ defmodule LaFamiglia.BuildingQueueItem do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
+  end
+
+  def completed_at([]) do
+    Ecto.DateTime.local
+  end
+  def completed_at([_|_] = queue) do
+    List.last(queue).completed_at
+  end
+
+  def enqueue(villa, building) do
+    old_queue = assoc(villa, :building_queue_items) |> Repo.all
+
+    level        = Building.level(villa, building)
+    costs        = building.costs.(level)
+    build_time   = building.build_time.(level)
+    completed_at = LaFamiglia.DateTime.add_seconds(completed_at(old_queue), build_time)
+
+    new_item = Ecto.Model.build(villa, :building_queue_items,
+                                building_id: building.id,
+                                completed_at: completed_at)
+
+    villa = Villa.subtract_resources(villa, costs)
+
+    Repo.transaction fn ->
+      Repo.insert!(new_item)
+      Repo.update!(villa)
+    end
   end
 end

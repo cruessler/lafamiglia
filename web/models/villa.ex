@@ -3,6 +3,7 @@ defmodule LaFamiglia.Villa do
 
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
+  alias LaFamiglia.BuildingQueueItem
 
   import Ecto.Query, only: [ from: 2 ]
   import LaFamiglia.DateTime, only: [ to_msecs: 1 ]
@@ -24,6 +25,7 @@ defmodule LaFamiglia.Villa do
     field :processed_until, Ecto.DateTime
 
     belongs_to :player, Player
+    has_many :building_queue_items, BuildingQueueItem
 
     timestamps
   end
@@ -127,6 +129,16 @@ defmodule LaFamiglia.Villa do
 
     new_resources = Map.merge old_resources, resources, fn(_k, v1, v2) ->
       min(v1 + v2, storage_capacity)
+    end
+
+    Villa.put_resources(villa, new_resources)
+  end
+
+  def subtract_resources(villa, resources) do
+    old_resources = Villa.get_resources(villa)
+
+    new_resources = Map.merge old_resources, resources, fn(_k, v1, v2) ->
+      v1 - v2
     end
 
     Villa.put_resources(villa, new_resources)
