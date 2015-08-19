@@ -20,7 +20,7 @@
   <%= Enum.map Application.get_env(:la_famiglia, :buildings), fn({k, b}) -> %>
     <tr>
       <td><%= k %></td>
-      <td><%= @current_villa |> Map.get(k) %></td>
+      <td><%= Building.level(@current_villa, b) %> (<%= Building.virtual_level(@current_villa, b) %>)</td>
       <td><%= @current_villa |> Map.get(k) |> b.points.() %></td>
       <td><%= @current_villa |> Map.get(k) |> b.costs.() |> resources %></td>
       <td><%= @current_villa |> Map.get(k) |> b.build_time.() %></td>
