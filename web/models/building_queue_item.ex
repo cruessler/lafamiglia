@@ -37,7 +37,7 @@ defmodule LaFamiglia.BuildingQueueItem do
   def enqueue(villa, building) do
     old_queue = assoc(villa, :building_queue_items) |> Repo.all
 
-    level        = Building.level(villa, building)
+    level        = Building.virtual_level(villa, building)
     costs        = building.costs.(level)
     build_time   = building.build_time.(level)
     completed_at = LaFamiglia.DateTime.add_seconds(completed_at(old_queue), build_time)
