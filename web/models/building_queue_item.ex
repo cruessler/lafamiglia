@@ -2,7 +2,7 @@ defmodule LaFamiglia.BuildingQueueItem do
   use LaFamiglia.Web, :model
 
   schema "building_queue_items" do
-    field :building_id
+    field :building_id, :integer
     field :completed_at, Ecto.DateTime
 
     belongs_to :villa, Villa
