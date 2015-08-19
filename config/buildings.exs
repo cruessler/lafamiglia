@@ -4,6 +4,7 @@ config :la_famiglia,
   buildings: [
     building_1: %{
       id: 1,
+      key: :building_1,
       build_time: fn level -> level * 1 + 4 end,
       costs: fn level ->
         %{
@@ -18,6 +19,7 @@ config :la_famiglia,
       },
     building_2: %{
       id: 2,
+      key: :building_2,
       build_time: fn level -> level * 1 + 4 end,
       costs: fn level ->
         %{
