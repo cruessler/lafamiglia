@@ -28,7 +28,7 @@ defmodule LaFamiglia.BuildingQueueItem do
   end
 
   def completed_at([]) do
-    Ecto.DateTime.utc
+    LaFamiglia.DateTime.now
   end
   def completed_at([_|_] = queue) do
     List.last(queue).completed_at

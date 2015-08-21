@@ -2,7 +2,7 @@ defmodule LaFamiglia.DateTimeTest do
   use LaFamiglia.ModelCase
 
   test "should set and get game time" do
-    LaFamiglia.DateTime.start_link
+    LaFamiglia.DateTime.clock!(nil)
 
     assert LaFamiglia.DateTime.now == nil
 

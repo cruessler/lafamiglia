@@ -93,7 +93,7 @@ defmodule LaFamiglia.Villa do
                                        resource_1: 0, resource_2: 0, resource_3: 0,
                                        storage_capacity: 100,
                                        building_1: 1, building_2: 0,
-                                       processed_until: Ecto.DateTime.utc,
+                                       processed_until: LaFamiglia.DateTime.now,
                                        player_id: player.id })
         Repo.insert!(changeset)
       _ -> nil
