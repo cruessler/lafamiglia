@@ -17,6 +17,7 @@ defmodule LaFamiglia.Router do
     plug LaFamiglia.Plugs.Authentication, "/"
     plug LaFamiglia.Plugs.VillaLoader
     plug LaFamiglia.Plugs.VillaChecker
+    plug LaFamiglia.Plugs.Timer
     plug LaFamiglia.Plugs.VillaProcessor
   end
 
