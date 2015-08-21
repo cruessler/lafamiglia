@@ -6,7 +6,7 @@ defmodule LaFamiglia.Villa do
   alias LaFamiglia.BuildingQueueItem
 
   import Ecto.Query, only: [ from: 2 ]
-  import LaFamiglia.DateTime, only: [ to_msecs: 1 ]
+  import LaFamiglia.DateTime, only: [ to_seconds: 1 ]
 
   schema "villas" do
     field :name, :string
@@ -105,7 +105,7 @@ defmodule LaFamiglia.Villa do
   the results to the database.
   """
   def process_virtually_until %Villa{processed_until: processed_until} = villa, time do
-    case to_msecs(time) - to_msecs(processed_until) do
+    case to_seconds(time) - to_seconds(processed_until) do
       0 ->
         villa
       time_diff ->
