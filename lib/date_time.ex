@@ -20,4 +20,16 @@ defmodule LaFamiglia.DateTime do
 
     %Ecto.DateTime{new_datetime | usec: usecs}
   end
+
+  def start_link do
+    {:ok, pid} = Agent.start_link(fn -> nil end, name: __MODULE__)
+  end
+
+  def clock!(time \\ Ecto.DateTime.utc) do
+    Agent.update(__MODULE__, fn(_time) -> time end)
+  end
+
+  def now do
+    Agent.get(__MODULE__, fn(time) -> time end)
+  end
 end
