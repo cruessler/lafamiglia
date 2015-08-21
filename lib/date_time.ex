@@ -30,7 +30,7 @@ defmodule LaFamiglia.DateTime do
   end
 
   def start_link do
-    {:ok, pid} = Agent.start_link(fn -> nil end, name: __MODULE__)
+    {:ok, _pid} = Agent.start_link(fn -> nil end, name: __MODULE__)
   end
 
   def clock!(time \\ Ecto.DateTime.utc) do
