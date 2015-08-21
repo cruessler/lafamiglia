@@ -11,6 +11,6 @@ defmodule LaFamiglia.Plugs.VillaProcessor do
   end
 
   defp process_villa(%Plug.Conn{assigns: %{current_villa: villa}} = conn) do
-    assign(conn, :current_villa, Villa.process_virtually_until(villa, Ecto.DateTime.local))
+    assign(conn, :current_villa, Villa.process_virtually_until(villa, Ecto.DateTime.utc))
   end
 end

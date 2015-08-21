@@ -26,5 +26,5 @@ defmodule Forge do
     storage_capacity: 100,
     building_1: 1,
     building_2: 0,
-    processed_until: Ecto.DateTime.local
+    processed_until: Ecto.DateTime.utc
 end
