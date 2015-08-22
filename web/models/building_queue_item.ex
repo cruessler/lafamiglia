@@ -46,11 +46,11 @@ defmodule LaFamiglia.BuildingQueueItem do
                                 building_id: building.id,
                                 completed_at: completed_at)
 
-    villa = Villa.subtract_resources(villa, costs)
+    changeset = Villa.subtract_resources(villa, costs)
 
     Repo.transaction fn ->
       Repo.insert!(new_item)
-      Repo.update!(villa)
+      Repo.update!(changeset)
     end
   end
 end

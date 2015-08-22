@@ -109,19 +109,15 @@ defmodule LaFamiglia.Villa do
       0 ->
         villa
       time_diff ->
-        villa = villa
-                |> add_resources(resource_gains time_diff)
+        changeset = villa
+                    |> add_resources(resource_gains time_diff)
 
-        %Villa{ villa | processed_until: time }
+        put_change(changeset, :processed_until, time)
     end
   end
 
   def get_resources(%Villa{resource_1: resource_1, resource_2: resource_2, resource_3: resource_3}) do
     %{resource_1: resource_1, resource_2: resource_2, resource_3: resource_3}
-  end
-
-  def put_resources(villa, %{resource_1: resource_1, resource_2: resource_2, resource_3: resource_3}) do
-    %Villa{villa | resource_1: resource_1, resource_2: resource_2, resource_3: resource_3}
   end
 
   def add_resources(%Villa{storage_capacity: storage_capacity} = villa, resources) do
@@ -131,7 +127,7 @@ defmodule LaFamiglia.Villa do
       min(v1 + v2, storage_capacity)
     end
 
-    Villa.put_resources(villa, new_resources)
+    Villa.changeset(villa, new_resources)
   end
 
   def subtract_resources(villa, resources) do
@@ -141,7 +137,7 @@ defmodule LaFamiglia.Villa do
       v1 - v2
     end
 
-    Villa.put_resources(villa, new_resources)
+    Villa.changeset(villa, new_resources)
   end
 
   def resource_gains time_diff do
