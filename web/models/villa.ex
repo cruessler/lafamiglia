@@ -116,6 +116,13 @@ defmodule LaFamiglia.Villa do
     end
   end
 
+  def has_resources?(%Villa{} = villa, resources) do
+    Villa.get_resources(villa)
+    |> Enum.all? fn({k, v}) ->
+      resources[k] <= v
+    end
+  end
+
   def get_resources(%Villa{resource_1: resource_1, resource_2: resource_2, resource_3: resource_3}) do
     %{resource_1: resource_1, resource_2: resource_2, resource_3: resource_3}
   end

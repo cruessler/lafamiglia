@@ -37,4 +37,11 @@ defmodule LaFamiglia.VillaTest do
 
     assert (villas_count + number_to_create) == assoc(player, :villas) |> Repo.all |> Enum.count
   end
+
+  test "has_resources?" do
+    villa = Forge.villa(resource_1: 10, resource_2: 10, resource_3: 0)
+
+    assert Villa.has_resources?(villa, %{resource_1: 10, resource_2: 10, resource_3: 0})
+    refute Villa.has_resources?(villa, %{resource_1: 10, resource_2: 10, resource_3: 10})
+  end
 end
