@@ -38,6 +38,8 @@ defmodule LaFamiglia.ConnCase do
       Ecto.Adapters.SQL.restart_test_transaction(LaFamiglia.Repo, [])
     end
 
+    LaFamiglia.DateTime.clock!
+
     :ok
   end
 end

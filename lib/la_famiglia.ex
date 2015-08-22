@@ -11,8 +11,6 @@ defmodule LaFamiglia do
       supervisor(LaFamiglia.Endpoint, []),
       # Start the Ecto repository
       worker(LaFamiglia.Repo, []),
-      # Start the timing agent
-      worker(LaFamiglia.DateTime, []),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
