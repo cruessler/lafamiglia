@@ -1,6 +1,7 @@
 defmodule Forge do
   use Blacksmith
 
+  alias LaFamiglia.Repo
   alias LaFamiglia.Player
   alias LaFamiglia.Villa
 
@@ -20,11 +21,12 @@ defmodule Forge do
     name: "New Villa",
     x: Sequence.next(:x),
     y: Sequence.next(:y),
-    resource_1: 0.0,
-    resource_2: 0.0,
-    resource_3: 0.0,
+    resource_1: 50.0,
+    resource_2: 50.0,
+    resource_3: 50.0,
     storage_capacity: 100,
     building_1: 1,
     building_2: 0,
     processed_until: LaFamiglia.DateTime.now,
+    player_id: Forge.saved_player(Repo).id
 end
