@@ -21,6 +21,8 @@ defmodule LaFamiglia.ModelCase do
       import Ecto.Model
       import Ecto.Query, only: [from: 2]
       import LaFamiglia.ModelCase
+
+      alias LaFamiglia.Villa
     end
   end
 

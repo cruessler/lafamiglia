@@ -18,4 +18,15 @@ defmodule LaFamiglia.BuildingQueueItemTest do
 
     assert Building.virtual_level(villa, building) == 4
   end
+
+  test "should respect validations" do
+    villa    = %Villa{Forge.saved_villa(Repo) | resource_1: 0 }
+    building = Building.get_by_id(1)
+
+    assert {:error, _changeset} = villa |> BuildingQueueItem.enqueue(building)
+
+    building = %{building | maxlevel: 1}
+
+    assert {:error, _changeset} = villa |> BuildingQueueItem.enqueue(building)
+  end
 end
