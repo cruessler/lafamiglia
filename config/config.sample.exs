@@ -10,7 +10,7 @@ config :la_famiglia, LaFamiglia.Endpoint,
   url: [host: "localhost"],
   root: Path.dirname(__DIR__),
   secret_key_base: "",
-  render_errors: [default_format: "html"],
+  render_errors: [accepts: ["html"]],
   pubsub: [name: LaFamiglia.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
