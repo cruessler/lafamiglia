@@ -32,7 +32,10 @@ defmodule LaFamiglia.Router do
       pipe_through :ingame
 
       resources "/players", PlayerController, only: [ :create, :new ]
-      resources "/villas", VillaController, only: [ :index, :show ]
+
+      resources "/villas", VillaController, only: [ :index, :show ] do
+        resources "/building_queue_items", BuildingQueueItemController, only: [ :create ]
+      end
     end
 
     get "/", PageController, :index

@@ -24,6 +24,29 @@
       <td><%= @current_villa |> Map.get(k) |> b.points.() %></td>
       <td><%= @current_villa |> Map.get(k) |> b.costs.() |> resources %></td>
       <td><%= @current_villa |> Map.get(k) |> b.build_time.() %></td>
+      <td><%= link_to_build_start(@conn, @current_villa, b) %></td>
+    </tr>
+  <% end %>
+</table>
+
+<h3>
+  Building queue
+</h3>
+
+<table class="col-md-8 table table-striped">
+  <tr>
+    <th>Building</th>
+    <th>Build time</th>
+    <th>Completion time</th>
+    <th></th>
+    <th>Cancel</th>
+  </tr>
+  <%= Enum.map @current_villa.building_queue_items, fn(i) -> %>
+    <tr>
+      <td><%= i.building_id %></td>
+      <td></td>
+      <td><%= i.completed_at %></td>
+      <td></td>
       <td></td>
     </tr>
   <% end %>
