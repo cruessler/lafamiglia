@@ -15,18 +15,17 @@ defmodule LaFamiglia.DateTime do
   end
 
   def add_seconds(%Ecto.DateTime{usec: usecs} = datetime, seconds) do
-    new_seconds =
-      datetime
-      |> Ecto.DateTime.to_erl
-      |> :calendar.datetime_to_gregorian_seconds
-      |> +(seconds)
+    new_seconds = to_seconds(datetime) + seconds
+    frac        = new_seconds - round(new_seconds)
+    new_seconds = trunc(new_seconds)
 
     new_datetime =
       new_seconds
       |> :calendar.gregorian_seconds_to_datetime
       |> Ecto.DateTime.from_erl
 
-    %Ecto.DateTime{new_datetime | usec: usecs}
+    %Ecto.DateTime{new_datetime | usec: trunc(frac * 1000)}
+  end
 
   def time_diff(%Ecto.DateTime{} = time1, %Ecto.DateTime{} = time2) do
     to_seconds(time2) - to_seconds(time1)
