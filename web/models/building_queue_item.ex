@@ -37,6 +37,39 @@ defmodule LaFamiglia.BuildingQueueItem do
     List.last(queue).completed_at
   end
 
+  defp first_of_its_kind?([], _item) do
+    true
+  end
+  defp first_of_its_kind?([h|t], item) do
+    cond do
+      h == item ->
+        true
+      h.building_id == item.building_id ->
+        false
+      true ->
+        first_of_its_kind?(t, item)
+    end
+  end
+
+  def last_of_its_kind?(queue, item) do
+    queue
+    |> Enum.reverse
+    |> first_of_its_kind?(item)
+  end
+
+  def refunds(villa, item, time_diff) do
+    building = Building.get_by_id(item.building_id)
+
+    previous_level = Building.virtual_level(villa, building) - 1
+    refund_ratio   = time_diff / item.build_time
+
+    building.costs.(previous_level)
+    |> Enum.map(fn({k, v}) ->
+      {k, v * refund_ratio}
+    end)
+    |> Enum.into(%{})
+  end
+
   def enqueue(villa, building) do
     villa = Repo.preload(villa, :building_queue_items)
 
@@ -61,6 +94,38 @@ defmodule LaFamiglia.BuildingQueueItem do
         changeset
         |> Ecto.Changeset.change(building_queue_items: villa.building_queue_items ++ [new_item])
         |> Repo.update
+    end
+  end
+
+  def dequeue(villa, item) do
+    villa        = Repo.preload(villa, :building_queue_items)
+    completed_at = completed_at(villa.building_queue_items)
+
+    unless last_of_its_kind?(villa.building_queue_items, item) do
+      {:error, "You can only cancel the last building of its kind."}
+    else
+      time_diff = if item == List.first(villa.building_queue_items) do
+        LaFamiglia.DateTime.time_diff(LaFamiglia.DateTime.now, completed_at)
+      else
+        item.build_time
+      end
+
+      Repo.transaction fn ->
+        villa
+        |> Villa.add_resources(refunds(villa, item, time_diff))
+        |> Repo.update!
+
+        Repo.delete!(item)
+
+        Enum.map villa.building_queue_items, fn(i) ->
+          if i.completed_at > item.completed_at do
+            changeset(i, %{completed_at: LaFamiglia.DateTime.add_seconds(i.completed_at, -time_diff)})
+            |> Repo.update!
+          end
+        end
+      end
+
+      :ok
     end
   end
 end
