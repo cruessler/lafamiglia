@@ -11,7 +11,7 @@ defmodule LaFamiglia.DateTime do
     datetime
     |> Ecto.DateTime.to_erl
     |> :calendar.datetime_to_gregorian_seconds
-    |> +(usecs / 1000)
+    |> +(usecs / 1_000_000)
   end
 
   def add_seconds(%Ecto.DateTime{usec: usecs} = datetime, seconds) do
@@ -24,7 +24,7 @@ defmodule LaFamiglia.DateTime do
       |> :calendar.gregorian_seconds_to_datetime
       |> Ecto.DateTime.from_erl
 
-    %Ecto.DateTime{new_datetime | usec: trunc(frac * 1000)}
+    %Ecto.DateTime{new_datetime | usec: trunc(frac * 1_000_000)}
   end
 
   def time_diff(%Ecto.DateTime{} = time1, %Ecto.DateTime{} = time2) do
