@@ -2,10 +2,12 @@ defmodule Building do
   alias LaFamiglia.Repo
 
   def get_by_id(id) do
-    {_k, b} = Enum.find Application.get_env(:la_famiglia, :buildings), fn({_k, b}) ->
-      b.id == id
+    case Application.get_env(:la_famiglia, :buildings)
+         |> Enum.find(fn({_k, b}) -> b.id == id end)
+    do
+      {_k, b} -> b
+      _       -> nil
     end
-    b
   end
 
   def level(villa, building) do
