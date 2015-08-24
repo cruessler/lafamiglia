@@ -8,6 +8,7 @@ defmodule LaFamiglia.BuildingQueueItem do
 
   schema "building_queue_items" do
     field :building_id, :integer
+    field :build_time, :float
     field :completed_at, Ecto.DateTime
 
     belongs_to :villa, Villa
@@ -54,6 +55,7 @@ defmodule LaFamiglia.BuildingQueueItem do
       true ->
         new_item = Ecto.Model.build(villa, :building_queue_items,
                                     building_id: building.id,
+                                    build_time: build_time / 1,
                                     completed_at: completed_at)
 
         changeset

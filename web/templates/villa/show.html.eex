@@ -44,7 +44,7 @@
   <%= Enum.map @current_villa.building_queue_items, fn(i) -> %>
     <tr>
       <td><%= i.building_id %></td>
-      <td></td>
+      <td><%= i.build_time %></td>
       <td><%= i.completed_at %></td>
       <td></td>
       <td></td>
