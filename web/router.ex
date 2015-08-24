@@ -36,6 +36,8 @@ defmodule LaFamiglia.Router do
       resources "/villas", VillaController, only: [ :index, :show ] do
         resources "/building_queue_items", BuildingQueueItemController, only: [ :create ]
       end
+
+      resources "/building_queue_items", BuildingQueueItemController, only: [ :delete ]
     end
 
     get "/", PageController, :index

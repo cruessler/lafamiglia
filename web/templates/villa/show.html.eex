@@ -47,7 +47,7 @@
       <td><%= i.build_time %></td>
       <td><%= i.completed_at %></td>
       <td></td>
-      <td></td>
+      <td><%= link_to_build_cancel(@conn, i) %></td>
     </tr>
   <% end %>
 </table>
