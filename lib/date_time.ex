@@ -27,6 +27,9 @@ defmodule LaFamiglia.DateTime do
       |> Ecto.DateTime.from_erl
 
     %Ecto.DateTime{new_datetime | usec: usecs}
+
+  def time_diff(%Ecto.DateTime{} = time1, %Ecto.DateTime{} = time2) do
+    to_seconds(time2) - to_seconds(time1)
   end
 
   def clock!(time \\ Ecto.DateTime.utc) do
