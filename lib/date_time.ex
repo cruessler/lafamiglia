@@ -14,7 +14,18 @@ defmodule LaFamiglia.DateTime do
     |> +(usecs / 1_000_000)
   end
 
-  def add_seconds(%Ecto.DateTime{usec: usecs} = datetime, seconds) do
+  def add_seconds(%Ecto.DateTime{usec: usecs} = datetime, seconds) when is_integer(seconds) do
+    new_datetime =
+      datetime
+      |> Ecto.DateTime.to_erl
+      |> :calendar.datetime_to_gregorian_seconds
+      |> +(seconds)
+      |> :calendar.gregorian_seconds_to_datetime
+      |> Ecto.DateTime.from_erl
+
+    %Ecto.DateTime{new_datetime | usec: usecs}
+  end
+  def add_seconds(%Ecto.DateTime{} = datetime, seconds) when is_float(seconds) do
     new_seconds = to_seconds(datetime) + seconds
     frac        = new_seconds - round(new_seconds)
     new_seconds = trunc(new_seconds)
