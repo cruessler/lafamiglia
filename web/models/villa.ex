@@ -115,10 +115,11 @@ defmodule LaFamiglia.Villa do
     end
   end
 
-  def has_resources?(%Villa{} = villa, resources) do
-    Villa.get_resources(villa)
+  def has_resources?(%Villa{} = villa,
+                     %{resource_1: _, resource_2: _, resource_3: _} = resources) do
+    resources
     |> Enum.all? fn({k, v}) ->
-      resources[k] <= v
+      Map.get(villa, k) >= v
     end
   end
 
@@ -126,24 +127,18 @@ defmodule LaFamiglia.Villa do
     %{resource_1: resource_1, resource_2: resource_2, resource_3: resource_3}
   end
 
-  def add_resources(%Villa{storage_capacity: storage_capacity} = villa, resources) do
-    old_resources = Villa.get_resources(villa)
-
-    new_resources = Map.merge old_resources, resources, fn(_k, v1, v2) ->
+  def add_resources(%Villa{storage_capacity: storage_capacity} = villa,
+                    %{resource_1: _, resource_2: _, resource_3: _} = resources) do
+    Map.merge villa, resources, fn(_k, v1, v2) ->
       min(v1 + v2, storage_capacity)
     end
-
-    Map.merge(villa, new_resources)
   end
 
-  def subtract_resources(villa, resources) do
-    old_resources = Villa.get_resources(villa)
-
-    new_resources = Map.merge old_resources, resources, fn(_k, v1, v2) ->
+  def subtract_resources(%Villa{} = villa,
+                         %{resource_1: _, resource_2: _, resource_3: _} = resources) do
+    Map.merge villa, resources, fn(_k, v1, v2) ->
       v1 - v2
     end
-
-    Map.merge(villa, new_resources)
   end
 
   def resource_gains time_diff do
