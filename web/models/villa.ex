@@ -109,10 +109,9 @@ defmodule LaFamiglia.Villa do
       0 ->
         villa
       time_diff ->
-        changeset = villa
-                    |> add_resources(resource_gains time_diff)
-
-        put_change(changeset, :processed_until, time)
+        villa
+        |> add_resources(resource_gains(time_diff))
+        |> Map.put(:processed_until, time)
     end
   end
 
@@ -134,7 +133,7 @@ defmodule LaFamiglia.Villa do
       min(v1 + v2, storage_capacity)
     end
 
-    Villa.changeset(villa, new_resources)
+    Map.merge(villa, new_resources)
   end
 
   def subtract_resources(villa, resources) do
@@ -144,7 +143,7 @@ defmodule LaFamiglia.Villa do
       v1 - v2
     end
 
-    Villa.changeset(villa, new_resources)
+    Map.merge(villa, new_resources)
   end
 
   def resource_gains time_diff do

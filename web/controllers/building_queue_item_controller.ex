@@ -7,12 +7,12 @@ defmodule LaFamiglia.BuildingQueueItemController do
     building = Building.get_by_id(String.to_integer(building_id))
 
     if building do
-      case BuildingQueueItem.enqueue(conn.assigns.current_villa, building) do
-        {:error, changeset} ->
+      case BuildingQueueItem.enqueue(conn.assigns.current_villa_untouched, building) do
+        {:error, message} ->
           conn
-          |> put_flash(:alert, changeset.errors[:building_queue_items])
+          |> put_flash(:info, message)
           |> redirect(to: villa_path(conn, :show, villa_id))
-        {:ok, _item} ->
+        {:ok, _villa} ->
           conn
           |> redirect(to: villa_path(conn, :show, villa_id))
       end

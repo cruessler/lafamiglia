@@ -70,28 +70,31 @@ defmodule LaFamiglia.BuildingQueueItem do
     |> Enum.into(%{})
   end
 
-  def enqueue(villa, building) do
-    villa = Repo.preload(villa, :building_queue_items)
+  def enqueue(old_villa, building) do
+    old_villa = Repo.preload(old_villa, :building_queue_items)
+    villa     = Villa.process_virtually_until(old_villa, LaFamiglia.DateTime.now)
 
     level        = Building.virtual_level(villa, building)
     costs        = building.costs.(level)
     build_time   = building.build_time.(level)
-    completed_at = LaFamiglia.DateTime.add_seconds(completed_at(villa.building_queue_items), build_time)
-
-    changeset = Villa.subtract_resources(villa, costs)
+    completed_at =
+      completed_at(villa.building_queue_items)
+      |> LaFamiglia.DateTime.add_seconds(build_time)
 
     cond do
       level >= building.maxlevel ->
-        {:error, Ecto.Changeset.add_error(changeset, :building_queue_items, "Building already at maxlevel.")}
+        {:error, "Building already at maxlevel."}
       !Villa.has_resources?(villa, costs) ->
-        {:error, Ecto.Changeset.add_error(changeset, :building_queue_items, "Not enough resources.")}
+        {:error, "Not enough resources."}
       true ->
         new_item = Ecto.Model.build(villa, :building_queue_items,
                                     building_id: building.id,
                                     build_time: build_time / 1,
                                     completed_at: completed_at)
 
-        changeset
+        villa = Villa.subtract_resources(villa, costs)
+
+        Villa.changeset(old_villa, Map.from_struct(villa))
         |> Ecto.Changeset.change(building_queue_items: villa.building_queue_items ++ [new_item])
         |> Repo.update
     end
