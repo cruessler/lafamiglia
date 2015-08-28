@@ -114,10 +114,6 @@ defmodule LaFamiglia.BuildingQueueItem do
       end
 
       Repo.transaction fn ->
-        villa
-        |> Villa.add_resources(refunds(villa, item, time_diff))
-        |> Repo.update!
-
         Repo.delete!(item)
 
         Enum.map villa.building_queue_items, fn(i) ->
@@ -126,9 +122,11 @@ defmodule LaFamiglia.BuildingQueueItem do
             |> Repo.update!
           end
         end
-      end
 
-      :ok
+        villa
+        |> Villa.add_resources(refunds(villa, item, time_diff))
+        |> Repo.update!
+      end
     end
   end
 end

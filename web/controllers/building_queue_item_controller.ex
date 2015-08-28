@@ -22,7 +22,7 @@ defmodule LaFamiglia.BuildingQueueItemController do
   def delete(conn, %{"id" => id}) do
     item = Repo.get_by!(BuildingQueueItem, id: id, villa_id: conn.assigns.current_villa.id)
 
-    BuildingQueueItem.dequeue(conn.assigns.current_villa, item)
+    {:ok, _villa} = BuildingQueueItem.dequeue(conn.assigns.current_villa, item)
 
     conn
     |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))
