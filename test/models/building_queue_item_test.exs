@@ -29,4 +29,15 @@ defmodule LaFamiglia.BuildingQueueItemTest do
 
     assert {:error, _changeset} = villa |> BuildingQueueItem.enqueue(building)
   end
+
+  test "should update processed_until" do
+    building = Building.get_by_id(1)
+
+    {:ok, villa} =
+      Forge.saved_villa(Repo)
+      |> Map.put(:processed_until, LaFamiglia.DateTime.add_seconds(LaFamiglia.DateTime.now, -86400))
+      |> BuildingQueueItem.enqueue(building)
+
+    assert villa.processed_until == LaFamiglia.DateTime.now
+  end
 end
