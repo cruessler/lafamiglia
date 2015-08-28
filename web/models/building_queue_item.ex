@@ -70,7 +70,7 @@ defmodule LaFamiglia.BuildingQueueItem do
     |> Enum.into(%{})
   end
 
-  def enqueue(old_villa, building) do
+  def enqueue!(old_villa, building) do
     old_villa = Repo.preload(old_villa, :building_queue_items)
     villa     = Villa.process_virtually_until(old_villa, LaFamiglia.DateTime.now)
 
@@ -100,7 +100,7 @@ defmodule LaFamiglia.BuildingQueueItem do
     end
   end
 
-  def dequeue(villa, item) do
+  def dequeue!(villa, item) do
     villa        = Repo.preload(villa, :building_queue_items)
     completed_at = completed_at(villa.building_queue_items)
 

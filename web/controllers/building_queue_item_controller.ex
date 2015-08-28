@@ -7,7 +7,7 @@ defmodule LaFamiglia.BuildingQueueItemController do
     building = Building.get_by_id(String.to_integer(building_id))
 
     if building do
-      case BuildingQueueItem.enqueue(conn.assigns.current_villa_untouched, building) do
+      case BuildingQueueItem.enqueue!(conn.assigns.current_villa_untouched, building) do
         {:error, message} ->
           conn
           |> put_flash(:info, message)
@@ -22,7 +22,7 @@ defmodule LaFamiglia.BuildingQueueItemController do
   def delete(conn, %{"id" => id}) do
     item = Repo.get_by!(BuildingQueueItem, id: id, villa_id: conn.assigns.current_villa.id)
 
-    {:ok, _villa} = BuildingQueueItem.dequeue(conn.assigns.current_villa, item)
+    {:ok, _villa} = BuildingQueueItem.dequeue!(conn.assigns.current_villa, item)
 
     conn
     |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))
