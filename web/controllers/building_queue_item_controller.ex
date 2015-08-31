@@ -12,7 +12,7 @@ defmodule LaFamiglia.BuildingQueueItemController do
           conn
           |> put_flash(:info, message)
           |> redirect(to: villa_path(conn, :show, villa_id))
-        {:ok, _villa} ->
+        {:ok, _item} ->
           conn
           |> redirect(to: villa_path(conn, :show, villa_id))
       end
@@ -22,7 +22,7 @@ defmodule LaFamiglia.BuildingQueueItemController do
   def delete(conn, %{"id" => id}) do
     item = Repo.get_by!(BuildingQueueItem, id: id, villa_id: conn.assigns.current_villa.id)
 
-    {:ok, _villa} = BuildingQueueItem.dequeue!(conn.assigns.current_villa, item)
+    {:ok, _item} = BuildingQueueItem.dequeue!(conn.assigns.current_villa, item)
 
     conn
     |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))

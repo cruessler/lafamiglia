@@ -94,9 +94,12 @@ defmodule LaFamiglia.BuildingQueueItem do
 
         villa = Villa.subtract_resources(villa, costs)
 
-        Villa.changeset(old_villa, Map.from_struct(villa))
-        |> Ecto.Changeset.change(building_queue_items: villa.building_queue_items ++ [new_item])
-        |> Repo.update
+        Repo.transaction fn ->
+          Villa.changeset(old_villa, Map.from_struct(villa))
+          |> Repo.update!
+
+          Repo.insert!(new_item)
+        end
     end
   end
 
@@ -126,6 +129,8 @@ defmodule LaFamiglia.BuildingQueueItem do
         villa
         |> Villa.add_resources(refunds(villa, item, time_diff))
         |> Repo.update!
+
+        item
       end
     end
   end

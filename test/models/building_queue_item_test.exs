@@ -23,8 +23,11 @@ defmodule LaFamiglia.BuildingQueueItemTest do
     villa    = Forge.saved_villa(Repo)
     building = Building.get_by_id(1)
 
-    assert {:ok, villa} = BuildingQueueItem.enqueue!(villa, building)
-    assert {:ok, _}     = BuildingQueueItem.dequeue!(villa, List.last(villa.building_queue_items))
+    assert {:ok, _item} = BuildingQueueItem.enqueue!(villa, building)
+
+    villa = Repo.get(Villa, villa.id) |> Repo.preload(:building_queue_items)
+
+    assert {:ok, _}    = BuildingQueueItem.dequeue!(villa, List.last(villa.building_queue_items))
   end
 
   test "should respect validations" do
@@ -39,13 +42,16 @@ defmodule LaFamiglia.BuildingQueueItemTest do
   end
 
   test "should update processed_until" do
+    villa    = Forge.saved_villa(Repo)
     building = Building.get_by_id(1)
 
-    {:ok, villa} =
-      Forge.saved_villa(Repo)
+    {:ok, item} =
+      villa
       |> Map.put(:processed_until, LaFamiglia.DateTime.add_seconds(LaFamiglia.DateTime.now, -86400))
       |> BuildingQueueItem.enqueue!(building)
 
-    assert villa.processed_until == LaFamiglia.DateTime.now
+    item = Repo.preload(item, :villa)
+
+    assert item.villa.processed_until == LaFamiglia.DateTime.now
   end
 end
