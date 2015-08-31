@@ -11,6 +11,9 @@ defmodule LaFamiglia do
       supervisor(LaFamiglia.Endpoint, []),
       # Start the Ecto repository
       worker(LaFamiglia.Repo, []),
+      # Start the event loop
+      worker(LaFamiglia.EventLoop, []),
+      worker(LaFamiglia.EventQueue, []),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

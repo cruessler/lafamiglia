@@ -12,7 +12,9 @@ defmodule LaFamiglia.BuildingQueueItemController do
           conn
           |> put_flash(:info, message)
           |> redirect(to: villa_path(conn, :show, villa_id))
-        {:ok, _item} ->
+        {:ok, item} ->
+          LaFamiglia.EventQueue.cast({:new_event, item})
+
           conn
           |> redirect(to: villa_path(conn, :show, villa_id))
       end
