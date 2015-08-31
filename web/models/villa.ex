@@ -130,7 +130,7 @@ defmodule LaFamiglia.Villa do
   def add_resources(%Villa{storage_capacity: storage_capacity} = villa,
                     %{resource_1: _, resource_2: _, resource_3: _} = resources) do
     Map.merge villa, resources, fn(_k, v1, v2) ->
-      min(v1 + v2, storage_capacity)
+      min(v1 + v2, storage_capacity / 1)
     end
   end
 
