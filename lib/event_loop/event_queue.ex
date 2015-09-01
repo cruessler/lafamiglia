@@ -16,6 +16,11 @@ defmodule LaFamiglia.EventQueue do
 
   require Logger
 
+  import Ecto.Query
+
+  alias LaFamiglia.Repo
+  alias LaFamiglia.BuildingQueueItem
+
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, Dict.put(opts, :name, __MODULE__))
   end
@@ -25,7 +30,13 @@ defmodule LaFamiglia.EventQueue do
   end
 
   def init(_args) do
-    {:ok, :ordsets.new()}
+    queue =
+      from(i in BuildingQueueItem, order_by: [asc: i.completed_at])
+      |> Repo.all
+      |> Enum.map(fn(i) -> {i.completed_at, i} end)
+      |> :ordsets.from_list
+
+    {:ok, queue, timeout(queue)}
   end
 
   def handle_cast({:new_event, event}, queue) do
@@ -53,7 +64,7 @@ defmodule LaFamiglia.EventQueue do
     :infinity
   end
   defp timeout([{completed_at, _event}|_]) do
-    milliseconds_until(completed_at)
+    max(milliseconds_until(completed_at), 0)
   end
 
   defp milliseconds_until(%Ecto.DateTime{} = time) do
