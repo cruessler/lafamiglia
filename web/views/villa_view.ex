@@ -2,7 +2,7 @@ defmodule LaFamiglia.VillaView do
   use LaFamiglia.Web, :view
 
   def link_to_build_start(conn, villa, building) do
-    level = Building.level(villa, building)
+    level = Building.virtual_level(villa, building)
 
     if level < building.maxlevel do
       title = if level > 0 do
