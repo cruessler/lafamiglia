@@ -3,6 +3,8 @@ defmodule LaFamiglia.BuildingQueueItem do
 
   use Ecto.Model.Callbacks
 
+  import LaFamiglia.Queue
+
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
 
@@ -28,13 +30,6 @@ defmodule LaFamiglia.BuildingQueueItem do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
-  end
-
-  def completed_at([]) do
-    LaFamiglia.DateTime.now
-  end
-  def completed_at([_|_] = queue) do
-    List.last(queue).completed_at
   end
 
   defp first_of_its_kind?([], _item) do
