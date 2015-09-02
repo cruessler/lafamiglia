@@ -27,6 +27,10 @@ defmodule Forge do
     storage_capacity: 100,
     building_1: 1,
     building_2: 0,
+    unit_1: 0,
+    unit_2: 0,
+    supply: 0,
+    max_supply: 100,
     processed_until: LaFamiglia.DateTime.now,
     player_id: Forge.saved_player(Repo).id
 end

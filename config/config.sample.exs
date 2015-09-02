@@ -24,3 +24,4 @@ config :logger, :console,
 import_config "#{Mix.env}.exs"
 
 import_config "buildings.exs"
+import_config "units.exs"

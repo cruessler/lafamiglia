@@ -4,6 +4,7 @@ defmodule LaFamiglia.Villa do
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
   alias LaFamiglia.BuildingQueueItem
+  alias LaFamiglia.UnitQueueItem
 
   import Ecto.Query, only: [ from: 2 ]
   import LaFamiglia.DateTime, only: [ to_seconds: 1 ]
@@ -32,6 +33,7 @@ defmodule LaFamiglia.Villa do
 
     belongs_to :player, Player
     has_many :building_queue_items, BuildingQueueItem
+    has_many :unit_queue_items, UnitQueueItem
 
     timestamps
   end
@@ -119,6 +121,10 @@ defmodule LaFamiglia.Villa do
         |> add_resources(resource_gains(time_diff))
         |> Map.put(:processed_until, time)
     end
+  end
+
+  def has_supply?(%Villa{} = villa, supply) do
+    villa.supply + supply <= villa.max_supply
   end
 
   def has_resources?(%Villa{} = villa,
