@@ -18,9 +18,10 @@ defmodule LaFamiglia.Unit do
     Ecto.Model.assoc(villa, :unit_queue_items)
     |> Repo.all
     |> Enum.reduce(0, fn(item, acc) ->
-      cond do
-        item.unit_id == unit.id -> acc + item.number
-        true -> acc
+      if item.unit_id == unit.id do
+        acc + item.number
+      else
+        acc
       end
     end)
   end
