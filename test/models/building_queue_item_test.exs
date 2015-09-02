@@ -27,7 +27,7 @@ defmodule LaFamiglia.BuildingQueueItemTest do
 
     villa = Repo.get(Villa, villa.id) |> Repo.preload(:building_queue_items)
 
-    assert {:ok, _}    = BuildingQueueItem.dequeue!(villa, List.last(villa.building_queue_items))
+    assert {:ok, _} = BuildingQueueItem.dequeue!(villa, List.last(villa.building_queue_items))
   end
 
   test "should respect validations" do

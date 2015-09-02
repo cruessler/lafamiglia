@@ -4,6 +4,7 @@ defmodule LaFamiglia.Repo.Migrations.CreateBuildingQueueItem do
   def change do
     create table(:building_queue_items) do
       add :villa_id, references(:villas)
+
       add :building_id, :integer
       add :completed_at, :datetime
 
