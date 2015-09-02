@@ -22,6 +22,12 @@ defmodule LaFamiglia.Villa do
     field :building_1, :integer
     field :building_2, :integer
 
+    field :unit_1, :integer
+    field :unit_2, :integer
+
+    field :supply, :integer
+    field :max_supply, :integer
+
     field :processed_until, Ecto.DateTime
 
     belongs_to :player, Player
