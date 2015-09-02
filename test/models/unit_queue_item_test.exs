@@ -19,4 +19,15 @@ defmodule LaFamiglia.UnitQueueItemTest do
 
     assert Unit.enqueued_number(villa, unit) == 30
   end
+
+  test "should cancel unit queue item" do
+    villa = Forge.saved_villa(Repo)
+    unit  = Unit.get_by_id(1)
+
+    assert {:ok, _item} = UnitQueueItem.enqueue!(villa, unit, 1)
+
+    villa = Repo.get(Villa, villa.id) |> Repo.preload(:unit_queue_items)
+
+    assert {:ok, _} = UnitQueueItem.dequeue!(villa, List.last(villa.unit_queue_items))
+  end
 end
