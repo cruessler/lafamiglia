@@ -20,4 +20,13 @@ defmodule LaFamiglia.UnitQueueItemController do
       end
     end
   end
+
+  def delete(conn, %{"id" => id}) do
+    item = Repo.get_by!(UnitQueueItem, id: id, villa_id: conn.assigns.current_villa.id)
+
+    {:ok, _item} = UnitQueueItem.dequeue!(conn.assigns.current_villa, item)
+
+    conn
+    |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))
+  end
 end

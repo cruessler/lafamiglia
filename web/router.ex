@@ -39,6 +39,7 @@ defmodule LaFamiglia.Router do
       end
 
       resources "/building_queue_items", BuildingQueueItemController, only: [ :delete ]
+      resources "/unit_queue_items", UnitQueueItemController, only: [ :delete ]
     end
 
     get "/", PageController, :index

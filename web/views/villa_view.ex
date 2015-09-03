@@ -28,4 +28,9 @@ defmodule LaFamiglia.VillaView do
          to: villa_unit_queue_item_path(conn, :create, villa.id, [unit_id: unit.id, number: number]),
          method: :post, class: "btn btn-primary btn-sm"
   end
+
+  def link_to_recruit_cancel(conn, item) do
+    link "Cancel", to: unit_queue_item_path(conn, :delete, item.id),
+                       method: :delete, class: "btn btn-primary"
+  end
 end
