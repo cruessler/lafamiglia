@@ -38,7 +38,11 @@ defmodule LaFamiglia.Villa do
     timestamps
   end
 
-  @required_fields ~w(name x y resource_1 resource_2 resource_3 storage_capacity building_1 building_2 processed_until player_id)
+  @required_fields ~w(name x y resource_1 resource_2 resource_3 storage_capacity
+                      building_1 building_2
+                      unit_1 unit_2
+                      supply max_supply
+                      processed_until player_id)
   @optional_fields ~w()
 
   @doc """
@@ -101,6 +105,8 @@ defmodule LaFamiglia.Villa do
                                        resource_1: 0, resource_2: 0, resource_3: 0,
                                        storage_capacity: 100,
                                        building_1: 1, building_2: 0,
+                                       unit_1: 0, unit_2: 0,
+                                       supply: 0, max_supply: 100,
                                        processed_until: LaFamiglia.DateTime.now,
                                        player_id: player.id })
         Repo.insert!(changeset)
