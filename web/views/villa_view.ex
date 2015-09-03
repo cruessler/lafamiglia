@@ -22,4 +22,10 @@ defmodule LaFamiglia.VillaView do
     link "Cancel", to: building_queue_item_path(conn, :delete, item.id),
                        method: :delete, class: "btn btn-primary"
   end
+
+  def link_to_recruit_start(conn, villa, unit, number) do
+    link Integer.to_string(number),
+         to: villa_unit_queue_item_path(conn, :create, villa.id, [unit_id: unit.id, number: number]),
+         method: :post, class: "btn btn-primary btn-sm"
+  end
 end
