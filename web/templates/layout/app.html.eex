@@ -31,6 +31,7 @@
                 <li><%= link "Villas", to: villa_path(@conn, :index) %></li>
 
                 <li><%= resources @conn.assigns.current_villa %></li>
+                <li><div class="supply">Supply: <%= @current_villa.supply %>/<%= @current_villa.max_supply %></div></li>
               </ul>
             <% end %>
 
