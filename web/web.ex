@@ -49,6 +49,7 @@ defmodule LaFamiglia.Web do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
+      alias LaFamiglia.Unit
       alias LaFamiglia.Villa
 
       import Villa, only: [ to_string: 1 ]

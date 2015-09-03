@@ -29,6 +29,27 @@
   <% end %>
 </table>
 
+<table class="col-md-8 table table-striped">
+  <tr>
+    <th>Unit</th>
+    <th>Number</th>
+    <th>Costs</th>
+    <th>Supply</th>
+    <th>Recruiting time</th>
+    <th>Build</th>
+  </tr>
+  <%= Enum.map Application.get_env(:la_famiglia, :units), fn({k, u}) -> %>
+    <tr>
+      <td><%= k %></td>
+      <td><%= Unit.number(@current_villa, u) %> (<%= Unit.virtual_number(@current_villa, u) %>)</td>
+      <td><%= resources(u.costs) %></td>
+      <td><%= u.supply %></td>
+      <td><%= u.build_time %></td>
+      <td></td>
+    </tr>
+  <% end %>
+</table>
+
 <h3>
   Building queue
 </h3>

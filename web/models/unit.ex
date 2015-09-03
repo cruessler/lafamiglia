@@ -25,4 +25,8 @@ defmodule LaFamiglia.Unit do
       end
     end)
   end
+
+  def virtual_number(villa, unit) do
+    number(villa, unit) + enqueued_number(villa, unit)
+  end
 end
