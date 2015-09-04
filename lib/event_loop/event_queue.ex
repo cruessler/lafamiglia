@@ -20,6 +20,7 @@ defmodule LaFamiglia.EventQueue do
 
   alias LaFamiglia.Repo
   alias LaFamiglia.BuildingQueueItem
+  alias LaFamiglia.UnitQueueItem
 
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, Dict.put(opts, :name, __MODULE__))
@@ -35,6 +36,12 @@ defmodule LaFamiglia.EventQueue do
       |> Repo.all
       |> Enum.map(fn(i) -> {i.completed_at, i} end)
       |> :ordsets.from_list
+
+    queue =
+      from(i in UnitQueueItem, order_by: [asc: i.completed_at])
+      |> Repo.all
+      |> Enum.map(fn(i) -> {i.completed_at, i} end)
+      |> :ordsets.union(queue)
 
     {:ok, queue, timeout(queue)}
   end

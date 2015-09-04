@@ -11,7 +11,9 @@ defmodule LaFamiglia.EventLoop do
 
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
+  alias LaFamiglia.Unit
   alias LaFamiglia.BuildingQueueItem
+  alias LaFamiglia.UnitQueueItem
 
   def start_link(opts \\ []) do
     {:ok, pid} = GenEvent.start_link(Dict.put(opts, :name, __MODULE__))
@@ -33,6 +35,22 @@ defmodule LaFamiglia.EventLoop do
     villa    = assoc(item, :villa) |> Repo.one
 
     changeset = Villa.changeset(villa, Map.put(%{}, key, Map.get(villa, key) + 1))
+
+    Repo.transaction fn ->
+      Repo.update!(changeset)
+      Repo.delete!(item)
+    end
+
+    {:ok, _state}
+  end
+  def handle_event(%UnitQueueItem{} = item, _state) do
+    Logger.info "processing recruiting event ##{item.id}"
+
+    unit  = Unit.get_by_id(item.unit_id)
+    key   = unit.key
+    villa = assoc(item, :villa) |> Repo.one
+
+    changeset = Villa.changeset(villa, Map.put(%{}, key, Map.get(villa, key) + item.number))
 
     Repo.transaction fn ->
       Repo.update!(changeset)
