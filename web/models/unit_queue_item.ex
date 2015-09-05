@@ -86,13 +86,25 @@ defmodule LaFamiglia.UnitQueueItem do
     completed_at = completed_at(villa.unit_queue_items)
 
     time_diff = if List.first(villa.unit_queue_items) == item do
-      LaFamiglia.DateTime.time_diff(item.completed_at, LaFamiglia.DateTime.now)
+      LaFamiglia.DateTime.time_diff(LaFamiglia.DateTime.now, item.completed_at)
     else
       item.build_time
     end
 
     unit        = Unit.get_by_id(item.unit_id)
     number_left = units_recruited_between(item, LaFamiglia.DateTime.now, completed_at)
+
+    # Don’t refund resources for the first unit that has already started
+    # being recruited.
+    refunds =
+      unit.costs
+      |> Enum.map(fn({k, v}) -> {k, v * (number_left - 1)} end)
+      |> Enum.into(%{})
+
+    new_villa =
+      villa
+      |> Villa.process_virtually_until(LaFamiglia.DateTime.now)
+      |> Villa.add_resources(refunds)
 
     Repo.transaction fn ->
       Repo.delete!(item)
@@ -104,16 +116,9 @@ defmodule LaFamiglia.UnitQueueItem do
         end
       end
 
-      # Don’t refund resources for the first unit that has already started
-      # being recruited.
-      refunds =
-        unit.costs
-        |> Enum.map(fn({k, v}) -> {k, v * (number_left - 1)} end)
-        |> Enum.into(%{})
-      new_villa = Villa.add_resources(villa, refunds)
-
       Villa.changeset(villa, Villa.get_resources(new_villa))
       |> Ecto.Changeset.put_change(:supply, villa.supply - unit.supply * number_left)
+      |> Ecto.Changeset.put_change(unit.key, Map.get(new_villa, unit.key))
       |> Repo.update!
 
       item
