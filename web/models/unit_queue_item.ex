@@ -108,10 +108,15 @@ defmodule LaFamiglia.UnitQueueItem do
     Repo.transaction fn ->
       Repo.delete!(item)
 
-      Enum.map villa.unit_queue_items, fn(i) ->
-        if i.completed_at > item.completed_at do
-          changeset(i, %{completed_at: LaFamiglia.DateTime.add_seconds(i.completed_at, -time_diff)})
-          |> Repo.update!
+      Enum.map villa.unit_queue_items, fn(other_item) ->
+        if Ecto.DateTime.compare(other_item.completed_at, item.completed_at) == :gt do
+          new_other_item =
+            other_item
+            |> changeset(%{completed_at: LaFamiglia.DateTime.add_seconds(other_item.completed_at, -time_diff)})
+            |> Repo.update!
+
+          LaFamiglia.EventQueue.cast({:cancel_event, other_item})
+          LaFamiglia.EventQueue.cast({:new_event, new_other_item})
         end
       end
 
