@@ -100,13 +100,12 @@ defmodule LaFamiglia.BuildingQueueItem do
 
   def dequeue!(villa, item) do
     villa        = Repo.preload(villa, :building_queue_items)
-    completed_at = completed_at(villa.building_queue_items)
 
     unless last_of_its_kind?(villa.building_queue_items, item) do
       {:error, "You can only cancel the last building of its kind."}
     else
       time_diff = if item == List.first(villa.building_queue_items) do
-        LaFamiglia.DateTime.time_diff(LaFamiglia.DateTime.now, completed_at)
+        LaFamiglia.DateTime.time_diff(LaFamiglia.DateTime.now, item.completed_at)
       else
         item.build_time
       end

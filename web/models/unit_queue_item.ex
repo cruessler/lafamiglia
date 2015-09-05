@@ -83,7 +83,6 @@ defmodule LaFamiglia.UnitQueueItem do
 
   def dequeue!(villa, item) do
     villa        = Repo.preload(villa, :unit_queue_items)
-    completed_at = completed_at(villa.unit_queue_items)
 
     time_diff = if List.first(villa.unit_queue_items) == item do
       LaFamiglia.DateTime.time_diff(LaFamiglia.DateTime.now, item.completed_at)
@@ -92,7 +91,7 @@ defmodule LaFamiglia.UnitQueueItem do
     end
 
     unit        = Unit.get_by_id(item.unit_id)
-    number_left = units_recruited_between(item, LaFamiglia.DateTime.now, completed_at)
+    number_left = units_recruited_between(item, LaFamiglia.DateTime.now, item.completed_at)
 
     # Don’t refund resources for the first unit that has already started
     # being recruited.
