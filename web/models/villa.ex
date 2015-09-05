@@ -119,7 +119,7 @@ defmodule LaFamiglia.Villa do
   Processes resource gains and recruiting of units without saving
   the results to the database.
   """
-  def process_virtually_until %Villa{processed_until: processed_until} = villa, time do
+  def process_virtually_until(%Villa{processed_until: processed_until} = villa, time) do
     case to_seconds(time) - to_seconds(processed_until) do
       0 ->
         villa
@@ -161,7 +161,7 @@ defmodule LaFamiglia.Villa do
     end
   end
 
-  def resource_gains time_diff do
+  def resource_gains(time_diff) do
     %{
       resource_1: time_diff * 0.01,
       resource_2: time_diff * 0.01,

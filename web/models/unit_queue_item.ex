@@ -36,7 +36,7 @@ defmodule LaFamiglia.UnitQueueItem do
     LaFamiglia.DateTime.add_seconds(completed_at([item]), -item.build_time)
   end
 
-  defp units_recruited_between(item, time_begin, time_end) do
+  def units_recruited_between(item, time_begin, time_end) do
     start_time = start_time(item)
     unit       = Unit.get_by_id(item.unit_id)
 
