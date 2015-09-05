@@ -32,4 +32,24 @@ defmodule LaFamiglia.UnitQueueItemTest do
 
     assert {:ok, _} = UnitQueueItem.dequeue!(villa, List.last(villa.unit_queue_items))
   end
+
+  test "should recruit in discrete steps" do
+    villa = Forge.saved_villa(Repo)
+    unit  = Unit.get_by_id(1)
+
+    start_number      = Unit.number(villa, unit)
+    number_to_recruit = 50
+    total_number      = start_number + number_to_recruit
+
+    UnitQueueItem.enqueue!(villa, unit, number_to_recruit)
+
+    villa = Repo.get(Villa, villa.id)
+
+    for _ <- 1..number_to_recruit do
+      villa = Villa.process_units_virtually_until(villa, LaFamiglia.DateTime.add_seconds(LaFamiglia.DateTime.now, unit.build_time * 0.9))
+
+      assert total_number == Unit.virtual_number(villa, unit)
+      assert total_number == Unit.number(villa, unit) + hd(villa.unit_queue_items).number
+    end
+  end
 end

@@ -3,6 +3,7 @@ defmodule LaFamiglia.Villa do
 
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
+  alias LaFamiglia.Unit
   alias LaFamiglia.BuildingQueueItem
   alias LaFamiglia.UnitQueueItem
 
@@ -125,6 +126,7 @@ defmodule LaFamiglia.Villa do
       time_diff ->
         villa
         |> add_resources(resource_gains(time_diff))
+        |> process_units_virtually_until(time)
         |> Map.put(:processed_until, time)
     end
   end
@@ -165,6 +167,24 @@ defmodule LaFamiglia.Villa do
       resource_2: time_diff * 0.01,
       resource_3: time_diff * 0.01
     }
+  end
+
+  def process_units_virtually_until(%Villa{processed_until: processed_until} = villa, time) do
+    villa = Repo.preload(villa, :unit_queue_items)
+
+    case villa.unit_queue_items do
+      [first|rest] ->
+        unit             = Unit.get_by_id(first.unit_id)
+        key              = unit.key
+        number_recruited = UnitQueueItem.units_recruited_between(first, processed_until, time)
+
+        first = Map.update!(first, :number, fn(v) -> v - number_recruited end)
+
+        villa
+        |> Map.update!(key, fn(v) -> v + number_recruited end)
+        |> Map.update!(:unit_queue_items, fn(_) -> [first|rest] end)
+      [] -> villa
+    end
   end
 
   def to_string(%Villa{name: name, x: x, y: y}) do

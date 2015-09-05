@@ -2,6 +2,8 @@ defmodule LaFamiglia.VillaTest do
   use LaFamiglia.ModelCase
 
   alias LaFamiglia.Villa
+  alias LaFamiglia.Unit
+  alias LaFamiglia.UnitQueueItem
 
   @valid_attrs %{ name: "New villa", x: 0, y: 0, player_id: 1,
                   resource_1: 0, resource_2: 0, resource_3: 0,
@@ -45,5 +47,20 @@ defmodule LaFamiglia.VillaTest do
 
     assert Villa.has_resources?(villa, %{resource_1: 10, resource_2: 10, resource_3: 0})
     refute Villa.has_resources?(villa, %{resource_1: 10, resource_2: 10, resource_3: 10})
+  end
+
+  test "process_units_virtually_until" do
+    villa  = Forge.saved_villa(Repo)
+    unit   = Unit.get_by_id(1)
+    number = Map.get(villa, unit.key)
+
+    UnitQueueItem.enqueue!(villa, unit, 10)
+
+    villa = Repo.get(Villa, villa.id)
+
+    villa = Villa.process_units_virtually_until(villa, LaFamiglia.DateTime.add_seconds(LaFamiglia.DateTime.now, unit.build_time + 1))
+
+    assert Unit.number(villa, unit) == number + 1
+    assert Unit.virtual_number(villa, unit) == number + 10
   end
 end
