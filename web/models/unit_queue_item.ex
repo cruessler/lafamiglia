@@ -71,6 +71,8 @@ defmodule LaFamiglia.UnitQueueItem do
                                     build_time: build_time / 1,
                                     completed_at: completed_at)
 
+        villa = Villa.subtract_resources(villa, costs)
+
         Repo.transaction fn ->
           Villa.changeset(old_villa, Map.from_struct(villa)
                                      |> Map.put(:supply, villa.supply + supply))
