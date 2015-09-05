@@ -17,6 +17,8 @@ defmodule LaFamiglia.UnitQueueItemTest do
       assert Enum.count(items) == i
     end
 
+    villa = Repo.preload(villa, :unit_queue_items)
+
     assert Unit.enqueued_number(villa, unit) == 30
   end
 
