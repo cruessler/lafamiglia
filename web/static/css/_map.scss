@@ -1,0 +1,53 @@
+div.map {
+  margin-right: 20px;
+
+  div.row {
+    clear: both;
+    position: relative;
+  }
+}
+
+$map-cells: 7;
+$map-cell-width: percentage(1/$map-cells);
+
+div.x-axis-label {
+  float: left;
+  width: $map-cell-width;
+  text-align: center;
+  margin-bottom: 0.3em;
+}
+div.y-axis-label {
+  position: absolute;
+  left: -1.6em;
+  width: 1em;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* The following rules are based on the blog entry found at:
+ * http://www.mademyday.de/css-height-equals-width-with-pure-css.html
+ */
+
+div.row div.cell {
+  float: left;
+  position: relative;
+  width: $map-cell-width;
+}
+div.row div.cell:before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+
+div.cell {
+  div.villa {
+    border: 1px solid black;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+}

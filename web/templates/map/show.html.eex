@@ -2,4 +2,6 @@
   On this map you can explore your neighbourhood
 </h2>
 
-<div id="map" data-villas="<%= Poison.encode!(@villas) %>"></div>
+<div id="map" data-min-x="<%= @min_x %>" data-max-x="<%= @max_x %>"
+              data-min-y="<%= @min_y %>" data-max-y="<%= @max_y %>"
+              data-villas="<%= Poison.encode!(@villas) %>"></div>
