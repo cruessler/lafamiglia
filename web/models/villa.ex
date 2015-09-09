@@ -61,6 +61,8 @@ defmodule LaFamiglia.Villa do
 
   @max_x 10
   @max_y 10
+  def max_x, do: @max_x
+  def max_y, do: @max_y
 
   def empty_coordinates do
     empty_coordinates({0, @max_x, 0, @max_y})
