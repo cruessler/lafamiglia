@@ -1,4 +1,30 @@
 class Map extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { x: 0, y: 0,
+                   dragging: false }
+
+    // https://facebook.github.io/react/blog/2015/01/27/react-v0.13.0-beta-1.html#autobinding
+    this.onMouseDown = this.onMouseDown.bind(this)
+    this.onMouseMove = this.onMouseMove.bind(this)
+    this.onMouseUp = this.onMouseUp.bind(this)
+  }
+
+  onMouseDown(e) {
+    this.setState({ dragging: true,
+                    startPosition: { x: e.clientX - this.state.x, y: e.clientY - this.state.y }})
+  }
+
+  onMouseUp(e) {
+    this.setState({ dragging: false })
+  }
+
+  onMouseMove(e) {
+    if(this.state.dragging) {
+      this.setState({ x: e.clientX - this.state.startPosition.x, y: e.clientY - this.state.startPosition.y })
+    }
+  }
+
   render() {
     let xAxisLabels = []
     for(var i = this.props.minX; i <= this.props.maxX; i++) {
@@ -26,8 +52,11 @@ class Map extends React.Component {
     }
 
     return (
-      <div className="container-fluid">
-        <div className="map">
+      <div className="container-fluid map-viewport"
+           onMouseDown={this.onMouseDown}
+           onMouseMove={this.onMouseMove}
+           onMouseUp={this.onMouseUp}>
+        <div className="map" style={{left: this.state.x, top: this.state.y}}>
           <div className="row">{xAxisLabels}</div>
           {rows}
         </div>

@@ -1,14 +1,20 @@
+div.map-viewport {
+  position: relative;
+  overflow: hidden;
+}
+
+$map-cell-width: 5em;
+$map-y-axis-labels-width: 2em;
+
 div.map {
-  margin-right: 20px;
+  position: relative;
+  margin-left: $map-y-axis-labels-width;
 
   div.row {
     clear: both;
     position: relative;
   }
 }
-
-$map-cells: 7;
-$map-cell-width: percentage(1/$map-cells);
 
 div.x-axis-label {
   float: left;
@@ -18,8 +24,8 @@ div.x-axis-label {
 }
 div.y-axis-label {
   position: absolute;
-  left: -1.6em;
-  width: 1em;
+  left: -1.5 * $map-y-axis-labels-width;
+  width: $map-y-axis-labels-width;
   height: 100%;
   display: flex;
   align-items: center;
