@@ -26,15 +26,17 @@ class Map extends React.Component {
   }
 
   render() {
-    let xAxisLabels = []
+    let xAxisLabels = [], yAxisLabels = []
+
     for(var i = this.props.minX; i <= this.props.maxX; i++) {
       xAxisLabels.push(<div className="x-axis-label">{i}</div>)
     }
 
     let rows = []
     for(let i = this.props.minY; i <= this.props.maxY; i++) {
-      let row = [ <div className="y-axis-label">{i}</div> ]
+      yAxisLabels.push(<div className="y-axis-label">{i}</div>)
 
+      let row = []
       for(let j = this.props.minX; j <= this.props.maxX; j++) {
         let villa = this.props.villas.find(v => v.x == j && v.y == i)
         let name  = ""
@@ -56,8 +58,9 @@ class Map extends React.Component {
            onMouseDown={this.onMouseDown}
            onMouseMove={this.onMouseMove}
            onMouseUp={this.onMouseUp}>
+        <div className="x-axis-labels" style={{left: this.state.x}}>{xAxisLabels}</div>
+        <div className="y-axis-labels" style={{top: this.state.y}}>{yAxisLabels}</div>
         <div className="map" style={{left: this.state.x, top: this.state.y}}>
-          <div className="row">{xAxisLabels}</div>
           {rows}
         </div>
       </div>

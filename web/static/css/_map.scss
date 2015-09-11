@@ -4,11 +4,13 @@ div.map-viewport {
 }
 
 $map-cell-width: 5em;
+$map-cell-height: 5em;
 $map-y-axis-labels-width: 2em;
+$map-x-axis-labels-height: 2.5em;
 
 div.map {
   position: relative;
-  margin-left: $map-y-axis-labels-width;
+  padding-left: 1.5 * $map-y-axis-labels-width;
 
   div.row {
     clear: both;
@@ -16,6 +18,21 @@ div.map {
   }
 }
 
+div.x-axis-labels {
+  position: relative;
+  width: 100%;
+  margin-left: $map-y-axis-labels-width;
+  height: $map-x-axis-labels-height;
+  background-color: $body-bg;
+  z-index: 5;
+}
+div.y-axis-labels {
+  position: absolute;
+  left: 0px;
+  margin-top: $map-x-axis-labels-height;
+  background-color: $body-bg;
+  z-index: 5;
+}
 div.x-axis-label {
   float: left;
   width: $map-cell-width;
@@ -23,10 +40,9 @@ div.x-axis-label {
   margin-bottom: 0.3em;
 }
 div.y-axis-label {
-  position: absolute;
-  left: -1.5 * $map-y-axis-labels-width;
+  left: -2 * $map-y-axis-labels-width;
   width: $map-y-axis-labels-width;
-  height: 100%;
+  height: $map-cell-height;
   display: flex;
   align-items: center;
   justify-content: flex-end;
