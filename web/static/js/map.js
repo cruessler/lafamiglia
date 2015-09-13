@@ -60,8 +60,10 @@ class Map extends React.Component {
            onMouseUp={this.onMouseUp}>
         <div className="x-axis-labels" style={{left: this.state.x}}>{xAxisLabels}</div>
         <div className="y-axis-labels" style={{top: this.state.y}}>{yAxisLabels}</div>
-        <div className="map" style={{left: this.state.x, top: this.state.y}}>
-          {rows}
+        <div className="map-inner-viewport">
+          <div className="map" style={{left: this.state.x, top: this.state.y}}>
+            {rows}
+           </div>
         </div>
       </div>
     )
