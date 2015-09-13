@@ -42,9 +42,11 @@ div.x-axis-labels {
   margin-left: 2.2 * $map-y-axis-labels-width;
   height: $map-x-axis-labels-height;
   background-color: $body-bg;
+  margin-bottom: 0.3em;
 }
 div.y-axis-labels {
   position: absolute;
+  width: $map-y-axis-labels-width;
   margin-top: $map-x-axis-labels-height;
   background-color: $body-bg;
 }
@@ -52,10 +54,8 @@ div.x-axis-label {
   float: left;
   width: $map-cell-width;
   text-align: center;
-  margin-bottom: 0.3em;
 }
 div.y-axis-label {
-  width: $map-y-axis-labels-width;
   height: $map-cell-height;
   display: flex;
   align-items: center;
