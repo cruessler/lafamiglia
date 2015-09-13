@@ -25,6 +25,22 @@ class Map extends React.Component {
     }
   }
 
+  getMapCoordinates(screenX, screenY) {
+    return { x: Math.ceil(screenX / this.cellDimensions.width),
+             y: Math.ceil(screenY / this.cellDimensions.height) }
+  }
+
+  componentDidMount() {
+    let rootNode    = $(React.findDOMNode(this))
+    let mapNode     = rootNode.find("div.map")
+    let mapCellNode = rootNode.find("div.cell:first")
+
+    this.mapDimensions  = { width:  mapNode.width(),
+                            height: mapNode.height() }
+    this.cellDimensions = { width:  mapCellNode.outerWidth(),
+                            height: mapCellNode.outerHeight() }
+  }
+
   render() {
     let xAxisLabels = [], yAxisLabels = []
 

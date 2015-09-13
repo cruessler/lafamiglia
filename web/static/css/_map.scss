@@ -11,7 +11,7 @@ div.map-viewport {
 div.map-inner-viewport {
   position: relative;
   overflow: hidden;
-  margin-left: 1.2 * $map-y-axis-labels-width;
+  margin-left: $map-y-axis-labels-width;
 }
 // http://stackoverflow.com/questions/13188828/force-box-shadow-on-top-of-content
 // http://stackoverflow.com/questions/8657685/display-box-shadow-above-the-text
@@ -29,17 +29,17 @@ div.map-inner-viewport:before {
 
 div.map {
   position: relative;
-  padding-left: 1.5 * $map-y-axis-labels-width;
 
   div.row {
     clear: both;
     position: relative;
+    margin: 0;
   }
 }
 
 div.x-axis-labels {
   position: relative;
-  margin-left: 2.2 * $map-y-axis-labels-width;
+  margin-left: $map-y-axis-labels-width;
   height: $map-x-axis-labels-height;
   background-color: $body-bg;
   margin-bottom: 0.3em;
@@ -48,6 +48,8 @@ div.y-axis-labels {
   position: absolute;
   width: $map-y-axis-labels-width;
   margin-top: $map-x-axis-labels-height;
+  margin-right: 0;
+  padding-right: 0.2em;
   background-color: $body-bg;
 }
 div.x-axis-label {
