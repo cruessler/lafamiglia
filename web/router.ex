@@ -28,10 +28,10 @@ defmodule LaFamiglia.Router do
                           only: [ :create, :new, :delete ],
                           singleton: true
 
+    resources "/players", PlayerController, only: [ :create, :new ]
+
     scope "" do
       pipe_through :ingame
-
-      resources "/players", PlayerController, only: [ :create, :new ]
 
       resources "/villas", VillaController, only: [ :index, :show ] do
         resources "/building_queue_items", BuildingQueueItemController, only: [ :create ]
