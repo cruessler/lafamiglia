@@ -30,6 +30,7 @@ div.map-inner-viewport:before {
 
 div.map {
   position: relative;
+  height: 30em;
 
   div.row {
     clear: both;
@@ -54,39 +55,25 @@ div.y-axis-labels {
   background-color: $body-bg;
 }
 div.x-axis-label {
-  float: left;
+  position: absolute;
   width: $map-cell-width;
   text-align: center;
 }
 div.y-axis-label {
+  position: absolute;
   height: $map-cell-height;
   display: flex;
   align-items: center;
   justify-content: flex-end;
 }
 
-/* The following rules are based on the blog entry found at:
- * http://www.mademyday.de/css-height-equals-width-with-pure-css.html
- */
-
-div.row div.cell {
-  float: left;
-  position: relative;
-  width: $map-cell-width;
-}
-div.row div.cell:before {
-  content: "";
-  display: block;
-  padding-top: 100%;
-}
-
 div.cell {
-  div.villa {
-    border: 1px solid lighten($gray-light, 40%);
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-  }
+  border: 1px solid lighten($gray-light, 40%);
+  position: absolute;
+  width: $map-cell-width;
+  height: $map-cell-width;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }

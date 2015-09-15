@@ -8,6 +8,8 @@ class Map extends React.Component {
     this.onMouseDown = this.onMouseDown.bind(this)
     this.onMouseMove = this.onMouseMove.bind(this)
     this.onMouseUp = this.onMouseUp.bind(this)
+
+    this.mounted = false
   }
 
   onMouseDown(e) {
@@ -25,24 +27,54 @@ class Map extends React.Component {
     }
   }
 
+  getViewportOffset(mapX, mapY) {
+    return { x: (mapX - this.props.minX) * this.cellDimensions.width,
+             y: (mapY - this.props.minY) * this.cellDimensions.width }
+  }
+
   getMapCoordinates(viewportX, viewportY) {
     return { x: Math.floor((viewportX - this.state.x) / this.cellDimensions.width) + this.props.minX,
              y: Math.floor((viewportY - this.state.y) / this.cellDimensions.height) + this.props.minY }
   }
 
+  getVisibleXAxisLabels() {
+    const upperLeftCorner  = this.getMapCoordinates(0, 0)
+    const width = Math.floor(this.mapDimensions.width / this.cellDimensions.width) + 1
+
+    return Array(width)
+             .fill()
+             .map((_, i) => upperLeftCorner.x + i)
+  }
+
+  getVisibleYAxisLabels() {
+    const upperLeftCorner  = this.getMapCoordinates(0, 0)
+    const height = Math.floor(this.mapDimensions.height / this.cellDimensions.height) + 1
+
+    return Array(height)
+             .fill()
+             .map((_, i) => upperLeftCorner.y + i)
+  }
+
   getVisibleCoordinates() {
     const upperLeftCorner  = this.getMapCoordinates(0, 0)
-    const lowerRightCorner = this.getMapCoordinates(this.mapDimensions.width, this.mapDimensions.height)
+    const lowerRightCorner = this.getMapCoordinates(this.mapDimensions.width + this.cellDimensions.width,
+                                                    this.mapDimensions.height + this.cellDimensions.height)
     const width  = lowerRightCorner.x - upperLeftCorner.x
     const height = lowerRightCorner.y - upperLeftCorner.y
 
     return Array(width * height)
              .fill()
              .map((_, i) => ({ x: upperLeftCorner.x + (i % width),
-                               y: upperLeftCorner.y + Math.trunc(i / width)}))
+                               y: upperLeftCorner.y + Math.floor(i / width)}))
   }
 
+  /*
+   * This function saves the dimensions of map elements which are not known
+   * prior to the first `render()` call.
+   */
   componentDidMount() {
+    this.mounted = true
+
     let rootNode    = $(React.findDOMNode(this))
     let mapNode     = rootNode.find("div.map")
     let mapCellNode = rootNode.find("div.cell:first")
@@ -51,34 +83,57 @@ class Map extends React.Component {
                             height: mapNode.height() }
     this.cellDimensions = { width:  mapCellNode.outerWidth(),
                             height: mapCellNode.outerHeight() }
+
+    this.forceUpdate()
   }
 
-  render() {
-    let xAxisLabels = [], yAxisLabels = []
+  renderXAxisLabel(x) {
+    const offset = this.getViewportOffset(x, 0)
+    const style = { left: offset.x }
 
-    for(var i = this.props.minX; i <= this.props.maxX; i++) {
-      xAxisLabels.push(<div className="x-axis-label">{i}</div>)
+    return <div className="x-axis-label" style={style}>{x}</div>
+  }
+
+  renderYAxisLabel(y) {
+    const offset = this.getViewportOffset(0, y)
+    const style = { top: offset.y }
+
+    return <div className="y-axis-label" style={style}>{y}</div>
+  }
+
+  renderMapCell(x, y) {
+    const offset = this.getViewportOffset(x, y)
+    const style  = { left: offset.x, top: offset.y }
+
+    const villa = this.props.villas.find(v => v.x == x && v.y == y)
+    let name  = ""
+    if(villa) {
+      name = `${villa.name} ${x}|${y}`
+    }
+    else {
+      name = `${x}|${y}`
     }
 
-    let rows = []
-    for(let i = this.props.minY; i <= this.props.maxY; i++) {
-      yAxisLabels.push(<div className="y-axis-label">{i}</div>)
+    return (<div className="cell" style={style}>{`${name}`}</div>)
+  }
 
-      let row = []
-      for(let j = this.props.minX; j <= this.props.maxX; j++) {
-        let villa = this.props.villas.find(v => v.x == j && v.y == i)
-        let name  = ""
-        if(villa) {
-          name = `${villa.name} ${j}|${i}`
-        }
-        else {
-          name = `${j}|${i}`
-        }
 
-        row.push(<div className="cell"><div className="villa">{name}</div></div>)
-      }
+  render() {
+    let mapCells = undefined
+    let xAxisLabels = [], yAxisLabels = []
 
-      rows.push(<div className="row">{row}</div>)
+    /*
+     * Map cells can only be positioned correctly when their dimensions are
+     * known. Their dimensions can only be determined when at least one map cell
+     * has been rendered to the DOM.
+     */
+    if(this.mounted) {
+      mapCells = this.getVisibleCoordinates().map(c => this.renderMapCell(c.x, c.y))
+
+      xAxisLabels = this.getVisibleXAxisLabels().map(x => this.renderXAxisLabel(x))
+      yAxisLabels = this.getVisibleYAxisLabels().map(y => this.renderYAxisLabel(y))
+    } else {
+      mapCells = <div className="cell"></div>
     }
 
     return (
@@ -90,7 +145,7 @@ class Map extends React.Component {
         <div className="y-axis-labels" style={{top: this.state.y}}>{yAxisLabels}</div>
         <div className="map-inner-viewport">
           <div className="map" style={{left: this.state.x, top: this.state.y}}>
-            {rows}
+            {mapCells}
            </div>
         </div>
       </div>
