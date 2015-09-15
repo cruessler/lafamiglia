@@ -57,10 +57,10 @@ class Map extends React.Component {
         let villa = this.props.villas.find(v => v.x == j && v.y == i)
         let name  = ""
         if(villa) {
-          name = `${villa.name} ${i}|${j}`
+          name = `${villa.name} ${j}|${i}`
         }
         else {
-          name = `${i}|${j}`
+          name = `${j}|${i}`
         }
 
         row.push(<div className="cell"><div className="villa">{name}</div></div>)
