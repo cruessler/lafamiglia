@@ -30,6 +30,18 @@ class Map extends React.Component {
              y: Math.floor((viewportY - this.state.y) / this.cellDimensions.height) + this.props.minY }
   }
 
+  getVisibleCoordinates() {
+    const upperLeftCorner  = this.getMapCoordinates(0, 0)
+    const lowerRightCorner = this.getMapCoordinates(this.mapDimensions.width, this.mapDimensions.height)
+    const width  = lowerRightCorner.x - upperLeftCorner.x
+    const height = lowerRightCorner.y - upperLeftCorner.y
+
+    return Array(width * height)
+             .fill()
+             .map((_, i) => ({ x: upperLeftCorner.x + (i % width),
+                               y: upperLeftCorner.y + Math.trunc(i / width)}))
+  }
+
   componentDidMount() {
     let rootNode    = $(React.findDOMNode(this))
     let mapNode     = rootNode.find("div.map")
