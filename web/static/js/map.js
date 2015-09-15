@@ -25,9 +25,9 @@ class Map extends React.Component {
     }
   }
 
-  getMapCoordinates(screenX, screenY) {
-    return { x: Math.ceil(screenX / this.cellDimensions.width),
-             y: Math.ceil(screenY / this.cellDimensions.height) }
+  getMapCoordinates(viewportX, viewportY) {
+    return { x: Math.floor((viewportX - this.state.x) / this.cellDimensions.width) + this.props.minX,
+             y: Math.floor((viewportY - this.state.y) / this.cellDimensions.height) + this.props.minY }
   }
 
   componentDidMount() {
