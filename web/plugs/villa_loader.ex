@@ -33,7 +33,9 @@ defmodule LaFamiglia.Plugs.VillaLoader do
   end
 
   defp load_first_villa(conn) do
-    Repo.get_by(Villa, player_id: conn.assigns.current_player.id)
+    Repo.all(Villa, player_id: conn.assigns.current_player.id,
+                    limit: 1)
+      |> List.first
   end
 
   defp create_new_villa(conn) do
