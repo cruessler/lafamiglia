@@ -116,14 +116,14 @@ class Map extends React.Component {
     const offset = this.getViewportOffset(x, 0)
     const style = { left: offset.x }
 
-    return <div className="x-axis-label" style={style}>{x}</div>
+    return <div key={x} className="x-axis-label" style={style}>{x}</div>
   }
 
   renderYAxisLabel(y) {
     const offset = this.getViewportOffset(0, y)
     const style = { top: offset.y }
 
-    return <div className="y-axis-label" style={style}>{y}</div>
+    return <div key={y} className="y-axis-label" style={style}>{y}</div>
   }
 
   renderMapCell(x, y) {
@@ -139,7 +139,7 @@ class Map extends React.Component {
       name = `${x}|${y}`
     }
 
-    return (<div className="cell fade" style={style}>{`${name}`}</div>)
+    return (<div key={[x, y]} className="cell fade" style={style}>{`${name}`}</div>)
   }
 
 
