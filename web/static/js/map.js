@@ -4,6 +4,8 @@ class Map extends React.Component {
     this.state = { x: 0, y: 0,
                    dragging: false }
 
+    // In ES6 classes, event handlers have to be bound to the respective class
+    // methods explicitly.
     // https://facebook.github.io/react/blog/2015/01/27/react-v0.13.0-beta-1.html#autobinding
     this.onMouseDown = this.onMouseDown.bind(this)
     this.onMouseMove = this.onMouseMove.bind(this)
