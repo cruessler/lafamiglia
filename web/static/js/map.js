@@ -1,7 +1,8 @@
 class Map extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { x: 0, y: 0,
+    this.state = { villas: this.mergeVillas(new window.Map(), this.props.villas),
+                   x: 0, y: 0,
                    dragging: false }
 
     // In ES6 classes, event handlers have to be bound to the respective class
@@ -14,6 +15,10 @@ class Map extends React.Component {
     this.mounted = false
   }
 
+  mergeVillas(villas, newVillas) {
+    return _.reduce(newVillas, (arr, v) => { arr[[v.x, v.y]] = v; return arr }, villas)
+  }
+
   onMouseDown(e) {
     this.setState({ dragging: true,
                     startPosition: { x: e.clientX - this.state.x, y: e.clientY - this.state.y }})
@@ -21,6 +26,20 @@ class Map extends React.Component {
 
   onMouseUp(e) {
     this.setState({ dragging: false })
+
+    const upperLeftCorner  = this.getMapCoordinates(0, 0)
+    const lowerRightCorner = this.getMapCoordinates(this.mapDimensions.width + this.cellDimensions.width,
+                                                    this.mapDimensions.height + this.cellDimensions.height)
+
+    // The `Accept` header has to be set manually. If it is determined by the
+    // data type, jQuery adds `*/*` to the header which causes Phoenix to assume
+    // `html` is the requested format.
+    // https://github.com/phoenixframework/phoenix/blob/master/lib/phoenix/controller.ex
+    $.ajax("/map", { beforeSend: (xhr) => xhr.setRequestHeader("Accept", "application/json"),
+                     data: { min_x: upperLeftCorner.x, min_y: upperLeftCorner.y,
+                             max_x: lowerRightCorner.x, max_y: lowerRightCorner.y },
+                     success: (data) => this.setState({ villas: this.mergeVillas(this.state.villas, data) })
+                   })
   }
 
   onMouseMove(e) {
@@ -89,6 +108,10 @@ class Map extends React.Component {
     this.forceUpdate()
   }
 
+  componentDidUpdate() {
+    setTimeout(() => $(React.findDOMNode(this)).find("div.cell").addClass("in"), 800)
+  }
+
   renderXAxisLabel(x) {
     const offset = this.getViewportOffset(x, 0)
     const style = { left: offset.x }
@@ -107,7 +130,7 @@ class Map extends React.Component {
     const offset = this.getViewportOffset(x, y)
     const style  = { left: offset.x, top: offset.y }
 
-    const villa = this.props.villas.find(v => v.x == x && v.y == y)
+    const villa = this.state.villas[[x, y]]
     let name  = ""
     if(villa) {
       name = `${villa.name} ${x}|${y}`
@@ -116,7 +139,7 @@ class Map extends React.Component {
       name = `${x}|${y}`
     }
 
-    return (<div className="cell" style={style}>{`${name}`}</div>)
+    return (<div className="cell fade" style={style}>{`${name}`}</div>)
   }
 
 

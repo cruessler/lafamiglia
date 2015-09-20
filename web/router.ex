@@ -2,7 +2,7 @@ defmodule LaFamiglia.Router do
   use LaFamiglia.Web, :router
 
   pipeline :browser do
-    plug :accepts, ["html"]
+    plug :accepts, ["html", "json"]
     plug :fetch_session
     plug :fetch_flash
     plug :protect_from_forgery
@@ -42,6 +42,7 @@ defmodule LaFamiglia.Router do
       resources "/unit_queue_items", UnitQueueItemController, only: [ :delete ]
 
       get "/map/:x/:y", MapController, :show
+      get "/map", MapController, :show
     end
 
     get "/", PageController, :index

@@ -29,6 +29,18 @@ defmodule LaFamiglia.MapController do
       |> assign(:max_y, max_y)
       |> assign(:villas, villas)
 
-    render conn, "show.html"
+    render conn, :show
+  end
+
+  def show(conn, %{"min_x" => min_x, "min_y" => min_y,
+                   "max_x" => max_x, "max_y" => max_y}) do
+    villas =
+      from(v in Villa,
+        select: %{name: v.name, x: v.x, y: v.y},
+        where: v.x >= ^min_x and v.x <= ^max_x
+               and v.y >= ^min_y and v.y <= ^max_y)
+      |> Repo.all(preload: [:player])
+
+    render conn, :show, villas: villas
   end
 end
