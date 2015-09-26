@@ -21,9 +21,11 @@ defmodule LaFamiglia.Mixfile do
   end
 
   # Specifies which paths to compile per environment
+  defp elixirc_paths(:dev),  do: ["lib", "web", "test/support"]
   defp elixirc_paths(:test), do: ["lib", "web", "test/support"]
   defp elixirc_paths(_),     do: ["lib", "web"]
 
+  defp applications(:dev),  do: applications(:test)
   defp applications(:test), do: applications(:all) ++ [:blacksmith, :faker]
   defp applications(_),     do: [:phoenix, :phoenix_html, :cowboy, :logger,
                                  :phoenix_ecto, :mariaex, :comeonin]
@@ -44,8 +46,8 @@ defmodule LaFamiglia.Mixfile do
      {:cowboy, "~> 1.0"},
      # http://icanmakeitbetter.com/elixir-testing-blacksmith/
      # https://github.com/batate/blacksmith/
-     {:blacksmith, "~> 0.1", only: :test},
+     {:blacksmith, "~> 0.1", only: [:dev, :test]},
      # https://github.com/igas/faker/
-     {:faker, "~> 0.5", only: :test}]
+     {:faker, "~> 0.5", only: [:dev, :test]}]
   end
 end
