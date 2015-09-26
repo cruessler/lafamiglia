@@ -1,0 +1,21 @@
+<h2>Write a message</h2>
+
+<%= render view_module(@conn), "_form.html", assigns %>
+
+<h2>Conversations</h2>
+
+<table class="table table-striped">
+  <%= Enum.map @conversations, fn(c) -> %>
+    <tr>
+      <td>
+        <%= c.id %>
+        Text: <%= Enum.map c.messages, fn(m) -> %>
+          <%= m.text %>
+        <% end %>
+        Players: <%= Enum.map c.players, fn(m) -> %>
+          <%= m.name %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+</table>

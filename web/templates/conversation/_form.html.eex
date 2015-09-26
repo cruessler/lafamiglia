@@ -1,0 +1,30 @@
+<%= form_for @changeset,
+             conversation_path(@conn, :create),
+             fn f -> %>
+  <%= if f.errors != [] do %>
+    <div class="alert alert-danger">
+      <p>Please check the errors below:</p>
+      <ul>
+        <%= for {attr, message} <- f.errors do %>
+          <li><%= humanize(attr) %> <%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <label class="control-label">
+      Receivers:
+    </label>
+    <%= player_select f, :receivers %>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label">
+      Text:
+    </label>
+    <%= textarea f, :text, class: :"form-control" %>
+  </div>
+
+  <button class="btn btn-primary" type="submit">Send</button>
+<% end %>
