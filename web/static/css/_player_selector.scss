@@ -1,0 +1,60 @@
+div.player-select {
+  padding: 0;
+  margin: 0;
+
+  div.container {
+    // Adapt container size depending on the size of its children.
+    // Bootstrap sets a fixed height on `form-control` (which is applied to
+    // `div.container` by PlayerSelector).
+    height: auto;
+    padding: 0.3em;
+    background-color: $input-bg;
+    border: 1px solid $input-border;
+    border-radius: $input-border-radius;
+  }
+
+  span.selected {
+    display: inline-block;
+    padding: 0.1em 0.6em;
+    padding-bottom: 0.2em;
+    margin-right: 0.5em;
+    border: 1px solid $input-border;
+    border-radius: $input-border-radius;
+    box-shadow: 0 0 0.3em 0.1em lighten($gray-light, 40%);
+
+    button.close {
+      margin-left: 0.3em;
+    }
+  }
+
+  input {
+    border: none;
+    background-color: transparent;
+  }
+}
+
+// Extracted from https://github.com/hyspace/typeahead.js-bootstrap3.less/blob/master/typeahead.less.
+.tt-dropdown-menu, .tt-menu {
+  padding: 5px 0;
+  margin: 2px 0 0;
+  background-color: $dropdown-bg;
+  border: 1px solid $dropdown-border;
+  border-radius: $border-radius-base;
+  @include box-shadow(0 6px 12px rgba(0, 0, 0, .175));
+
+  .tt-suggestion {
+    display: block;
+    padding: 3px 20px;
+
+    &.tt-cursor, &:hover {
+      cursor: pointer;
+      text-decoration: none;
+      background-color: $dropdown-link-hover-bg;
+      color: $dropdown-link-hover-color;
+    }
+  }
+
+  p {
+    margin: 0;
+  }
+}

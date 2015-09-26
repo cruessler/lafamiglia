@@ -1,9 +1,12 @@
 import {Socket} from "deps/phoenix/web/static/js/phoenix"
 import "deps/phoenix_html/web/static/js/phoenix_html"
+
 import Map from "web/static/js/map"
+import PlayerSelector from "web/static/js/player_selector"
 
 $(document).ready(() => {
   Map.init()
+  PlayerSelector.init()
 })
 
 // let socket = new Socket("/ws")

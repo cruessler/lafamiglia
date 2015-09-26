@@ -3,6 +3,8 @@ defmodule LaFamiglia.PlayerController do
 
   alias LaFamiglia.Player
 
+  @search_query_limit 10
+
   def new(conn, _params) do
     changeset = Player.changeset(%Player{})
     render conn, "new.html", changeset: changeset
@@ -20,5 +22,16 @@ defmodule LaFamiglia.PlayerController do
     else
       render(conn, "new.html", changeset: changeset)
     end
+  end
+
+  def search(conn, %{"query" => query}) do
+    players =
+      from(p in Player,
+        select: %{id: p.id, name: p.name},
+        where: like(p.name, "%#{query}%"),
+        limit: @search_query_limit)
+      |> Repo.all
+
+    render(conn, :search, players: players)
   end
 end
