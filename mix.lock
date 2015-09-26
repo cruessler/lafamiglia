@@ -3,7 +3,7 @@
   "cowboy": {:hex, :cowboy, "1.0.2"},
   "cowlib": {:hex, :cowlib, "1.0.1"},
   "decimal": {:hex, :decimal, "1.1.0"},
-  "ecto": {:hex, :ecto, "0.16.0"},
+  "ecto": {:hex, :ecto, "1.0.3"},
   "faker": {:hex, :faker, "0.5.1"},
   "fs": {:hex, :fs, "0.9.2"},
   "mariaex": {:hex, :mariaex, "0.4.3"},
