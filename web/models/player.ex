@@ -1,8 +1,10 @@
 defmodule LaFamiglia.Player do
   use LaFamiglia.Web, :model
 
-  alias LaFamiglia.Villa
   alias Comeonin.Bcrypt
+
+  alias LaFamiglia.Villa
+  alias LaFamiglia.ConversationStatus
 
   schema "players" do
     field :email, :string
@@ -14,6 +16,9 @@ defmodule LaFamiglia.Player do
     field :points, :integer
 
     has_many :villas, Villa
+
+    has_many :conversation_statuses, ConversationStatus
+    has_many :conversations, through: [:conversation_statuses, :conversation]
 
     timestamps
   end
