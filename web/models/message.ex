@@ -5,7 +5,9 @@ defmodule LaFamiglia.Message do
 
   alias LaFamiglia.Repo
 
+  alias LaFamiglia.Player
   alias LaFamiglia.Conversation
+  alias LaFamiglia.ConversationStatus
 
   schema "messages" do
     belongs_to :sender, Player
@@ -18,7 +20,7 @@ defmodule LaFamiglia.Message do
     timestamps
   end
 
-  before_insert :create_conversation
+  before_insert :find_or_create_conversation
 
   @required_fields ~w(sender_id receivers text)
   @optional_fields ~w()
@@ -49,14 +51,47 @@ defmodule LaFamiglia.Message do
     |> add_error(:receivers, "must contain at least one player")
   end
 
-  defp create_conversation(%Changeset{changes: changes} = changeset) do
-    conversation =
-      Conversation.changeset(%Conversation{}, %{})
-      |> Repo.insert!
+  defp find_conversation(%Changeset{changes: %{receivers: receivers} = changes}) do
+    query        = from(c in Conversation, select: c.id)
+    participants = [%{id: changes.sender_id}|receivers]
 
-    changes.receivers ++ [%{id: changes.sender_id}] |> Enum.map fn(p) ->
-      Ecto.Model.build(conversation, :conversation_statuses, %{ player_id: p.id })
-      |> Repo.insert!
+    # Find all conversations whose set of participants contains the players in
+    # `participants`.
+    conversation_ids =
+      Enum.reduce(participants, query, fn(p, query) ->
+        from(c in query,
+          join: s in ConversationStatus, on: s.conversation_id == c.id
+                                             and s.player_id == ^p.id)
+      end)
+      |> Repo.all
+
+    if length(conversation_ids) > 0 do
+      # Find the right conversation by the number of participants. This assumes
+      # that, at any given time, every conversation is unique with respect to
+      # its set of participants.
+      from(c in Conversation,
+        join: s in assoc(c, :conversation_statuses),
+        group_by: c.id,
+        select: %{id: c.id, participant_count: count(s.id)},
+        where: c.id in ^conversation_ids)
+      |> Repo.all
+      |> Enum.find fn(c) -> c.participant_count == length(participants) end
+    end
+    # Return nil if no conversation was found.
+  end
+
+  defp find_or_create_conversation(%Changeset{changes: changes} = changeset) do
+    conversation = find_conversation(changeset)
+
+    if is_nil(conversation) do
+      conversation =
+        Conversation.changeset(%Conversation{}, %{})
+        |> Repo.insert!
+
+      [%{id: changes.sender_id}|changes.receivers] |> Enum.map fn(p) ->
+        Ecto.Model.build(conversation, :conversation_statuses, %{ player_id: p.id })
+        |> Repo.insert!
+      end
     end
 
     changeset
