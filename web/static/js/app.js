@@ -16,7 +16,22 @@ $(document).ready(() => {
 //   console.log("Success!")
 // })
 
-let App = {
+class App {
+  static mountReactComponents() {
+    const nodes = $("[data-react-class]").toArray()
+
+    for(const node of nodes) {
+      const reactClass  = $(node).data("react-class")
+      const props       = $(node).data("react-props")
+      const constructor = window[reactClass]
+
+      if(constructor != undefined) {
+        React.render(React.createElement(constructor, props), node)
+      }
+    }
+  }
 }
+
+App.mountReactComponents()
 
 export default App
