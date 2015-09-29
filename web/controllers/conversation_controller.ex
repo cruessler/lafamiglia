@@ -6,14 +6,10 @@ defmodule LaFamiglia.ConversationController do
   alias LaFamiglia.Message
 
   def create(conn, %{"message" => %{"text" => text, "receivers" => receivers}} = _params) do
-    receivers_ids =
-      receivers
-      |> Enum.map fn(r) -> String.to_integer(r) end
-
     receivers =
       from(p in Player,
         select: %{id: p.id},
-        where: p.id in ^receivers_ids)
+        where: p.id in ^receivers)
       |> Repo.all
 
     message_params = %{sender_id: conn.assigns.current_player.id,
