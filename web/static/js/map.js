@@ -1,7 +1,7 @@
-class Map extends React.Component {
+class InteractiveMap extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { villas: this.mergeVillas(new window.Map(), this.props.villas),
+    this.state = { villas: this.mergeVillas(new Map(), this.props.villas),
                    x: 0, y: 0,
                    dragging: false }
 
@@ -189,4 +189,4 @@ class Map extends React.Component {
   }
 }
 
-export default Map
+export default InteractiveMap
