@@ -1,0 +1,2 @@
+<%= react_component "Conversation", %{"sender_id" => @current_player.id,
+                                      "messages" => @conversation.messages } %>

@@ -1,0 +1,20 @@
+<div class="row">
+  <div class="col-sm-4">
+    <h3>Conversations</h3>
+
+    <ul class="conversations">
+      <li><%= link "Write a message", to: conversation_path(@conn, :index) %></li>
+
+      <%= for c <- @conversations do %>
+        <li class="<%= li_class_for(c, @conversation) %>">
+          <%= link to: conversation_path(@conn, :show, c) do %>
+            <%= participants_except(c.players, @current_player) %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+  <div class="col-sm-8">
+    <%= @inner %>
+  </div>
+</div>

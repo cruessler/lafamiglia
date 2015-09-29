@@ -1,0 +1,53 @@
+$conversation-border: $input-border;
+$conversation-bg: $input-bg;
+
+ul.conversations {
+  padding: 0;
+  border: 1px solid $conversation-border;
+  background-color: $conversation-bg;
+
+  li {
+    list-style: none;
+    width: 100%;
+
+    &:first-child {
+      margin-bottom: 1.2em;
+    }
+
+    a {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0.8em 2.0em;
+      color: $gray-dark;
+      text-decoration: none;
+    }
+
+    &.selected {
+      background-color: darken($conversation-bg, 5%);
+    }
+  }
+}
+
+ul.messages {
+  padding: 0;
+
+  li {
+    list-style: none;
+    width: 80%;
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+    padding: 0.3em 0.5em;
+    background: $conversation-bg;
+    border: 1px solid $conversation-border;
+
+    &.sent {
+      float: left;
+    }
+    &.received {
+      float: right;
+    }
+  }
+}

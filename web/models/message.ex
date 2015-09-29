@@ -1,4 +1,6 @@
 defmodule LaFamiglia.Message do
+  @derive [Poison.Encoder]
+
   use LaFamiglia.Web, :model
 
   alias Ecto.Changeset
@@ -96,5 +98,11 @@ defmodule LaFamiglia.Message do
 
     changeset
     |> put_change(:conversation_id, conversation.id)
+  end
+end
+
+defimpl Poison.Encoder, for: LaFamiglia.Message do
+  def encode(%{id: id, text: text, sender_id: sender_id}, _options) do
+    Poison.encode!(%{id: id, text: text, sender_id: sender_id})
   end
 end

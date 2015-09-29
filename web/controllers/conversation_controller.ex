@@ -2,6 +2,7 @@ defmodule LaFamiglia.ConversationController do
   use LaFamiglia.Web, :controller
 
   alias LaFamiglia.Player
+  alias LaFamiglia.Conversation
   alias LaFamiglia.Message
 
   def create(conn, %{"message" => %{"text" => text, "receivers" => receivers}} = _params) do
@@ -46,8 +47,22 @@ defmodule LaFamiglia.ConversationController do
       |> Repo.preload([:messages, :players])
 
     conn
+    |> assign(:conversation, %Conversation{})
     |> assign(:conversations, conversations)
     |> assign(:changeset, Ecto.Changeset.change(%Message{}))
     |> render("index.html")
+  end
+
+  def show(conn, %{"id" => id}) do
+    conversation  = Repo.get(Conversation, id) |> Repo.preload(:messages)
+    conversations =
+      assoc(conn.assigns.current_player, :conversations)
+      |> Repo.all
+      |> Repo.preload([:messages, :players])
+
+    conn
+    |> assign(:conversation, conversation)
+    |> assign(:conversations, conversations)
+    |> render("show.html")
   end
 end
