@@ -4,6 +4,8 @@ defmodule Forge do
   alias LaFamiglia.Repo
   alias LaFamiglia.Player
   alias LaFamiglia.Villa
+  alias LaFamiglia.Conversation
+  alias LaFamiglia.Message
 
   @save_one_function &Blacksmith.Config.save/2
   @save_all_function &Blacksmith.Config.save_all/2
@@ -33,4 +35,11 @@ defmodule Forge do
     max_supply: 100,
     processed_until: LaFamiglia.DateTime.now,
     player_id: Forge.saved_player(Repo).id
+
+  register :conversation,
+    __struct__: Conversation
+
+  register :message,
+    __struct__: Message,
+    text: "This is a text"
 end
