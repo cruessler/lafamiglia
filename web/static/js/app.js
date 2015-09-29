@@ -1,14 +1,14 @@
 import {Socket} from "deps/phoenix/web/static/js/phoenix"
 import "deps/phoenix_html/web/static/js/phoenix_html"
 
-import Map from "web/static/js/map"
+import InteractiveMap from "web/static/js/map"
 import PlayerSelector from "web/static/js/player_selector"
 import Conversation from "web/static/js/conversation"
 
+window.InteractiveMap = InteractiveMap
 window.Conversation = Conversation
 
 $(document).ready(() => {
-  Map.init()
   PlayerSelector.init()
 })
 

@@ -2,6 +2,6 @@
   On this map you can explore your neighbourhood
 </h2>
 
-<div id="map" data-min-x="<%= @min_x %>" data-max-x="<%= @max_x %>"
-              data-min-y="<%= @min_y %>" data-max-y="<%= @max_y %>"
-              data-villas="<%= Poison.encode!(@villas) %>"></div>
+<%= react_component("InteractiveMap", %{minX: @min_x, maxX: @max_x,
+                                        minY: @min_y, maxY: @max_y,
+                                        villas: @villas}) %>

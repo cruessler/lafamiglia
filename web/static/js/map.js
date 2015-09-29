@@ -176,17 +176,6 @@ class InteractiveMap extends React.Component {
       </div>
     )
   }
-
-  static init() {
-    let map = $("#map")
-
-    React.render(
-      <Map minX={map.data("min-x")} maxX={map.data("max-x")}
-           minY={map.data("min-y")} maxY={map.data("max-y")}
-           villas={map.data("villas")} />,
-      document.getElementById("map")
-    )
-  }
 }
 
 export default InteractiveMap
