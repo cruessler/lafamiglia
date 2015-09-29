@@ -16,7 +16,6 @@
   <% end %>
 
   <div class="form-group">
-  <div class="form-group">
     <label class="control-label">
       Name:
     </label>
