@@ -49,5 +49,10 @@ ul.messages {
     &.received {
       float: right;
     }
+    &.sender-header {
+      background: transparent;
+      border: none;
+      font-size: $font-size-h4;
+    }
   }
 }

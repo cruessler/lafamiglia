@@ -50,11 +50,11 @@ defmodule LaFamiglia.ConversationController do
   end
 
   def show(conn, %{"id" => id}) do
-    conversation  = Repo.get(Conversation, id) |> Repo.preload(:messages)
+    conversation  = Repo.get(Conversation, id) |> Repo.preload([messages: :sender])
     conversations =
       assoc(conn.assigns.current_player, :conversations)
       |> Repo.all
-      |> Repo.preload([:messages, :players])
+      |> Repo.preload([:players])
 
     conn
     |> assign(:conversation, conversation)

@@ -102,7 +102,8 @@ defmodule LaFamiglia.Message do
 end
 
 defimpl Poison.Encoder, for: LaFamiglia.Message do
-  def encode(%{id: id, text: text, sender_id: sender_id}, _options) do
-    Poison.encode!(%{id: id, text: text, sender_id: sender_id})
+  def encode(%{id: id, text: text, sender: sender}, _options) do
+    Poison.encode!(%{id: id, text: text,
+                     sender: %{id: sender.id, name: sender.name}})
   end
 end
