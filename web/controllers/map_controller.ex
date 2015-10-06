@@ -16,10 +16,11 @@ defmodule LaFamiglia.MapController do
 
     villas =
       from(v in Villa,
-        select: %{name: v.name, x: v.x, y: v.y},
+        join: p in assoc(v, :player),
+        select: %{name: v.name, x: v.x, y: v.y, player: %{id: p.id, name: p.name}},
         where: v.x >= ^min_x and v.x <= ^max_x
                and v.y >= ^min_y and v.y <= ^max_y)
-      |> Repo.all(preload: [:player])
+      |> Repo.all
 
     conn =
       conn
@@ -36,10 +37,11 @@ defmodule LaFamiglia.MapController do
                    "max_x" => max_x, "max_y" => max_y}) do
     villas =
       from(v in Villa,
-        select: %{name: v.name, x: v.x, y: v.y},
+        join: p in assoc(v, :player),
+        select: %{name: v.name, x: v.x, y: v.y, player: %{id: p.id, name: p.name}},
         where: v.x >= ^min_x and v.x <= ^max_x
                and v.y >= ^min_y and v.y <= ^max_y)
-      |> Repo.all(preload: [:player])
+      |> Repo.all
 
     render conn, :show, villas: villas
   end

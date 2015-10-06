@@ -126,20 +126,31 @@ class InteractiveMap extends React.Component {
     return <div key={y} className="y-axis-label" style={style}>{y}</div>
   }
 
+  nameForVilla(villa) {
+    if(villa) {
+      return `${villa.name} ${villa.x}|${villa.y}`
+    } else {
+      return ""
+    }
+  }
+
+  classNamesForVilla(villa) {
+    if(villa && villa.player.id != this.props.player_id) {
+      return "cell fade foreign"
+    }
+    else {
+      return "cell fade"
+    }
+ }
+
   renderMapCell(x, y) {
     const offset = this.getViewportOffset(x, y)
     const style  = { left: offset.x, top: offset.y }
 
     const villa = this.state.villas[[x, y]]
-    let name  = ""
-    if(villa) {
-      name = `${villa.name} ${x}|${y}`
-    }
-    else {
-      name = `${x}|${y}`
-    }
 
-    return (<div key={[x, y]} className="cell fade" style={style}>{`${name}`}</div>)
+    return (<div key={[x, y]} className={this.classNamesForVilla(villa)}
+                              style={style}>{this.nameForVilla(villa)}</div>)
   }
 
 
