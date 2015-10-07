@@ -27,7 +27,7 @@ defmodule LaFamiglia.EventLoop do
     GenEvent.notify(__MODULE__, request)
   end
 
-  def handle_event(%BuildingQueueItem{} = item, _state) do
+  def handle_event(%BuildingQueueItem{} = item, state) do
     Logger.info "processing build event ##{item.id}"
 
     building = Building.get_by_id(item.building_id)
@@ -41,9 +41,9 @@ defmodule LaFamiglia.EventLoop do
       Repo.delete!(item)
     end
 
-    {:ok, _state}
+    {:ok, state}
   end
-  def handle_event(%UnitQueueItem{} = item, _state) do
+  def handle_event(%UnitQueueItem{} = item, state) do
     Logger.info "processing recruiting event ##{item.id}"
 
     unit  = Unit.get_by_id(item.unit_id)
@@ -57,6 +57,6 @@ defmodule LaFamiglia.EventLoop do
       Repo.delete!(item)
     end
 
-    {:ok, _state}
+    {:ok, state}
   end
 end
