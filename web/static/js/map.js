@@ -173,16 +173,16 @@ class InteractiveMap extends React.Component {
     }
 
     return (
-      <div className="container-fluid map-viewport"
+      <div className="container-fluid map-viewport">
+        <div className="x-axis-labels" style={{left: this.state.x}}>{xAxisLabels}</div>
+        <div className="y-axis-labels" style={{top: this.state.y}}>{yAxisLabels}</div>
+        <div className="map-inner-viewport" ref="innerViewport"
            onMouseDown={this.onMouseDown}
            onMouseMove={this.onMouseMove}
            onMouseUp={this.onMouseUp}>
-        <div className="x-axis-labels" style={{left: this.state.x}}>{xAxisLabels}</div>
-        <div className="y-axis-labels" style={{top: this.state.y}}>{yAxisLabels}</div>
-        <div className="map-inner-viewport">
           <div className="map" style={{left: this.state.x, top: this.state.y}}>
             {mapCells}
-           </div>
+          </div>
         </div>
       </div>
     )
