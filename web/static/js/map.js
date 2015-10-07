@@ -1,9 +1,12 @@
+import StatusBar from "web/static/js/status_bar"
+
 class InteractiveMap extends React.Component {
   constructor(props) {
     super(props)
     this.state = { villas: this.mergeVillas(new Map(), this.props.villas),
                    x: 0, y: 0,
-                   dragging: false }
+                   dragging: false,
+                   hoveredVilla: undefined }
 
     // In ES6 classes, event handlers have to be bound to the respective class
     // methods explicitly.
@@ -45,6 +48,17 @@ class InteractiveMap extends React.Component {
   onMouseMove(e) {
     if(this.state.dragging) {
       this.setState({ x: e.clientX - this.state.startPosition.x, y: e.clientY - this.state.startPosition.y })
+    } else {
+      const viewportNode = React.findDOMNode(this.refs.innerViewport)
+      const offset = $(viewportNode).offset()
+
+      const viewportX = e.clientX - offset.left + window.scrollX
+      const viewportY = e.clientY - offset.top + window.scrollY
+
+      const coordinates = this.getMapCoordinates(viewportX, viewportY)
+      const villa       = this.state.villas[[coordinates.x, coordinates.y]]
+
+      this.setState({ hoveredVilla: villa })
     }
   }
 
@@ -184,6 +198,7 @@ class InteractiveMap extends React.Component {
             {mapCells}
           </div>
         </div>
+        <StatusBar villa={this.state.hoveredVilla} />
       </div>
     )
   }

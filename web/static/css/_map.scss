@@ -7,6 +7,21 @@ div.map-viewport {
   position: relative;
   overflow: hidden;
   padding-left: 0;
+
+  div.status-bar {
+    position: absolute;
+    left: 5%;
+    bottom: 4%;
+    border: 1px solid $input-border;
+    padding: 0.5em 1em;
+    @include box-shadow(0 6px 12px rgba(0, 0, 0, .175));
+    background-color: $input-bg;
+    z-index: 3;
+
+    &:empty {
+      display: none;
+    }
+  }
 }
 div.map-inner-viewport {
   position: relative;
