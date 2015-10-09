@@ -1,4 +1,8 @@
 defmodule LaFamiglia.Unit do
+  def all do
+    Application.get_env(:la_famiglia, :units)
+  end
+
   def get_by_id(id) do
     case Application.get_env(:la_famiglia, :units)
          |> Enum.find(fn({_k, b}) -> b.id == id end)
