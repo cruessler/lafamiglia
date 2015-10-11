@@ -11,7 +11,8 @@ config :la_famiglia,
         resource_2: 0,
         resource_3: 1
       },
-      supply: 2
+      supply: 5,
+      speed: 2
     },
     unit_2: %{
       id: 2,
@@ -22,5 +23,6 @@ config :la_famiglia,
         resource_2: 50,
         resource_3: 50
       },
-      supply: 20
+      supply: 20,
+      speed: 1
     }]
