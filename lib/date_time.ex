@@ -27,7 +27,7 @@ defmodule LaFamiglia.DateTime do
   end
   def add_seconds(%Ecto.DateTime{} = datetime, seconds) when is_float(seconds) do
     new_seconds = to_seconds(datetime) + seconds
-    frac        = new_seconds - round(new_seconds)
+    frac        = new_seconds - Float.floor(new_seconds)
     new_seconds = trunc(new_seconds)
 
     new_datetime =

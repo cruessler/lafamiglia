@@ -1,13 +1,23 @@
 defmodule LaFamiglia.DateTimeTest do
   use LaFamiglia.ModelCase
 
+  alias LaFamiglia.DateTime
+
   test "should set and get game time" do
-    LaFamiglia.DateTime.clock!(nil)
+    DateTime.clock!(nil)
 
-    assert LaFamiglia.DateTime.now == nil
+    assert DateTime.now == nil
 
-    LaFamiglia.DateTime.clock!
+    DateTime.clock!
 
-    assert LaFamiglia.DateTime.now != nil
+    assert DateTime.now != nil
+  end
+
+  test "add_second" do
+    time = DateTime.add_seconds(DateTime.now, 0.7)
+
+    %{usec: usec} = time
+
+    assert usec > 0
   end
 end
