@@ -17,7 +17,8 @@ defmodule LaFamiglia.MapController do
     villas =
       from(v in Villa,
         join: p in assoc(v, :player),
-        select: %{name: v.name, x: v.x, y: v.y, player: %{id: p.id, name: p.name}},
+        select: %{id: v.id, name: v.name, x: v.x, y: v.y,
+                  player: %{id: p.id, name: p.name}},
         where: v.x >= ^min_x and v.x <= ^max_x
                and v.y >= ^min_y and v.y <= ^max_y)
       |> Repo.all
@@ -38,7 +39,8 @@ defmodule LaFamiglia.MapController do
     villas =
       from(v in Villa,
         join: p in assoc(v, :player),
-        select: %{name: v.name, x: v.x, y: v.y, player: %{id: p.id, name: p.name}},
+        select: %{id: v.id, name: v.name, x: v.x, y: v.y,
+                  player: %{id: p.id, name: p.name}},
         where: v.x >= ^min_x and v.x <= ^max_x
                and v.y >= ^min_y and v.y <= ^max_y)
       |> Repo.all

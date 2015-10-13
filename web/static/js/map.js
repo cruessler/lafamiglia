@@ -1,3 +1,4 @@
+import InfoBox from "web/static/js/info_box"
 import StatusBar from "web/static/js/status_bar"
 
 class InteractiveMap extends React.Component {
@@ -6,7 +7,8 @@ class InteractiveMap extends React.Component {
     this.state = { villas: this.mergeVillas(new Map(), this.props.villas),
                    x: 0, y: 0,
                    dragging: false,
-                   hoveredVilla: undefined }
+                   hoveredVilla: undefined,
+                   clickedVilla: undefined }
 
     // In ES6 classes, event handlers have to be bound to the respective class
     // methods explicitly.
@@ -23,7 +25,7 @@ class InteractiveMap extends React.Component {
   }
 
   onMouseDown(e) {
-    this.setState({ dragging: true,
+    this.setState({ dragging: true, moved: false,
                     startPosition: { x: e.clientX - this.state.x, y: e.clientY - this.state.y }})
   }
 
@@ -34,20 +36,26 @@ class InteractiveMap extends React.Component {
     const lowerRightCorner = this.getMapCoordinates(this.mapDimensions.width + this.cellDimensions.width,
                                                     this.mapDimensions.height + this.cellDimensions.height)
 
-    // The `Accept` header has to be set manually. If it is determined by the
-    // data type, jQuery adds `*/*` to the header which causes Phoenix to assume
-    // `html` is the requested format.
-    // https://github.com/phoenixframework/phoenix/blob/master/lib/phoenix/controller.ex
-    $.ajax("/map", { beforeSend: (xhr) => xhr.setRequestHeader("Accept", "application/json"),
-                     data: { min_x: upperLeftCorner.x, min_y: upperLeftCorner.y,
-                             max_x: lowerRightCorner.x, max_y: lowerRightCorner.y },
-                     success: (data) => this.setState({ villas: this.mergeVillas(this.state.villas, data) })
-                   })
+    if(this.state.moved) {
+      // The `Accept` header has to be set manually. If it is determined by the
+      // data type, jQuery adds `*/*` to the header which causes Phoenix to assume
+      // `html` is the requested format.
+      // https://github.com/phoenixframework/phoenix/blob/master/lib/phoenix/controller.ex
+      $.ajax("/map", { beforeSend: (xhr) => xhr.setRequestHeader("Accept", "application/json"),
+                       data: { min_x: upperLeftCorner.x, min_y: upperLeftCorner.y,
+                               max_x: lowerRightCorner.x, max_y: lowerRightCorner.y },
+                       success: (data) => this.setState({ villas: this.mergeVillas(this.state.villas, data) })
+                     })
+    } else {
+      this.setState({clickedVilla: this.state.hoveredVilla})
+    }
   }
 
   onMouseMove(e) {
     if(this.state.dragging) {
-      this.setState({ x: e.clientX - this.state.startPosition.x, y: e.clientY - this.state.startPosition.y })
+      this.setState({ moved: true,
+                      x: e.clientX - this.state.startPosition.x,
+                      y: e.clientY - this.state.startPosition.y })
     } else {
       const viewportNode = React.findDOMNode(this.refs.innerViewport)
       const offset = $(viewportNode).offset()
@@ -198,6 +206,7 @@ class InteractiveMap extends React.Component {
             {mapCells}
           </div>
         </div>
+        <InfoBox playerId={this.props.player_id} villa={this.state.clickedVilla} />
         <StatusBar villa={this.state.hoveredVilla} />
       </div>
     )
