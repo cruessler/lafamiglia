@@ -37,9 +37,9 @@ defmodule LaFamiglia.EventQueue do
   def init(_args) do
     queries = [
       from(i in BuildingQueueItem, order_by: [asc: i.completed_at]),
-      from(i in UnitQueueItem, order_by: [asc: i.completed_at]),
-      from(m in AttackMovement, order_by: [asc: m.arrives_at]),
-      from(m in ComebackMovement, order_by: [asc: m.arrives_at])
+      from(i in UnitQueueItem,     order_by: [asc: i.completed_at]),
+      from(m in AttackMovement,    order_by: [asc: m.arrives_at]),
+      from(m in ComebackMovement,  order_by: [asc: m.arrives_at])
     ]
 
     queue =
