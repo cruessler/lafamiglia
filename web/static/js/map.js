@@ -18,6 +18,8 @@ class InteractiveMap extends React.Component {
     this.onMouseUp = this.onMouseUp.bind(this)
 
     this.mounted = false
+
+    this.FADE_IN_TIMEOUT = 400
   }
 
   mergeVillas(villas, newVillas) {
@@ -131,7 +133,8 @@ class InteractiveMap extends React.Component {
   }
 
   componentDidUpdate() {
-    setTimeout(() => $(React.findDOMNode(this)).find("div.cell").addClass("in"), 800)
+    setTimeout(() => $(React.findDOMNode(this)).find("div.cell").addClass("in"),
+               this.FADE_IN_TIMEOUT)
   }
 
   renderXAxisLabel(x) {
