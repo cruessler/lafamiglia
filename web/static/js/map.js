@@ -174,8 +174,11 @@ class InteractiveMap extends React.Component {
 
     const villa = this.state.villas[[x, y]]
 
-    return (<div key={[x, y]} className={this.classNamesForVilla(villa)}
-                              style={style}>{this.nameForVilla(villa)}</div>)
+    return (<div key={[x, y]}
+                 className={this.classNamesForVilla(villa)}
+                 style={style}>
+              {this.nameForVilla(villa)}
+            </div>)
   }
 
 
