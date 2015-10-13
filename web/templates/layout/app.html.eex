@@ -29,6 +29,7 @@
               <ul class="nav navbar-nav">
                 <li><%= link coordinates(@conn.assigns.current_villa), to: villa_path(@conn, :show, @conn.assigns.current_villa)%></li>
                 <li><%= link "Villas", to: villa_path(@conn, :index) %></li>
+                <li><%= link "Troops", to: movement_path(@conn, :index) %></li>
                 <li><%= link "Map", to: map_path(@conn, :show, @current_villa.x, @current_villa.y) %></li>
                 <li><%= link "Messages", to: conversation_path(@conn, :index) %></li>
 
