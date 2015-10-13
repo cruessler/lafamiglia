@@ -37,53 +37,80 @@ defmodule LaFamiglia.AttackMovement do
     |> validate_origin_and_target_belong_to_different_players
     |> validate_unit_numbers
     |> validate_at_least_one_unit
+    |> remove_associations
     |> assoc_constraint(:origin)
     |> assoc_constraint(:target)
   end
 
   defp validate_origin_and_target_are_different(changeset) do
-    case changeset.changes.origin_id == changeset.changes.target_id do
-      true -> add_error(changeset, :target_id, "must be different from origin")
-      _    -> changeset
+    validate_change changeset, :origin_id, fn _field, value ->
+      case get_change(changeset, :target_id) do
+        ^value -> [{:target, "must not be the origin"}]
+        _      -> []
+      end
     end
   end
 
   # So far, there seems to be no standard way of validating fields of associated
   # models. This is a hack to make `origin` and `target` available to the
   # validations.
-  defp preload_associations(%Changeset{changes: changes, model: model} = changeset) do
-    model =
-      model
-      |> Map.put(:origin, Repo.get!(Villa, changes.origin_id))
-      |> Map.put(:target, Repo.get!(Villa, changes.target_id))
-    %Changeset{changeset | model: model}
+  defp preload_associations(changeset) do
+    case changeset.changes do
+      %{origin_id: origin_id, target_id: target_id} ->
+        changeset
+        |> put_change(:origin, Repo.get(Villa, origin_id))
+        |> put_change(:target, Repo.get(Villa, target_id))
+      _ ->
+        changeset
+    end
+  end
+
+  defp remove_associations(%Changeset{changes: changes} = changeset) do
+    %Changeset{changeset | changes: Map.drop(changes, [:origin, :target])}
   end
 
   defp validate_origin_and_target_belong_to_different_players(changeset) do
-    case get_field(changeset, :origin).player_id == get_field(changeset, :target).player_id do
-      true -> add_error(changeset, :target_id, "must not be owned by you")
-      _    -> changeset
+    case changeset.changes do
+      %{origin: origin, target: target} ->
+        cond do
+          origin.player_id == target.player_id ->
+            add_error(changeset, :target, "must not be owned by you")
+          true ->
+            changeset
+        end
+      _ -> changeset
     end
   end
 
   defp validate_unit_numbers(changeset) do
-    origin = get_field(changeset, :origin)
-
-    LaFamiglia.Unit.all
-    |> Enum.reduce changeset, fn({k, u}, changeset) ->
-      changeset
-      |> validate_number(k, less_than_or_equal_to: Unit.number(origin, u))
+    case changeset.changes do
+      %{origin: origin} ->
+        Enum.reduce LaFamiglia.Unit.all, changeset, fn({k, u}, changeset) ->
+          changeset
+          |> validate_number(k, less_than_or_equal_to: Unit.number(origin, u))
+        end
+      _ -> changeset
     end
   end
 
   defp validate_at_least_one_unit(%Changeset{changes: changes} = changeset) do
-    total_unit_number =
-      LaFamiglia.Unit.all
-      |> Enum.reduce 0, fn({k, _u}, acc) -> acc + changes[k] end
+    cond do
+      unit_number_given?(changeset) ->
+        total_unit_number =
+          LaFamiglia.Unit.all
+          |> Enum.reduce 0, fn({k, _u}, acc) -> acc + (changes[k] || 0) end
 
-    case total_unit_number == 0 do
-      true -> add_error(changeset, :unit_count, "must be greater than 0")
-      _    -> changeset
+        case total_unit_number == 0 do
+          true -> add_error(changeset, :unit_count, "must be greater than 0")
+          _    -> changeset
+        end
+      true -> changeset
+    end
+  end
+
+  defp unit_number_given?(%Changeset{changes: changes}) do
+    Enum.any? changes, fn({k, _v}) ->
+      Dict.has_key?(LaFamiglia.Unit.all, k)
     end
   end
 end
