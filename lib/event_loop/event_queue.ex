@@ -18,6 +18,8 @@ defmodule LaFamiglia.EventQueue do
 
   import Ecto.Query
 
+  alias LaFamiglia.Event
+
   alias LaFamiglia.Repo
   alias LaFamiglia.BuildingQueueItem
   alias LaFamiglia.UnitQueueItem
@@ -33,29 +35,19 @@ defmodule LaFamiglia.EventQueue do
   end
 
   def init(_args) do
-    queue =
-      from(i in BuildingQueueItem, order_by: [asc: i.completed_at])
-      |> Repo.all
-      |> Enum.map(fn(i) -> {i.completed_at, i} end)
-      |> :ordsets.from_list
-
-    queue =
-      from(i in UnitQueueItem, order_by: [asc: i.completed_at])
-      |> Repo.all
-      |> Enum.map(fn(i) -> {i.completed_at, i} end)
-      |> :ordsets.union(queue)
-
-    queue =
-      from(m in AttackMovement, order_by: [asc: m.arrives_at])
-      |> Repo.all
-      |> Enum.map(fn(m) -> {m.arrives_at, m} end)
-      |> :ordsets.union(queue)
-
-    queue =
+    queries = [
+      from(i in BuildingQueueItem, order_by: [asc: i.completed_at]),
+      from(i in UnitQueueItem, order_by: [asc: i.completed_at]),
+      from(m in AttackMovement, order_by: [asc: m.arrives_at]),
       from(m in ComebackMovement, order_by: [asc: m.arrives_at])
-      |> Repo.all
-      |> Enum.map(fn(m) -> {m.arrives_at, m} end)
-      |> :ordsets.union(queue)
+    ]
+
+    queue =
+      queries
+      |> Enum.map(&Repo.all/1)
+      |> Enum.concat
+      |> Enum.map(fn(e) -> {Event.happens_at(e), e} end)
+      |> :ordsets.from_list
 
     {:ok, queue, timeout(queue)}
   end
@@ -63,14 +55,14 @@ defmodule LaFamiglia.EventQueue do
   def handle_cast({:new_event, event}, queue) do
     Logger.info "adding event ##{event.id} to queue with length #{length(queue)}"
 
-    new_queue = :ordsets.add_element({happens_at(event), event}, queue)
+    new_queue = :ordsets.add_element({Event.happens_at(event), event}, queue)
 
     {:noreply, new_queue, timeout(new_queue)}
   end
   def handle_cast({:cancel_event, event}, queue) do
     Logger.info "removing event ##{event.id} from queue with length #{length(queue)}"
 
-    new_queue = :ordsets.del_element({happens_at(event), event}, queue)
+    new_queue = :ordsets.del_element({Event.happens_at(event), event}, queue)
 
     {:noreply, new_queue, timeout(new_queue)}
   end
@@ -79,19 +71,6 @@ defmodule LaFamiglia.EventQueue do
     LaFamiglia.EventLoop.notify(event)
 
     {:noreply, queue, timeout(queue)}
-  end
-
-  defp happens_at(%BuildingQueueItem{} = item) do
-    item.completed_at
-  end
-  defp happens_at(%UnitQueueItem{} = item) do
-    item.completed_at
-  end
-  defp happens_at(%AttackMovement{} = movement) do
-    movement.arrives_at
-  end
-  defp happens_at(%ComebackMovement{} = movement) do
-    movement.arrives_at
   end
 
   defp timeout([]) do
