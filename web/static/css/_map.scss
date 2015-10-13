@@ -42,6 +42,11 @@ div.map-viewport {
     &:empty {
       display: none;
     }
+
+    small {
+      display: block;
+      color: $gray-light;
+    }
   }
 }
 div.map-inner-viewport {

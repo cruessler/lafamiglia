@@ -8,7 +8,14 @@ class StatusBar extends React.Component {
   }
 
   render() {
-    return <div className="status-bar">{this.villaToString(this.props.villa)}</div>
+    if(this.props.villa) {
+      return <div className="status-bar">
+               {this.villaToString(this.props.villa)}
+               <small>Click on the villa to see more actions</small>
+             </div>
+    } else {
+      return <div className="status-bar"></div>
+    }
   }
 }
 
