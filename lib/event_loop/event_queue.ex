@@ -76,8 +76,8 @@ defmodule LaFamiglia.EventQueue do
   defp timeout([]) do
     :infinity
   end
-  defp timeout([{completed_at, _event}|_]) do
-    max(milliseconds_until(completed_at), 0)
+  defp timeout([{happens_at, _event}|_]) do
+    max(milliseconds_until(happens_at), 0)
   end
 
   defp milliseconds_until(%Ecto.DateTime{} = time) do
