@@ -38,10 +38,10 @@ defmodule LaFamiglia.UnitQueueItemTest do
     unit  = Unit.get_by_id(1)
 
     start_number      = Unit.number(villa, unit)
-    number_to_recruit = 50
+    number_to_recruit = 10
     total_number      = start_number + number_to_recruit
 
-    UnitQueueItem.enqueue!(villa, unit, number_to_recruit)
+    {:ok, _item} = UnitQueueItem.enqueue!(villa, unit, number_to_recruit)
 
     villa = Repo.get(Villa, villa.id)
 
