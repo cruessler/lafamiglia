@@ -15,7 +15,8 @@ class InteractiveMap extends React.Component {
     // https://facebook.github.io/react/blog/2015/01/27/react-v0.13.0-beta-1.html#autobinding
     this.onMouseDown = this.onMouseDown.bind(this)
     this.onMouseMove = this.onMouseMove.bind(this)
-    this.onMouseUp = this.onMouseUp.bind(this)
+    this.onMouseUp   = this.onMouseUp.bind(this)
+    this.onMouseOut  = this.onMouseOut.bind(this)
 
     this.mounted = false
 
@@ -32,25 +33,7 @@ class InteractiveMap extends React.Component {
   }
 
   onMouseUp(e) {
-    this.setState({ dragging: false })
-
-    const upperLeftCorner  = this.getMapCoordinates(0, 0)
-    const lowerRightCorner = this.getMapCoordinates(this.mapDimensions.width + this.cellDimensions.width,
-                                                    this.mapDimensions.height + this.cellDimensions.height)
-
-    if(this.state.moved) {
-      // The `Accept` header has to be set manually. If it is determined by the
-      // data type, jQuery adds `*/*` to the header which causes Phoenix to assume
-      // `html` is the requested format.
-      // https://github.com/phoenixframework/phoenix/blob/master/lib/phoenix/controller.ex
-      $.ajax("/map", { beforeSend: (xhr) => xhr.setRequestHeader("Accept", "application/json"),
-                       data: { min_x: upperLeftCorner.x, min_y: upperLeftCorner.y,
-                               max_x: lowerRightCorner.x, max_y: lowerRightCorner.y },
-                       success: (data) => this.setState({ villas: this.mergeVillas(this.state.villas, data) })
-                     })
-    } else {
-      this.setState({clickedVilla: this.state.hoveredVilla})
-    }
+    this.stopDragging()
   }
 
   onMouseMove(e) {
@@ -69,6 +52,36 @@ class InteractiveMap extends React.Component {
       const villa       = this.state.villas[[coordinates.x, coordinates.y]]
 
       this.setState({ hoveredVilla: villa })
+    }
+  }
+
+  onMouseOut(e) {
+    this.stopDragging()
+  }
+
+  stopDragging() {
+    if(!this.state.dragging) {
+      return
+    }
+
+    this.setState({ dragging: false })
+
+    const upperLeftCorner  = this.getMapCoordinates(0, 0)
+    const lowerRightCorner = this.getMapCoordinates(this.mapDimensions.width + this.cellDimensions.width,
+                                                    this.mapDimensions.height + this.cellDimensions.height)
+
+    if(this.state.moved) {
+      // The `Accept` header has to be set manually. If it is determined by the
+      // data type, jQuery adds `*/*` to the header which causes Phoenix to assume
+      // `html` is the requested format.
+      // https://github.com/phoenixframework/phoenix/blob/master/lib/phoenix/controller.ex
+      $.ajax("/map", { beforeSend: (xhr) => xhr.setRequestHeader("Accept", "application/json"),
+                       data: { min_x: upperLeftCorner.x, min_y: upperLeftCorner.y,
+                               max_x: lowerRightCorner.x, max_y: lowerRightCorner.y },
+                       success: (data) => this.setState({ villas: this.mergeVillas(this.state.villas, data) })
+                     })
+    } else {
+      this.setState({clickedVilla: this.state.hoveredVilla})
     }
   }
 
@@ -207,7 +220,8 @@ class InteractiveMap extends React.Component {
         <div className="map-inner-viewport" ref="innerViewport"
            onMouseDown={this.onMouseDown}
            onMouseMove={this.onMouseMove}
-           onMouseUp={this.onMouseUp}>
+           onMouseUp={this.onMouseUp}
+           onMouseOut={this.onMouseOut}>
           <div className="map" style={{left: this.state.x, top: this.state.y}}>
             {mapCells}
           </div>
