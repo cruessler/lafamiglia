@@ -15,7 +15,8 @@ defmodule LaFamiglia.AttackMovementTest do
 
     changeset = AttackMovement
                   .changeset(%AttackMovement{}, movement_params)
-    assert changeset.valid?
+    {:ok, movement} = Repo.insert(changeset)
+    assert Ecto.DateTime.compare(movement.arrives_at, LaFamiglia.DateTime.now) == :gt
 
     changeset = AttackMovement
                   .changeset(%AttackMovement{}, %{movement_params | unit_1: 0})

@@ -20,6 +20,8 @@ defmodule LaFamiglia.AttackMovement do
     timestamps
   end
 
+  before_insert :calculate_arrives_at
+
   @required_fields ~w(origin_id target_id unit_1 unit_2)
   @optional_fields ~w()
 
@@ -112,5 +114,34 @@ defmodule LaFamiglia.AttackMovement do
     Enum.any? changes, fn({k, _v}) ->
       Dict.has_key?(LaFamiglia.Unit.all, k)
     end
+  end
+
+  defp calculate_arrives_at(changeset) do
+    %{changes: changes} = changeset
+
+    origin = Repo.get(Villa, changes.origin_id)
+    target = Repo.get(Villa, changes.target_id)
+
+    duration = duration(origin, target, units(changes))
+
+    arrives_at = LaFamiglia.DateTime.add_seconds(LaFamiglia.DateTime.now, duration)
+    put_change(changeset, :arrives_at, arrives_at)
+  end
+
+  defp units(movement) do
+    Enum.filter LaFamiglia.Unit.all, fn({_k, u}) -> LaFamiglia.Unit.number(movement, u) > 0 end
+  end
+
+  defp duration(origin, target, units) do
+    distance_between(origin, target) / speed(units)
+  end
+
+  defp distance_between(origin, target) do
+    :math.sqrt(:math.pow(origin.x - target.x, 2) + :math.pow(origin.y - target.y, 2))
+  end
+
+  defp speed(units) do
+    Enum.map(units, fn({_k, u}) -> u.speed end)
+    |> Enum.min
   end
 end
