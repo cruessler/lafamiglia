@@ -25,7 +25,7 @@ defmodule LaFamiglia.Message do
   before_insert :find_or_create_conversation
 
   @required_fields ~w(sender_id receivers text)
-  @optional_fields ~w()
+  @optional_fields ~w(conversation_id)
 
   @doc """
   Creates a changeset based on the `model` and `params`.
@@ -42,6 +42,12 @@ defmodule LaFamiglia.Message do
     |> assoc_constraint(:conversation)
   end
 
+  # Since `conversation_id` is checked through `assoc_constraint` and every
+  # Conversation is assumed to be valid, a changeset containing a
+  # `conversation_id` does not need to be double checked.
+  defp validate_receivers(%Changeset{changes: %{conversation_id: _}} = changeset) do
+    changeset
+  end
   # Ecto removes empty lists in `cast`. If `receivers` is present it contains at
   # least one element.
   defp validate_receivers(%Changeset{changes: %{receivers: receivers}} = changeset)
@@ -83,21 +89,25 @@ defmodule LaFamiglia.Message do
   end
 
   defp find_or_create_conversation(%Changeset{changes: changes} = changeset) do
-    conversation = find_conversation(changeset)
+    if changes.conversation_id do
+      changeset
+    else
+      conversation = find_conversation(changeset)
 
-    if is_nil(conversation) do
-      conversation =
-        Conversation.changeset(%Conversation{}, %{})
-        |> Repo.insert!
+      if is_nil(conversation) do
+        conversation =
+          Conversation.changeset(%Conversation{}, %{})
+          |> Repo.insert!
 
-      [%{id: changes.sender_id}|changes.receivers] |> Enum.map fn(p) ->
-        Ecto.Model.build(conversation, :conversation_statuses, %{ player_id: p.id })
-        |> Repo.insert!
+        [%{id: changes.sender_id}|changes.receivers] |> Enum.map fn(p) ->
+          Ecto.Model.build(conversation, :conversation_statuses, %{ player_id: p.id })
+          |> Repo.insert!
+        end
       end
-    end
 
-    changeset
-    |> put_change(:conversation_id, conversation.id)
+      changeset
+      |> put_change(:conversation_id, conversation.id)
+    end
   end
 end
 

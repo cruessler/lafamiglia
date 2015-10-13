@@ -2,9 +2,33 @@ defmodule LaFamiglia.ConversationController do
   use LaFamiglia.Web, :controller
 
   alias LaFamiglia.Player
+  alias LaFamiglia.ConversationStatus
   alias LaFamiglia.Conversation
   alias LaFamiglia.Message
 
+  def create(conn, %{"message" => %{"text" => text, "conversation_id" => conversation_id}} = _params) do
+    conversation_status =
+      from(s in ConversationStatus,
+        where: s.conversation_id == ^conversation_id and
+               s.player_id == ^conn.assigns.current_player.id)
+      |> Repo.one
+      |> Repo.preload(:conversation)
+
+    message_params = %{conversation_id: conversation_status.conversation.id,
+                       sender_id: conn.assigns.current_player.id,
+                       text: text}
+    message = Message.changeset(%Message{}, message_params)
+
+    case Repo.insert(message) do
+      {:error, changeset} ->
+        conn
+        |> assign(:changeset, changeset)
+        |> render("new.html")
+      {:ok, _message} ->
+        conn
+        |> redirect(to: conversation_path(conn, :show, conversation_status.conversation.id))
+    end
+ end
   def create(conn, %{"message" => %{"text" => text, "receivers" => receivers}} = _params) do
     receivers =
       from(p in Player,
@@ -59,6 +83,9 @@ defmodule LaFamiglia.ConversationController do
     conn
     |> assign(:conversation, conversation)
     |> assign(:conversations, conversations)
+    |> assign(:changeset, Ecto.Changeset.change(%Message{},
+                                                %{conversation_id: conversation.id,
+                                                  sender_id: conn.assigns.current_player.id}))
     |> render("show.html")
   end
 end

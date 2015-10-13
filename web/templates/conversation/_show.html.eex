@@ -1,2 +1,31 @@
 <%= react_component "Conversation", %{"sender_id" => @current_player.id,
                                       "messages" => @conversation.messages } %>
+
+<h3 class="write-message-header">Write a message</h3>
+
+<%= form_for @changeset,
+             conversation_path(@conn, :create),
+             [class: "form-vertical"],
+             fn f -> %>
+  <%= hidden_input f, :conversation_id, value: @changeset.changes.conversation_id %>
+
+  <%= if f.errors != [] do %>
+    <div class="alert alert-danger">
+      <p>Please check the errors below:</p>
+      <ul>
+        <%= for {attr, message} <- f.errors do %>
+          <li><%= humanize(attr) %> <%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <label class="control-label">
+      Text:
+    </label>
+    <%= textarea f, :text, class: :"form-control" %>
+  </div>
+
+  <button class="btn btn-primary" type="submit">Send</button>
+<% end %>
