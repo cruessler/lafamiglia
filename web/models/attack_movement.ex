@@ -7,6 +7,7 @@ defmodule LaFamiglia.AttackMovement do
   alias LaFamiglia.Villa
 
   alias LaFamiglia.Unit
+  alias LaFamiglia.ComebackMovement
 
   schema "attack_movements" do
     belongs_to :origin, Villa
@@ -42,6 +43,26 @@ defmodule LaFamiglia.AttackMovement do
     |> remove_associations
     |> assoc_constraint(:origin)
     |> assoc_constraint(:target)
+  end
+
+  def cancel!(attack) do
+    attack = Repo.preload(attack, [:origin, :target])
+
+    time_remaining = LaFamiglia.DateTime.time_diff(attack.arrives_at, LaFamiglia.DateTime.now)
+    duration_of_return = duration(attack.origin, attack.target, units(attack)) - time_remaining
+    new_arrives_at = LaFamiglia.DateTime.add_seconds(LaFamiglia.DateTime.now, duration_of_return)
+
+    # The new ComebackMovement is identical to `attack` except for `arrives_at`.
+    params =
+      Map.from_struct(attack)
+      |> Map.put(:arrives_at, new_arrives_at)
+
+    changeset = ComebackMovement.changeset(%ComebackMovement{}, params)
+
+    Repo.transaction fn ->
+      Repo.delete(attack)
+      Repo.insert!(changeset)
+    end
   end
 
   defp validate_origin_and_target_are_different(changeset) do
