@@ -21,6 +21,8 @@ defmodule LaFamiglia.EventQueue do
   alias LaFamiglia.Repo
   alias LaFamiglia.BuildingQueueItem
   alias LaFamiglia.UnitQueueItem
+  alias LaFamiglia.AttackMovement
+  alias LaFamiglia.ComebackMovement
 
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, Dict.put(opts, :name, __MODULE__))
@@ -43,20 +45,32 @@ defmodule LaFamiglia.EventQueue do
       |> Enum.map(fn(i) -> {i.completed_at, i} end)
       |> :ordsets.union(queue)
 
+    queue =
+      from(m in AttackMovement, order_by: [asc: m.arrives_at])
+      |> Repo.all
+      |> Enum.map(fn(m) -> {m.arrives_at, m} end)
+      |> :ordsets.union(queue)
+
+    queue =
+      from(m in ComebackMovement, order_by: [asc: m.arrives_at])
+      |> Repo.all
+      |> Enum.map(fn(m) -> {m.arrives_at, m} end)
+      |> :ordsets.union(queue)
+
     {:ok, queue, timeout(queue)}
   end
 
   def handle_cast({:new_event, event}, queue) do
     Logger.info "adding event ##{event.id} to queue with length #{length(queue)}"
 
-    new_queue = :ordsets.add_element({event.completed_at, event}, queue)
+    new_queue = :ordsets.add_element({happens_at(event), event}, queue)
 
     {:noreply, new_queue, timeout(new_queue)}
   end
   def handle_cast({:cancel_event, event}, queue) do
     Logger.info "removing event ##{event.id} from queue with length #{length(queue)}"
 
-    new_queue = :ordsets.del_element({event.completed_at, event}, queue)
+    new_queue = :ordsets.del_element({happens_at(event), event}, queue)
 
     {:noreply, new_queue, timeout(new_queue)}
   end
@@ -65,6 +79,19 @@ defmodule LaFamiglia.EventQueue do
     LaFamiglia.EventLoop.notify(event)
 
     {:noreply, queue, timeout(queue)}
+  end
+
+  defp happens_at(%BuildingQueueItem{} = item) do
+    item.completed_at
+  end
+  defp happens_at(%UnitQueueItem{} = item) do
+    item.completed_at
+  end
+  defp happens_at(%AttackMovement{} = movement) do
+    movement.arrives_at
+  end
+  defp happens_at(%ComebackMovement{} = movement) do
+    movement.arrives_at
   end
 
   defp timeout([]) do

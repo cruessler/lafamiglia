@@ -9,11 +9,15 @@ defmodule LaFamiglia.EventLoop do
 
   import Ecto.Model
 
+  alias LaFamiglia.EventQueue
+
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
   alias LaFamiglia.Unit
   alias LaFamiglia.BuildingQueueItem
   alias LaFamiglia.UnitQueueItem
+  alias LaFamiglia.AttackMovement
+  alias LaFamiglia.ComebackMovement
 
   def start_link(opts \\ []) do
     {:ok, pid} = GenEvent.start_link(Dict.put(opts, :name, __MODULE__))
@@ -56,6 +60,25 @@ defmodule LaFamiglia.EventLoop do
       Repo.update!(changeset)
       Repo.delete!(item)
     end
+
+    {:ok, state}
+  end
+  def handle_event(%AttackMovement{} = attack, state) do
+    Logger.info "processing attack event ##{attack.id}"
+
+    LaFamiglia.DateTime.clock!
+
+    {:ok, comeback} = AttackMovement.cancel!(attack)
+    EventQueue.cast({:new_event, comeback})
+
+    {:ok, state}
+  end
+  def handle_event(%ComebackMovement{} = comeback, state) do
+    Logger.info "processing comeback event ##{comeback.id}"
+
+    LaFamiglia.DateTime.clock!
+
+    ComebackMovement.arrive!(comeback)
 
     {:ok, state}
   end
