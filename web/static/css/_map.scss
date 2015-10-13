@@ -8,6 +8,27 @@ div.map-viewport {
   overflow: hidden;
   padding-left: 0;
 
+  div.info-box {
+    position: absolute;
+    left: 5%;
+    top: 12%;
+    border: 1px solid $input-border;
+    padding: 0.5em 1em;
+    padding-bottom: 1em;
+    @include box-shadow(0 6px 12px rgba(0, 0, 0, .175));
+    background-color: $input-bg;
+    z-index: 3;
+
+    &:empty {
+      display: none;
+    }
+
+    div.actions {
+      padding-top: 0.5em;
+      border-top: 1px solid $gray-lighter;
+    }
+  }
+
   div.status-bar {
     position: absolute;
     left: 5%;
