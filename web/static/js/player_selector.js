@@ -48,20 +48,6 @@ class PlayerSelector extends React.Component {
       .on("typeahead:selected", (event, selected) => {
         this.addPlayer(selected)
       })
-
-    rootNode.closest("form").on("submit", (event) => {
-      this.state.players.forEach((p) => {
-        let hiddenNode = $("<input></input>")
-
-        hiddenNode.attr({ type: "hidden",
-                          // Lists are encoded by appending `[]` to the param name.
-                          // https://github.com/elixir-lang/plug/blob/master/lib/plug/conn/query.ex
-                          name: `${this.props.name}[]`,
-                          value: p.id })
-
-        rootNode.append(hiddenNode)
-      })
-    })
   }
 
   render() {
@@ -71,15 +57,27 @@ class PlayerSelector extends React.Component {
     }
 
     const playerSpans = this.state.players.map((p) => {
-      return <span className="selected">{p.name}
+      return <span className="selected" key={p.id}>{p.name}
                <button type="button" className="close" aria-label="Close" onClick={this.removePlayer.bind(this, p)}>
                  <span aria-hidden="true">&times;</span>
                </button>
              </span>
     })
 
-    return <div className="form-control container">{playerSpans}
+    const hiddenNodes = this.state.players.map((p) => {
+      return <input type="hidden"
+                    // Lists are encoded by appending `[]` to the param name.
+                    // https://github.com/elixir-lang/plug/blob/master/lib/plug/conn/query.ex
+                    name={`${this.props.name}[]`}
+                    value={p.id}
+                    key={p.id}>
+             </input>
+    })
+
+    return <div className="form-control container">
+             {playerSpans}
              <input type="text" ref="name" valueLink={valueLink} />
+             {hiddenNodes}
            </div>
   }
 
