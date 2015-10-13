@@ -18,7 +18,7 @@
     <label class="control-label">
       Target:
     </label>
-    <%= Villa.to_string(f.model.target) %>
+    <%= f.model.target %>
   </div>
 
   <div class="form-group">

@@ -6,7 +6,7 @@
   <%= for m <- @attacks do %>
     <tr>
       <td><%= m.id %></td>
-      <td><%= Villa.to_string(m.origin) %> → <%= Villa.to_string(m.target) %></td>
+      <td><%= m.origin %> → <%= m.target %></td>
       <%= Enum.map LaFamiglia.Unit.all, fn({k, u}) -> %>
         <td><%= "#{k}: #{Unit.number(m, u)}" %></td>
       <% end %>
@@ -21,7 +21,7 @@
   <%= for m <- @comebacks do %>
     <tr>
       <td><%= m.id %></td>
-      <td><%= Villa.to_string(m.origin) %> ← <%= Villa.to_string(m.target) %></td>
+      <td><%= m.origin %> ← <%= m.target %></td>
       <%= Enum.map LaFamiglia.Unit.all, fn({k, u}) -> %>
         <td><%= "#{k}: #{Unit.number(m, u)}" %></td>
       <% end %>

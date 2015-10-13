@@ -2,6 +2,6 @@
 
 <ul>
   <%= for v <- @villas do %>
-    <li><a href="<%= villa_path(@conn, :show, v) %>"><%= Villa.to_string(v) %></a></li>
+    <li><a href="<%= villa_path(@conn, :show, v) %>"><%= v %></a></li>
   <% end %>
 </ul>

@@ -189,8 +189,16 @@ defmodule LaFamiglia.Villa do
       [] -> villa
     end
   end
+end
 
-  def to_string(%Villa{name: name, x: x, y: y}) do
+defimpl String.Chars, for: LaFamiglia.Villa do
+  def to_string(%LaFamiglia.Villa{name: name, x: x, y: y}) do
     "#{name} (#{x}|#{y})"
+  end
+end
+
+defimpl Phoenix.HTML.Safe, for: LaFamiglia.Villa do
+  def to_iodata(villa) do
+    Plug.HTML.html_escape(to_string(villa))
   end
 end
