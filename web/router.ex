@@ -40,6 +40,7 @@ defmodule LaFamiglia.Router do
       resources "/villas", VillaController, only: [ :index, :show ] do
         resources "/building_queue_items", BuildingQueueItemController, only: [ :create ]
         resources "/unit_queue_items", UnitQueueItemController, only: [ :create ]
+        resources "/attack_movements", AttackMovementController, only: [ :new, :create ]
       end
 
       resources "/building_queue_items", BuildingQueueItemController, only: [ :delete ]
