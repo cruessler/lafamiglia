@@ -92,17 +92,13 @@ defmodule LaFamiglia.Message do
     if changes.conversation_id do
       changeset
     else
-      conversation = find_conversation(changeset)
-
-      if is_nil(conversation) do
-        conversation =
-          Conversation.changeset(%Conversation{}, %{})
+      conversation = case find_conversation(changeset) do
+        nil ->
+          Conversation.changeset(%Conversation{},
+            %{participants: [%{id: changes.sender_id}|changes.receivers]})
           |> Repo.insert!
-
-        [%{id: changes.sender_id}|changes.receivers] |> Enum.map fn(p) ->
-          Ecto.Model.build(conversation, :conversation_statuses, %{ player_id: p.id })
-          |> Repo.insert!
-        end
+        conversation ->
+          conversation
       end
 
       changeset
