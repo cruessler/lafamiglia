@@ -50,6 +50,8 @@ defmodule LaFamiglia.Plugs.VillaLoader do
       || create_new_villa(conn)
 
     if villa do
+      villa = Repo.preload(villa, :unit_queue_items)
+
       conn
       |> assign(:current_villa, villa)
       |> put_session(:current_villa_id, villa.id)

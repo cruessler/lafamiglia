@@ -7,13 +7,14 @@ defmodule LaFamiglia.BuildingQueueItemController do
     building = Building.get_by_id(String.to_integer(building_id))
 
     if building do
-      case BuildingQueueItem.enqueue!(conn.assigns.current_villa_untouched, building) do
+      case BuildingQueueItem.enqueue!(conn.assigns.current_villa_changeset, building) do
         {:error, message} ->
           conn
           |> put_flash(:info, message)
           |> redirect(to: villa_path(conn, :show, villa_id))
-        {:ok, item} ->
-          LaFamiglia.EventQueue.cast({:new_event, item})
+        {:ok, villa} ->
+          new_item = List.last(villa.building_queue_items)
+          LaFamiglia.EventQueue.cast({:new_event, new_item})
 
           conn
           |> redirect(to: villa_path(conn, :show, villa_id))
@@ -24,12 +25,12 @@ defmodule LaFamiglia.BuildingQueueItemController do
   def delete(conn, %{"id" => id}) do
     item = Repo.get_by!(BuildingQueueItem, id: id, villa_id: conn.assigns.current_villa.id)
 
-    case BuildingQueueItem.dequeue!(conn.assigns.current_villa_untouched, item) do
+    case BuildingQueueItem.dequeue!(conn.assigns.current_villa_changeset, item) do
       {:error, message} ->
         conn
         |> put_flash(:info, message)
         |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))
-      {:ok, item} ->
+      {:ok, _villa} ->
         LaFamiglia.EventQueue.cast({:cancel_event, item})
 
         conn

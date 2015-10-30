@@ -1,5 +1,8 @@
 defmodule Building do
-  alias LaFamiglia.Repo
+  import Ecto.Changeset
+  alias Ecto.Changeset
+
+  alias LaFamiglia.Villa
 
   def get_by_id(id) do
     case Application.get_env(:la_famiglia, :buildings)
@@ -10,18 +13,24 @@ defmodule Building do
     end
   end
 
-  def level(villa, building) do
+  def level(%Changeset{} = changeset, building) do
+    get_field(changeset, building.key)
+  end
+  def level(%Villa{} = villa, building) do
     Map.get(villa, building.key)
   end
 
-  def virtual_level(villa, building) do
-    level(villa, building) + enqueued_count(villa, building)
+  def virtual_level(%Changeset{} = changeset, building) do
+    level(changeset, building) +
+      enqueued_count(get_field(changeset, :building_queue_items), building)
+  end
+  def virtual_level(%Villa{} = villa, building) do
+    level(villa, building) +
+      enqueued_count(villa.building_queue_items, building)
   end
 
-  defp enqueued_count(villa, building) do
-    Ecto.Model.assoc(villa, :building_queue_items)
-    |> Repo.all
-    |> Enum.count fn(item) ->
+  defp enqueued_count(queue, building) do
+    Enum.count queue, fn(item) ->
       item.building_id == building.id
     end
   end

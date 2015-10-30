@@ -9,13 +9,14 @@ defmodule LaFamiglia.UnitQueueItemController do
     number = String.to_integer(number)
 
     if unit do
-      case UnitQueueItem.enqueue!(conn.assigns.current_villa_untouched, unit, number) do
+      case UnitQueueItem.enqueue!(conn.assigns.current_villa_changeset, unit, number) do
         {:error, message} ->
           conn
           |> put_flash(:info, message)
           |> redirect(to: villa_path(conn, :show, villa_id))
-        {:ok, item} ->
-          LaFamiglia.EventQueue.cast({:new_event, item})
+        {:ok, villa} ->
+          new_item = List.last(villa.unit_queue_items)
+          LaFamiglia.EventQueue.cast({:new_event, new_item})
 
           conn
           |> redirect(to: villa_path(conn, :show, villa_id))
@@ -26,7 +27,7 @@ defmodule LaFamiglia.UnitQueueItemController do
   def delete(conn, %{"id" => id}) do
     item = Repo.get_by!(UnitQueueItem, id: id, villa_id: conn.assigns.current_villa.id)
 
-    {:ok, item} = UnitQueueItem.dequeue!(conn.assigns.current_villa_untouched, item)
+    {:ok, _villa} = UnitQueueItem.dequeue!(conn.assigns.current_villa_changeset, item)
 
     LaFamiglia.EventQueue.cast({:cancel_event, item})
 

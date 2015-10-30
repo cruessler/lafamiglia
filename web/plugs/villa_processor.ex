@@ -11,8 +11,11 @@ defmodule LaFamiglia.Plugs.VillaProcessor do
   end
 
   defp process_villa(%Plug.Conn{assigns: %{current_villa: villa}} = conn) do
+    changeset =
+      Ecto.Changeset.change(villa)
+      |> Villa.process_virtually_until(LaFamiglia.DateTime.now)
+
     conn
-    |> assign(:current_villa_untouched, villa)
-    |> assign(:current_villa, Villa.process_virtually_until(villa, LaFamiglia.DateTime.now))
+    |> assign(:current_villa_changeset, changeset)
   end
 end

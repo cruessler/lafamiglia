@@ -1,6 +1,8 @@
 defmodule LaFamiglia.MapController do
   use LaFamiglia.Web, :controller
 
+  alias Ecto.Changeset
+
   alias LaFamiglia.Villa
 
   @map_radius 3
@@ -31,7 +33,9 @@ defmodule LaFamiglia.MapController do
       |> assign(:max_y, max_y)
       |> assign(:villas, villas)
 
-    render conn, :show
+    conn
+    |> assign(:current_villa, Changeset.apply_changes(conn.assigns.current_villa_changeset))
+    |> render(:show)
   end
 
   def show(conn, %{"min_x" => min_x, "min_y" => min_y,

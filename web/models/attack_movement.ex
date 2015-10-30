@@ -150,7 +150,9 @@ defmodule LaFamiglia.AttackMovement do
   end
 
   defp units(movement) do
-    Enum.filter LaFamiglia.Unit.all, fn({_k, u}) -> LaFamiglia.Unit.number(movement, u) > 0 end
+    Enum.filter LaFamiglia.Unit.all, fn({_k, u}) ->
+      Map.get(movement, u.key) > 0
+    end
   end
 
   defp duration(origin, target, units) do

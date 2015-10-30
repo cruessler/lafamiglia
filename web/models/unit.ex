@@ -1,4 +1,9 @@
 defmodule LaFamiglia.Unit do
+  import Ecto.Changeset
+  alias Ecto.Changeset
+
+  alias LaFamiglia.Villa
+
   def all do
     Application.get_env(:la_famiglia, :units)
   end
@@ -12,13 +17,22 @@ defmodule LaFamiglia.Unit do
     end
   end
 
-  def number(villa, unit) do
+  def number(%Changeset{} = changeset, unit) do
+    get_field(changeset, unit.key)
+  end
+  def number(%Villa{} = villa, unit) do
     Map.get(villa, unit.key)
   end
 
-  def enqueued_number(villa, unit) do
-    villa.unit_queue_items
-    |> Enum.reduce 0, fn(item, acc) ->
+  def enqueued_number(%Changeset{} = changeset, unit) do
+    enqueued_number(get_field(changeset, :unit_queue_items), unit)
+  end
+  def enqueued_number(%Villa{} = villa, unit) do
+    enqueued_number(villa.unit_queue_items, unit)
+  end
+
+  def enqueued_number(queue, unit) when is_list(queue) do
+    Enum.reduce queue, 0, fn(item, acc) ->
       if item.unit_id == unit.id do
         acc + item.number
       else
@@ -27,7 +41,10 @@ defmodule LaFamiglia.Unit do
     end
   end
 
-  def virtual_number(villa, unit) do
+  def virtual_number(%Changeset{} = changeset, unit) do
+    number(changeset, unit) + enqueued_number(changeset, unit)
+  end
+  def virtual_number(%Villa{} = villa, unit) do
     number(villa, unit) + enqueued_number(villa, unit)
   end
 end

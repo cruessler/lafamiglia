@@ -43,24 +43,26 @@ defmodule LaFamiglia.VillaTest do
   end
 
   test "has_resources?" do
-    villa = Forge.villa(resource_1: 10, resource_2: 10, resource_3: 0)
+    villa     = Forge.villa(resource_1: 10, resource_2: 10, resource_3: 0)
+    changeset = Ecto.Changeset.change(villa)
 
-    assert Villa.has_resources?(villa, %{resource_1: 10, resource_2: 10, resource_3: 0})
-    refute Villa.has_resources?(villa, %{resource_1: 10, resource_2: 10, resource_3: 10})
+    assert Villa.has_resources?(changeset, %{resource_1: 10, resource_2: 10, resource_3: 0})
+    refute Villa.has_resources?(changeset, %{resource_1: 10, resource_2: 10, resource_3: 10})
   end
 
   test "process_units_virtually_until" do
-    villa  = Forge.saved_villa(Repo)
+    villa     = Forge.saved_villa(Repo) |> Repo.preload(:unit_queue_items)
+    changeset = Ecto.Changeset.change(villa)
     unit   = Unit.get_by_id(1)
     number = Map.get(villa, unit.key)
 
-    UnitQueueItem.enqueue!(villa, unit, 10)
+    {:ok, villa} = UnitQueueItem.enqueue!(changeset, unit, 10)
 
-    villa = Repo.get(Villa, villa.id)
+    changeset = Ecto.Changeset.change(villa)
 
-    villa = Villa.process_units_virtually_until(villa, LaFamiglia.DateTime.add_seconds(LaFamiglia.DateTime.now, unit.build_time + 1))
+    changeset = Villa.process_units_virtually_until(changeset, LaFamiglia.DateTime.add_seconds(LaFamiglia.DateTime.now, unit.build_time + 1))
 
-    assert Unit.number(villa, unit) == number + 1
-    assert Unit.virtual_number(villa, unit) == number + 10
+    assert Unit.number(changeset, unit) == number + 1
+    assert Unit.virtual_number(changeset, unit) == number + 10
   end
 end

@@ -8,8 +8,9 @@ defmodule LaFamiglia.Villa do
   alias LaFamiglia.BuildingQueueItem
   alias LaFamiglia.UnitQueueItem
 
+  alias Ecto.Changeset
+
   import Ecto.Query, only: [ from: 2 ]
-  import LaFamiglia.DateTime, only: [ to_seconds: 1 ]
 
   schema "villas" do
     field :name, :string
@@ -34,8 +35,8 @@ defmodule LaFamiglia.Villa do
     field :processed_until, Ecto.DateTime
 
     belongs_to :player, Player
-    has_many :building_queue_items, BuildingQueueItem
-    has_many :unit_queue_items, UnitQueueItem
+    has_many :building_queue_items, BuildingQueueItem, on_replace: :delete
+    has_many :unit_queue_items, UnitQueueItem, on_replace: :delete
 
     timestamps
   end
@@ -46,6 +47,8 @@ defmodule LaFamiglia.Villa do
                       supply max_supply
                       processed_until player_id)
   @optional_fields ~w()
+
+  @resources [:resource_1, :resource_2, :resource_3]
 
   @doc """
   Creates a changeset based on the `model` and `params`.
@@ -122,27 +125,25 @@ defmodule LaFamiglia.Villa do
   Processes resource gains and recruiting of units without saving
   the results to the database.
   """
-  def process_virtually_until(%Villa{processed_until: processed_until} = villa, time) do
-    case to_seconds(time) - to_seconds(processed_until) do
+  def process_virtually_until(%Changeset{model: villa} = changeset, time) do
+    case LaFamiglia.DateTime.time_diff(villa.processed_until, time) do
       0 ->
-        villa
+        changeset
       time_diff ->
-        villa
+        changeset
         |> add_resources(resource_gains(time_diff))
         |> process_units_virtually_until(time)
-        |> Map.put(:processed_until, time)
+        |> put_change(:processed_until, time)
     end
   end
 
-  def has_supply?(%Villa{} = villa, supply) do
-    villa.supply + supply <= villa.max_supply
+  def has_supply?(%Changeset{} = changeset, supply) do
+    get_field(changeset, :supply) + supply <= get_field(changeset, :max_supply)
   end
 
-  def has_resources?(%Villa{} = villa,
-                     %{resource_1: _, resource_2: _, resource_3: _} = resources) do
-    resources
-    |> Enum.all? fn({k, v}) ->
-      Map.get(villa, k) >= v
+  def has_resources?(%Changeset{} = changeset, resources) do
+    Enum.all? resources, fn({k, v}) ->
+      get_field(changeset, k) >= v
     end
   end
 
@@ -150,17 +151,20 @@ defmodule LaFamiglia.Villa do
     %{resource_1: resource_1, resource_2: resource_2, resource_3: resource_3}
   end
 
-  def add_resources(%Villa{storage_capacity: storage_capacity} = villa,
-                    %{resource_1: _, resource_2: _, resource_3: _} = resources) do
-    Map.merge villa, resources, fn(_k, v1, v2) ->
-      min(v1 + v2, storage_capacity / 1)
+  def add_resources(%Changeset{} = changeset, resources) do
+    storage_capacity = get_field(changeset, :storage_capacity)
+
+    Enum.reduce @resources, changeset, fn(r, changeset) ->
+      changeset
+      |> put_change(r, min(get_field(changeset, r) + Map.get(resources, r),
+                           storage_capacity / 1))
     end
   end
 
-  def subtract_resources(%Villa{} = villa,
-                         %{resource_1: _, resource_2: _, resource_3: _} = resources) do
-    Map.merge villa, resources, fn(_k, v1, v2) ->
-      v1 - v2
+  def subtract_resources(%Changeset{} = changeset, resources) do
+    Enum.reduce @resources, changeset, fn(r, changeset) ->
+      changeset
+      |> put_change(r, get_field(changeset, r) - Map.get(resources, r))
     end
   end
 
@@ -172,21 +176,21 @@ defmodule LaFamiglia.Villa do
     }
   end
 
-  def process_units_virtually_until(%Villa{processed_until: processed_until} = villa, time) do
-    villa = Repo.preload(villa, :unit_queue_items)
-
-    case villa.unit_queue_items do
+  def process_units_virtually_until(%Changeset{model: villa} = changeset, time) do
+    case get_field(changeset, :unit_queue_items) do
       [first|rest] ->
-        unit             = Unit.get_by_id(first.unit_id)
-        key              = unit.key
-        number_recruited = UnitQueueItem.units_recruited_between(first, processed_until, time)
+        unit = Unit.get_by_id(first.unit_id)
+        key  = unit.key
+
+        number_recruited =
+          UnitQueueItem.units_recruited_between(first, villa.processed_until, time)
 
         first = Map.update!(first, :number, fn(v) -> v - number_recruited end)
 
-        villa
-        |> Map.update!(key, fn(v) -> v + number_recruited end)
-        |> Map.update!(:unit_queue_items, fn(_) -> [first|rest] end)
-      [] -> villa
+        changeset
+        |> put_change(key, get_field(changeset, key) + number_recruited)
+        |> put_change(:unit_queue_items, [first|rest])
+      [] -> changeset
     end
   end
 end

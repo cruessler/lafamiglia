@@ -1,6 +1,8 @@
 defmodule LaFamiglia.UnitQueueItem do
   use LaFamiglia.Web, :model
 
+  alias Ecto.Changeset
+
   import LaFamiglia.Queue
 
   alias LaFamiglia.Repo
@@ -46,9 +48,8 @@ defmodule LaFamiglia.UnitQueueItem do
     end_number - start_number
   end
 
-  def enqueue!(old_villa, unit, number) do
-    old_villa = Repo.preload(old_villa, :unit_queue_items)
-    villa     = Villa.process_virtually_until(old_villa, LaFamiglia.DateTime.now)
+  def enqueue!(%Changeset{model: villa} = changeset, unit, number) do
+    unit_queue_items = get_field(changeset, :unit_queue_items)
 
     costs      = unit.costs
                  |> Enum.map(fn({k, v}) -> {k, v * number} end)
@@ -56,13 +57,13 @@ defmodule LaFamiglia.UnitQueueItem do
     supply     = unit.supply * number
     build_time = unit.build_time * number
     completed_at =
-      completed_at(villa.unit_queue_items)
+      completed_at(unit_queue_items)
       |> LaFamiglia.DateTime.add_seconds(build_time)
 
     cond do
-      !Villa.has_supply?(villa, supply) ->
+      !Villa.has_supply?(changeset, supply) ->
         {:error, "You don’t have enough supply to recruit these units."}
-      !Villa.has_resources?(villa, costs) ->
+      !Villa.has_resources?(changeset, costs) ->
         {:error, "You don’t have enough resources to recruit these units."}
       true ->
         new_item = Ecto.Model.build(villa, :unit_queue_items,
@@ -71,25 +72,22 @@ defmodule LaFamiglia.UnitQueueItem do
                                     build_time: build_time / 1,
                                     completed_at: completed_at)
 
-        villa = Villa.subtract_resources(villa, costs)
-
-        Repo.transaction fn ->
-          Villa.changeset(old_villa, Map.from_struct(villa)
-                                     |> Map.put(:supply, villa.supply + supply))
-          |> Repo.update!
-
-          Repo.insert!(new_item)
-        end
+        changeset
+        |> Villa.subtract_resources(costs)
+        |> put_change(:supply, villa.supply + supply)
+        |> put_change(:unit_queue_items, unit_queue_items ++ [new_item])
+        |> Repo.update
     end
   end
 
-  def dequeue!(villa, item) do
-    villa        = Repo.preload(villa, :unit_queue_items)
+  def dequeue!(%Changeset{model: villa} = changeset, item) do
+    unit_queue_items = get_field(changeset, :unit_queue_items)
 
-    time_diff = if List.first(villa.unit_queue_items) == item do
-      LaFamiglia.DateTime.time_diff(LaFamiglia.DateTime.now, item.completed_at)
-    else
-      item.build_time
+    time_diff = case List.first(unit_queue_items) do
+      ^item ->
+        LaFamiglia.DateTime.time_diff(LaFamiglia.DateTime.now, item.completed_at)
+      _ ->
+        item.build_time
     end
 
     unit        = Unit.get_by_id(item.unit_id)
@@ -102,32 +100,29 @@ defmodule LaFamiglia.UnitQueueItem do
       |> Enum.map(fn({k, v}) -> {k, v * (number_left - 1)} end)
       |> Enum.into(%{})
 
-    new_villa =
-      villa
-      |> Villa.process_virtually_until(LaFamiglia.DateTime.now)
-      |> Villa.add_resources(refunds)
+    new_unit_queue_items =
+      unit_queue_items
+      |> Enum.filter(fn(i) -> i != item end)
+      |> Enum.map fn(other_item) ->
+        case Ecto.DateTime.compare(other_item.completed_at, item.completed_at) do
+          :gt ->
+            new_completed_at = LaFamiglia.DateTime.add_seconds(other_item.completed_at, -time_diff)
+            new_other_item =
+              %__MODULE__{other_item | completed_at: new_completed_at}
 
-    Repo.transaction fn ->
-      Repo.delete!(item)
+            LaFamiglia.EventQueue.cast({:cancel_event, other_item})
+            LaFamiglia.EventQueue.cast({:new_event, new_other_item})
 
-      Enum.map villa.unit_queue_items, fn(other_item) ->
-        if Ecto.DateTime.compare(other_item.completed_at, item.completed_at) == :gt do
-          new_other_item =
+            new_other_item
+          _ ->
             other_item
-            |> changeset(%{completed_at: LaFamiglia.DateTime.add_seconds(other_item.completed_at, -time_diff)})
-            |> Repo.update!
-
-          LaFamiglia.EventQueue.cast({:cancel_event, other_item})
-          LaFamiglia.EventQueue.cast({:new_event, new_other_item})
         end
       end
 
-      Villa.changeset(villa, Villa.get_resources(new_villa))
-      |> Ecto.Changeset.put_change(:supply, villa.supply - unit.supply * number_left)
-      |> Ecto.Changeset.put_change(unit.key, Map.get(new_villa, unit.key))
-      |> Repo.update!
-
-      item
-    end
+    changeset
+    |> Villa.add_resources(refunds)
+    |> put_change(:supply, villa.supply - unit.supply * number_left)
+    |> put_change(:unit_queue_items, new_unit_queue_items)
+    |> Repo.update
   end
 end
