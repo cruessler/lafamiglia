@@ -33,9 +33,7 @@ defmodule LaFamiglia.MapController do
       |> assign(:max_y, max_y)
       |> assign(:villas, villas)
 
-    conn
-    |> assign(:current_villa, Changeset.apply_changes(conn.assigns.current_villa_changeset))
-    |> render(:show)
+    render(conn, :show)
   end
 
   def show(conn, %{"min_x" => min_x, "min_y" => min_y,

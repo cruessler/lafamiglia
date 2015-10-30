@@ -11,13 +11,12 @@ defmodule LaFamiglia.VillaController do
 
   # Matching the id is not necessary here as that is done implicitly in
   # VillaLoader.load_villa_from_query_params.
+  # Either conn.assigns.current_villa.id == conn.params.id is true or
+  # current_villa has been loaded by a fallback.
   def show(conn, _params) do
-    villa =
-      Changeset.apply_changes(conn.assigns.current_villa_changeset)
-      |> Repo.preload(:building_queue_items)
-
     conn
-    |> assign(:current_villa, villa)
+    |> assign(:current_villa,
+         conn.assigns.current_villa |> Repo.preload(:building_queue_items))
     |> render("show.html")
   end
 end

@@ -24,7 +24,6 @@ defmodule LaFamiglia.ConversationController do
     case Repo.insert(message) do
       {:error, changeset} ->
         conn
-        |> assign(:current_villa, Changeset.apply_changes(conn.assigns.current_villa_changeset))
         |> assign(:changeset, changeset)
         |> render("new.html")
       {:ok, _message} ->
@@ -47,7 +46,6 @@ defmodule LaFamiglia.ConversationController do
     case Repo.insert(message) do
       {:error, changeset} ->
         conn
-        |> assign(:current_villa, Changeset.apply_changes(conn.assigns.current_villa_changeset))
         |> assign(:changeset, changeset)
         |> render("new.html")
       {:ok, _message} ->
@@ -71,7 +69,6 @@ defmodule LaFamiglia.ConversationController do
       |> Repo.preload([:messages, :players])
 
     conn
-    |> assign(:current_villa, Changeset.apply_changes(conn.assigns.current_villa_changeset))
     |> assign(:conversation, %Conversation{})
     |> assign(:conversations, conversations)
     |> assign(:changeset, Ecto.Changeset.change(%Message{}))
@@ -86,7 +83,6 @@ defmodule LaFamiglia.ConversationController do
       |> Repo.preload([:players])
 
     conn
-    |> assign(:current_villa, Changeset.apply_changes(conn.assigns.current_villa_changeset))
     |> assign(:conversation, conversation)
     |> assign(:conversations, conversations)
     |> assign(:changeset, Ecto.Changeset.change(%Message{},

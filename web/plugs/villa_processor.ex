@@ -17,5 +17,6 @@ defmodule LaFamiglia.Plugs.VillaProcessor do
 
     conn
     |> assign(:current_villa_changeset, changeset)
+    |> assign(:current_villa, Ecto.Changeset.apply_changes(changeset))
   end
 end
