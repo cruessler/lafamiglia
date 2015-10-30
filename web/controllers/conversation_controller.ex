@@ -1,8 +1,6 @@
 defmodule LaFamiglia.ConversationController do
   use LaFamiglia.Web, :controller
 
-  alias Ecto.Changeset
-
   alias LaFamiglia.Player
   alias LaFamiglia.ConversationStatus
   alias LaFamiglia.Conversation

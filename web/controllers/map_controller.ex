@@ -1,8 +1,6 @@
 defmodule LaFamiglia.MapController do
   use LaFamiglia.Web, :controller
 
-  alias Ecto.Changeset
-
   alias LaFamiglia.Villa
 
   @map_radius 3
