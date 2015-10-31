@@ -173,7 +173,7 @@ class InteractiveMap extends React.Component {
   }
 
   classNamesForVilla(villa) {
-    if(villa && villa.player.id != this.props.player_id) {
+    if(villa && villa.player.id != this.props.playerId) {
       return "cell fade foreign"
     }
     else {
@@ -226,7 +226,7 @@ class InteractiveMap extends React.Component {
             {mapCells}
           </div>
         </div>
-        <InfoBox playerId={this.props.player_id} villa={this.state.clickedVilla} />
+        <InfoBox playerId={this.props.playerId} villa={this.state.clickedVilla} />
         <StatusBar villa={this.state.hoveredVilla} />
       </div>
     )

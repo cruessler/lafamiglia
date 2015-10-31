@@ -5,4 +5,4 @@
 <%= react_component("InteractiveMap", %{minX: @min_x, maxX: @max_x,
                                         minY: @min_y, maxY: @max_y,
                                         villas: @villas,
-                                        player_id: @current_player.id}) %>
+                                        playerId: @current_player.id}) %>
