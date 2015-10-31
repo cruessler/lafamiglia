@@ -146,6 +146,8 @@ class InteractiveMap extends React.Component {
     this.cellDimensions = { width:  mapCellNode.outerWidth(),
                             height: mapCellNode.outerHeight() }
 
+    this.fetchData()
+
     this.forceUpdate()
   }
 
