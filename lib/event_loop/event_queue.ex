@@ -62,7 +62,9 @@ defmodule LaFamiglia.EventQueue do
   def handle_cast({:cancel_event, event}, queue) do
     Logger.info "removing event ##{event.id} from queue with length #{length(queue)}"
 
-    new_queue = :ordsets.del_element({Event.happens_at(event), event}, queue)
+    new_queue = :ordsets.filter(fn({happens_at, e}) ->
+      !(event.__struct__ == e.__struct__ && event.id == e.id)
+    end, queue)
 
     {:noreply, new_queue, timeout(new_queue)}
   end
