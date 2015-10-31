@@ -3,25 +3,31 @@ $map-cell-height: 5em;
 $map-y-axis-labels-width: 2em;
 $map-x-axis-labels-height: 2.5em;
 
+@mixin overlay-box {
+  border: 1px solid $input-border;
+  padding: 0.5em 1em;
+  @include box-shadow(0 6px 12px rgba(0, 0, 0, .175));
+  background-color: $input-bg;
+  z-index: 3;
+
+  &:empty {
+    display: none;
+  }
+}
+
 div.map-viewport {
   position: relative;
   overflow: hidden;
   padding-left: 0;
 
   div.info-box {
+    @include overlay-box;
+
+    padding-bottom: 1em;
+
     position: absolute;
     left: 5%;
     top: 12%;
-    border: 1px solid $input-border;
-    padding: 0.5em 1em;
-    padding-bottom: 1em;
-    @include box-shadow(0 6px 12px rgba(0, 0, 0, .175));
-    background-color: $input-bg;
-    z-index: 3;
-
-    &:empty {
-      display: none;
-    }
 
     div.actions {
       padding-top: 0.5em;
@@ -30,18 +36,11 @@ div.map-viewport {
   }
 
   div.status-bar {
+    @include overlay-box;
+
     position: absolute;
     left: 5%;
     bottom: 4%;
-    border: 1px solid $input-border;
-    padding: 0.5em 1em;
-    @include box-shadow(0 6px 12px rgba(0, 0, 0, .175));
-    background-color: $input-bg;
-    z-index: 3;
-
-    &:empty {
-      display: none;
-    }
 
     small {
       display: block;
