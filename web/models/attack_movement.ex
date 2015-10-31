@@ -50,7 +50,7 @@ defmodule LaFamiglia.AttackMovement do
 
     time_remaining = LaFamiglia.DateTime.time_diff(attack.arrives_at, LaFamiglia.DateTime.now)
     duration_of_return = duration(attack.origin, attack.target, units(attack)) - time_remaining
-    new_arrives_at = LaFamiglia.DateTime.add_seconds(LaFamiglia.DateTime.now, duration_of_return)
+    new_arrives_at = LaFamiglia.DateTime.from_now(duration_of_return)
 
     # The new ComebackMovement is identical to `attack` except for `arrives_at`.
     params =
@@ -145,7 +145,7 @@ defmodule LaFamiglia.AttackMovement do
 
     duration = duration(origin, target, units(changes))
 
-    arrives_at = LaFamiglia.DateTime.add_seconds(LaFamiglia.DateTime.now, duration)
+    arrives_at = LaFamiglia.DateTime.from_now(duration)
     put_change(changeset, :arrives_at, arrives_at)
   end
 

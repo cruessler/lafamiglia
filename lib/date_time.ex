@@ -42,6 +42,10 @@ defmodule LaFamiglia.DateTime do
     to_seconds(time2) - to_seconds(time1)
   end
 
+  def from_now(seconds) do
+    add_seconds(now, seconds)
+  end
+
   def clock!(time \\ Ecto.DateTime.utc) do
     Process.put(:la_famiglia_now, time)
   end
