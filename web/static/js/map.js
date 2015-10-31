@@ -66,23 +66,27 @@ class InteractiveMap extends React.Component {
 
     this.setState({ dragging: false })
 
+    if(this.state.moved) {
+      this.fetchData()
+    } else {
+      this.setState({clickedVilla: this.state.hoveredVilla})
+    }
+  }
+
+  fetchData() {
     const upperLeftCorner  = this.getMapCoordinates(0, 0)
     const lowerRightCorner = this.getMapCoordinates(this.mapDimensions.width + this.cellDimensions.width,
                                                     this.mapDimensions.height + this.cellDimensions.height)
 
-    if(this.state.moved) {
-      // The `Accept` header has to be set manually. If it is determined by the
-      // data type, jQuery adds `*/*` to the header which causes Phoenix to assume
-      // `html` is the requested format.
-      // https://github.com/phoenixframework/phoenix/blob/master/lib/phoenix/controller.ex
-      $.ajax("/map", { beforeSend: (xhr) => xhr.setRequestHeader("Accept", "application/json"),
-                       data: { min_x: upperLeftCorner.x, min_y: upperLeftCorner.y,
-                               max_x: lowerRightCorner.x, max_y: lowerRightCorner.y },
-                       success: (data) => this.setState({ villas: this.mergeVillas(this.state.villas, data) })
-                     })
-    } else {
-      this.setState({clickedVilla: this.state.hoveredVilla})
-    }
+    // The `Accept` header has to be set manually. If it is determined by the
+    // data type, jQuery adds `*/*` to the header which causes Phoenix to assume
+    // `html` is the requested format.
+    // https://github.com/phoenixframework/phoenix/blob/master/lib/phoenix/controller.ex
+    $.ajax("/map", { beforeSend: (xhr) => xhr.setRequestHeader("Accept", "application/json"),
+      data: { min_x: upperLeftCorner.x, min_y: upperLeftCorner.y,
+        max_x: lowerRightCorner.x, max_y: lowerRightCorner.y },
+        success: (data) => this.setState({ villas: this.mergeVillas(this.state.villas, data) })
+    })
   }
 
   getViewportOffset(mapX, mapY) {
