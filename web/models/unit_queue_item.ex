@@ -17,8 +17,14 @@ defmodule LaFamiglia.UnitQueueItem do
 
     belongs_to :villa, Villa
 
+    field :processed, :boolean, virtual: true
+
     timestamps
   end
+
+  after_insert LaFamiglia.EventCallbacks, :after_insert
+  after_update LaFamiglia.EventCallbacks, :after_update
+  after_delete LaFamiglia.EventCallbacks, :after_delete
 
   @required_fields ~w(unit_id number completed_at villa_id)
   @optional_fields ~w()
@@ -107,13 +113,8 @@ defmodule LaFamiglia.UnitQueueItem do
         case Ecto.DateTime.compare(other_item.completed_at, item.completed_at) do
           :gt ->
             new_completed_at = LaFamiglia.DateTime.add_seconds(other_item.completed_at, -time_diff)
-            new_other_item =
-              %__MODULE__{other_item | completed_at: new_completed_at}
 
-            LaFamiglia.EventQueue.cast({:cancel_event, other_item})
-            LaFamiglia.EventQueue.cast({:new_event, new_other_item})
-
-            new_other_item
+            %__MODULE__{other_item | completed_at: new_completed_at}
           _ ->
             other_item
         end

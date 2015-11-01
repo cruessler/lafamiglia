@@ -42,7 +42,7 @@ defmodule LaFamiglia.EventLoop do
 
     Repo.transaction fn ->
       Repo.update!(changeset)
-      Repo.delete!(item)
+      Repo.delete!(%BuildingQueueItem{item | processed: true})
     end
 
     {:ok, state}
@@ -58,7 +58,7 @@ defmodule LaFamiglia.EventLoop do
 
     Repo.transaction fn ->
       Repo.update!(changeset)
-      Repo.delete!(item)
+      Repo.delete!(%UnitQueueItem{item | processed: true})
     end
 
     {:ok, state}

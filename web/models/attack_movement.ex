@@ -22,6 +22,7 @@ defmodule LaFamiglia.AttackMovement do
   end
 
   before_insert :calculate_arrives_at
+  after_insert LaFamiglia.EventCallbacks, :after_insert
 
   @required_fields ~w(origin_id target_id unit_1 unit_2)
   @optional_fields ~w()

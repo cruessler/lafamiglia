@@ -68,6 +68,17 @@ defmodule LaFamiglia.EventQueue do
 
     {:noreply, new_queue, timeout(new_queue)}
   end
+  def handle_cast({:update_event, event}, queue) do
+    Logger.info "updating event ##{event.id} in queue with length #{length(queue)}"
+
+    new_queue = :ordsets.filter(fn({happens_at, e}) ->
+      !(event.__struct__ == e.__struct__ && event.id == e.id)
+    end, queue)
+
+    new_queue = :ordsets.add_element({Event.happens_at(event), event}, new_queue)
+
+    {:noreply, new_queue, timeout(new_queue)}
+  end
 
   def handle_info(:timeout, [{_completed_at, event}|queue]) do
     LaFamiglia.EventLoop.notify(event)

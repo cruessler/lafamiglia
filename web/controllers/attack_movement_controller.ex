@@ -43,9 +43,7 @@ defmodule LaFamiglia.AttackMovementController do
         conn
         |> assign(:changeset, changeset)
         |> render("new.html")
-      {:ok, movement} ->
-        LaFamiglia.EventQueue.cast({:new_event, movement})
-
+      {:ok, _movement} ->
         conn
         |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))
     end

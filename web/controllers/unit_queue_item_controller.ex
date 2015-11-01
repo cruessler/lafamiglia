@@ -14,10 +14,7 @@ defmodule LaFamiglia.UnitQueueItemController do
           conn
           |> put_flash(:info, message)
           |> redirect(to: villa_path(conn, :show, villa_id))
-        {:ok, villa} ->
-          new_item = List.last(villa.unit_queue_items)
-          LaFamiglia.EventQueue.cast({:new_event, new_item})
-
+        {:ok, _villa} ->
           conn
           |> redirect(to: villa_path(conn, :show, villa_id))
       end
@@ -28,8 +25,6 @@ defmodule LaFamiglia.UnitQueueItemController do
     item = Repo.get_by!(UnitQueueItem, id: id, villa_id: conn.assigns.current_villa.id)
 
     {:ok, _villa} = UnitQueueItem.dequeue!(conn.assigns.current_villa_changeset, item)
-
-    LaFamiglia.EventQueue.cast({:cancel_event, item})
 
     conn
     |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))
