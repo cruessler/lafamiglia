@@ -6,6 +6,7 @@ class InteractiveMap extends React.Component {
     super(props)
     this.state = { villas: this.mergeVillas(new Map(), this.props.villas),
                    x: 0, y: 0,
+                   minX: undefined, minY: undefined,
                    dragging: false,
                    hoveredVilla: undefined,
                    clickedVilla: undefined }
@@ -90,13 +91,13 @@ class InteractiveMap extends React.Component {
   }
 
   getViewportOffset(mapX, mapY) {
-    return { x: (mapX - this.props.minX) * this.cellDimensions.width,
-             y: (mapY - this.props.minY) * this.cellDimensions.width }
+    return { x: (mapX - this.state.minX) * this.cellDimensions.width,
+             y: (mapY - this.state.minY) * this.cellDimensions.width }
   }
 
   getMapCoordinates(viewportX, viewportY) {
-    return { x: Math.floor((viewportX - this.state.x) / this.cellDimensions.width) + this.props.minX,
-             y: Math.floor((viewportY - this.state.y) / this.cellDimensions.height) + this.props.minY }
+    return { x: Math.floor((viewportX - this.state.x) / this.cellDimensions.width + this.state.minX),
+             y: Math.floor((viewportY - this.state.y) / this.cellDimensions.height + this.state.minY) }
   }
 
   getVisibleXAxisLabels() {
@@ -146,9 +147,13 @@ class InteractiveMap extends React.Component {
     this.cellDimensions = { width:  mapCellNode.outerWidth(),
                             height: mapCellNode.outerHeight() }
 
-    this.fetchData()
+    const minX = this.props.centerX -
+                 ((this.mapDimensions.width - this.cellDimensions.width) / this.cellDimensions.width) / 2
+    const minY = this.props.centerY -
+                 ((this.mapDimensions.height - this.cellDimensions.height) / this.cellDimensions.height) / 2
+    this.setState({ minX: minX, minY: minY })
 
-    this.forceUpdate()
+    setTimeout(() => this.fetchData(), 0)
   }
 
   componentDidUpdate() {

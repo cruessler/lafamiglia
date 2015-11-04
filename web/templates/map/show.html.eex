@@ -2,6 +2,5 @@
   On this map you can explore your neighbourhood
 </h2>
 
-<%= react_component("InteractiveMap", %{minX: @min_x, maxX: @max_x,
-                                        minY: @min_y, maxY: @max_y,
+<%= react_component("InteractiveMap", %{centerX: @center_x, centerY: @center_y,
                                         playerId: @current_player.id}) %>
