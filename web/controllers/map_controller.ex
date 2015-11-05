@@ -3,9 +3,15 @@ defmodule LaFamiglia.MapController do
 
   alias LaFamiglia.Villa
 
+  @max_length 20
+
   def show(conn, %{"x" => x, "y" => y}) do
-    x = String.to_integer(x) |> max(0) |> min(Villa.max_x)
-    y = String.to_integer(y) |> max(0) |> min(Villa.max_y)
+    x = String.to_integer(x)
+        |> max(0)
+        |> min(Villa.max_x)
+    y = String.to_integer(y)
+        |> max(0)
+        |> min(Villa.max_y)
 
     conn =
       conn
@@ -17,6 +23,21 @@ defmodule LaFamiglia.MapController do
 
   def show(conn, %{"min_x" => min_x, "min_y" => min_y,
                    "max_x" => max_x, "max_y" => max_y}) do
+    min_x = String.to_integer(min_x)
+            |> max(0)
+            |> min(Villa.max_x)
+    min_y = String.to_integer(min_y)
+            |> max(0)
+            |> min(Villa.max_y)
+    max_x = String.to_integer(max_x)
+            |> max(min_x)
+            |> min(min_x + @max_length)
+            |> min(Villa.max_x)
+    max_y = String.to_integer(max_y)
+            |> max(min_y)
+            |> min(min_y + @max_length)
+            |> min(Villa.max_y)
+
     villas =
       from(v in Villa,
         join: p in assoc(v, :player),
