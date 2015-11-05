@@ -43,7 +43,7 @@ class InteractiveMap extends React.Component {
                       x: e.clientX - this.state.startPosition.x,
                       y: e.clientY - this.state.startPosition.y })
     } else {
-      const viewportNode = React.findDOMNode(this.refs.innerViewport)
+      const viewportNode = this.innerViewport.getDOMNode()
       const offset = $(viewportNode).offset()
 
       const viewportX = e.clientX - offset.left + window.scrollX
@@ -138,9 +138,8 @@ class InteractiveMap extends React.Component {
   componentDidMount() {
     this.mounted = true
 
-    let rootNode    = $(React.findDOMNode(this))
-    let mapNode     = rootNode.find("div.map")
-    let mapCellNode = rootNode.find("div.cell:first")
+    let mapNode     = $(this.map.getDOMNode())
+    let mapCellNode = $(this.firstCell.getDOMNode())
 
     this.mapDimensions  = { width:  mapNode.width(),
                             height: mapNode.height() }
@@ -157,7 +156,7 @@ class InteractiveMap extends React.Component {
   }
 
   componentDidUpdate() {
-    setTimeout(() => $(React.findDOMNode(this)).find("div.cell").addClass("in"),
+    setTimeout(() => $(this.map.getDOMNode()).find("div.cell").addClass("in"),
                this.FADE_IN_TIMEOUT)
   }
 
@@ -221,19 +220,20 @@ class InteractiveMap extends React.Component {
       xAxisLabels = this.getVisibleXAxisLabels().map(x => this.renderXAxisLabel(x))
       yAxisLabels = this.getVisibleYAxisLabels().map(y => this.renderYAxisLabel(y))
     } else {
-      mapCells = <div className="cell"></div>
+      mapCells = <div className="cell" ref={(c) => this.firstCell = c}></div>
     }
 
     return (
       <div className="container-fluid map-viewport">
         <div className="x-axis-labels" style={{left: this.state.x}}>{xAxisLabels}</div>
         <div className="y-axis-labels" style={{top: this.state.y}}>{yAxisLabels}</div>
-        <div className="map-inner-viewport" ref="innerViewport"
+        <div className="map-inner-viewport" ref={(v) => this.innerViewport = v}
            onMouseDown={this.onMouseDown}
            onMouseMove={this.onMouseMove}
            onMouseUp={this.onMouseUp}
            onMouseOut={this.onMouseOut}>
-          <div className="map" style={{left: this.state.x, top: this.state.y}}>
+          <div className="map" style={{left: this.state.x, top: this.state.y}}
+               ref={(m) => this.map = m}>
             {mapCells}
           </div>
         </div>
