@@ -50,7 +50,8 @@ defmodule LaFamiglia.Router do
 
       resources "/movements", MovementController, only: [ :index ]
 
-      resources "/conversations", ConversationController, only: [ :index, :create, :show ]
+      resources "/conversations", ConversationController, only: [ :index, :show ]
+      resources "/messages", MessageController, only: [ :create ]
 
       get "/map/:x/:y", MapController, :show
       get "/map", MapController, :show

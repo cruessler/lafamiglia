@@ -4,7 +4,7 @@
 <h3 class="write-message-header">Write a message</h3>
 
 <%= form_for @changeset,
-             conversation_path(@conn, :create),
+             message_path(@conn, :create),
              [class: "form-vertical"],
              fn f -> %>
   <%= hidden_input f, :conversation_id, value: @changeset.changes.conversation_id %>

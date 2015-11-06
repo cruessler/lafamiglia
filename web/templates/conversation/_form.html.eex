@@ -1,5 +1,5 @@
 <%= form_for @changeset,
-             conversation_path(@conn, :create),
+             message_path(@conn, :create),
              fn f -> %>
   <%= if f.errors != [] do %>
     <div class="alert alert-danger">
