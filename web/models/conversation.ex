@@ -39,10 +39,11 @@ defmodule LaFamiglia.Conversation do
     # The association has to be preloaded as otherwise an exception is thrown.
     conversation = changeset.model |> Repo.preload(:conversation_statuses)
 
-    statuses = Enum.map changeset.changes.participants, fn(p) ->
-      Ecto.Model.build(conversation, :conversation_statuses, %{player_id: p.id})
-      |> Repo.insert!
-    end
+    statuses =
+      for p <- changeset.changes.participants do
+        Ecto.Model.build(conversation, :conversation_statuses, %{player_id: p.id})
+        |> Repo.insert!
+      end
 
     Changeset.put_change(%Changeset{changeset | model: conversation},
       :conversation_statuses, statuses)

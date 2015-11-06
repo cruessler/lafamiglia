@@ -17,7 +17,7 @@
     <th>Build time</th>
     <th>Build</th>
   </tr>
-  <%= Enum.map Application.get_env(:la_famiglia, :buildings), fn({k, b}) -> %>
+  <%= for {k, b} <- Application.get_env(:la_famiglia, :buildings) do %>
     <tr>
       <td><%= k %></td>
       <td><%= Building.level(@current_villa, b) %> (<%= Building.virtual_level(@current_villa, b) %>)</td>
@@ -38,7 +38,7 @@
     <th>Recruiting time</th>
     <th class="recruit">Recruit</th>
   </tr>
-  <%= Enum.map Application.get_env(:la_famiglia, :units), fn({k, u}) -> %>
+  <%= for {k, u} <- Application.get_env(:la_famiglia, :units) do %>
     <tr>
       <td><%= k %></td>
       <td><%= Unit.number(@current_villa, u) %> (<%= Unit.virtual_number(@current_villa, u) %>)</td>
@@ -46,7 +46,7 @@
       <td><%= u.supply %></td>
       <td><%= u.build_time %></td>
       <td>
-        <%= Enum.map [ 1, 5, 20, 100 ], fn(n) -> %>
+        <%= for n <- [ 1, 5, 20, 100 ] do %>
           <%= link_to_recruit_start(@conn, @current_villa, u, n) %>
         <% end %>
       </td>
@@ -66,7 +66,7 @@
     <th></th>
     <th>Cancel</th>
   </tr>
-  <%= Enum.map @current_villa.building_queue_items, fn(i) -> %>
+  <%= for i <- @current_villa.building_queue_items do %>
     <tr>
       <td><%= i.building_id %></td>
       <td><%= i.build_time %></td>
@@ -90,7 +90,7 @@
     <th></th>
     <th>Cancel</th>
   </tr>
-  <%= Enum.map @current_villa.unit_queue_items, fn(i) -> %>
+  <%= for i <- @current_villa.unit_queue_items do %>
     <tr>
       <td><%= i.unit_id %></td>
       <td><%= i.number %></td>

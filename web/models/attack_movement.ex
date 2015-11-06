@@ -165,7 +165,8 @@ defmodule LaFamiglia.AttackMovement do
   end
 
   defp speed(units) do
-    Enum.map(units, fn({_k, u}) -> u.speed end)
+    units
+    |> Enum.map(fn({_k, u}) -> u.speed end)
     |> Enum.min
   end
 end
