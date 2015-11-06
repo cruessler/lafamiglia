@@ -28,7 +28,7 @@ defmodule LaFamiglia.ConversationController do
         conn
         |> redirect(to: conversation_path(conn, :show, conversation_status.conversation.id))
     end
- end
+  end
   def create(conn, %{"message" => %{"text" => text, "receivers" => receivers}} = _params) do
     receivers =
       from(p in Player,
