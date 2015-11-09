@@ -1,7 +1,7 @@
 <h1>Eventually you will find a landing page</h1>
 
-<%= if @conn.assigns[:current_player] do %>
-  <p>Hello <%= @conn.assigns.current_player.name %>! You are logged in.</p>
+<%= if @current_player do %>
+  <p>Hello <%= @current_player.name %>! You are logged in.</p>
 <% else %>
   <p>Right now, there is not much you can do. Maybe you want to
     <a href="<%= player_path(@conn, :new) %>">register?</a>

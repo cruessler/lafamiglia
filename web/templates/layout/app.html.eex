@@ -12,7 +12,7 @@
   </head>
 
   <body>
-    <%= if @conn.assigns[:current_player] do %>
+    <%= if @current_player do %>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
           <div class="navbar-header">
@@ -25,15 +25,15 @@
             <a class="navbar-brand" href="#">La Famiglia</a>
           </div>
           <div class="navbar-collapse collapse">
-            <%= if @conn.assigns.current_villa do %>
+            <%= if @current_villa do %>
               <ul class="nav navbar-nav">
-                <li><%= link coordinates(@conn.assigns.current_villa), to: villa_path(@conn, :show, @conn.assigns.current_villa)%></li>
+                <li><%= link coordinates(@current_villa), to: villa_path(@conn, :show, @current_villa)%></li>
                 <li><%= link "Villas", to: villa_path(@conn, :index) %></li>
                 <li><%= link "Troops", to: movement_path(@conn, :index) %></li>
                 <li><%= link "Map", to: map_path(@conn, :show, @current_villa.x, @current_villa.y) %></li>
                 <li><%= link "Messages", to: conversation_path(@conn, :index) %></li>
 
-                <li><%= resources @conn.assigns.current_villa %></li>
+                <li><%= resources @current_villa %></li>
                 <li><div class="supply">Supply: <%= @current_villa.supply %>/<%= @current_villa.max_supply %></div></li>
               </ul>
             <% end %>
