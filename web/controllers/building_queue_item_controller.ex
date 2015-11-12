@@ -3,7 +3,7 @@ defmodule LaFamiglia.BuildingQueueItemController do
 
   alias LaFamiglia.BuildingQueueItem
 
-  def create(conn, %{"villa_id" => villa_id, "building_id" => building_id}) do
+  def create(conn, %{"building_id" => building_id}) do
     building = Building.get_by_id(String.to_integer(building_id))
 
     if building do
@@ -11,10 +11,10 @@ defmodule LaFamiglia.BuildingQueueItemController do
         {:error, message} ->
           conn
           |> put_flash(:info, message)
-          |> redirect(to: villa_path(conn, :show, villa_id))
+          |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))
         {:ok, _villa} ->
           conn
-          |> redirect(to: villa_path(conn, :show, villa_id))
+          |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))
       end
     end
   end
