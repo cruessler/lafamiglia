@@ -37,10 +37,22 @@ defmodule LaFamiglia.Message do
     model
     |> cast(params, @required_fields, @optional_fields)
     |> validate_length(:text, min: 1)
+    |> remove_sender_from_receivers
     |> validate_receivers
     |> assoc_constraint(:sender)
     |> assoc_constraint(:conversation)
   end
+
+  defp remove_sender_from_receivers(
+    %Changeset{changes: %{sender_id: sender_id, receivers: receivers}} = changeset) do
+
+    new_receivers = Enum.filter receivers, fn(r) ->
+      r.id != sender_id
+    end
+
+    put_change(changeset, :receivers, new_receivers)
+  end
+  defp remove_sender_from_receivers(%Changeset{} = changeset), do: changeset
 
   # Since `conversation_id` is checked through `assoc_constraint` and every
   # Conversation is assumed to be valid, a changeset containing a
@@ -48,10 +60,7 @@ defmodule LaFamiglia.Message do
   defp validate_receivers(%Changeset{changes: %{conversation_id: _}} = changeset) do
     changeset
   end
-  # Ecto removes empty lists in `cast`. If `receivers` is present it contains at
-  # least one element.
-  defp validate_receivers(%Changeset{changes: %{receivers: receivers}} = changeset)
-       when is_list(receivers) do
+  defp validate_receivers(%Changeset{changes: %{receivers: [_|_]}} = changeset) do
     changeset
   end
   defp validate_receivers(%Changeset{} = changeset) do
