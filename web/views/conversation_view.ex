@@ -13,8 +13,4 @@ defmodule LaFamiglia.ConversationView do
     |> Enum.map(fn(p) -> p.name end)
     |> Enum.join(", ")
   end
-
-  def player_select(%{name: name}, field) do
-    content_tag :div, "", name: "#{name}[#{field}]", class: "player-select"
-  end
 end

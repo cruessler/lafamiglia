@@ -19,6 +19,10 @@ defmodule LaFamiglia.AppView do
     ""
   end
 
+  def player_select(%{name: name}, field) do
+    content_tag :div, "", name: "#{name}[#{field}]", class: "player-select"
+  end
+
   def react_component(class, props \\ %{}) do
     data_attributes =
       [ "data-react-class": class,
