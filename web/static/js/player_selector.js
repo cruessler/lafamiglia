@@ -45,6 +45,8 @@ class PlayerSelector extends React.Component {
       .on("typeahead:selected", (event, selected) => {
         this.addPlayer(selected)
       })
+      .on("focusin", (event) => $(this.container.getDOMNode()).addClass("focus"))
+      .on("focusout", (event) => $(this.container.getDOMNode()).removeClass("focus"))
   }
 
   render() {
@@ -72,7 +74,7 @@ class PlayerSelector extends React.Component {
              </input>
     })
 
-    return <div className="form-control container">
+    return <div className="form-control container" ref={(c) => this.container = c}>
              {playerSpans}
              <input type="text" ref={(i) => this.input = i}
                     valueLink={valueLink} />
