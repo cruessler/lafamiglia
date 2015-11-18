@@ -23,6 +23,7 @@ defmodule LaFamiglia.Message do
   end
 
   before_insert :find_or_create_conversation
+  after_insert :update_conversation
 
   @required_fields ~w(sender_id receivers text)
   @optional_fields ~w(conversation_id)
@@ -113,6 +114,15 @@ defmodule LaFamiglia.Message do
       changeset
       |> put_change(:conversation_id, conversation.id)
     end
+  end
+
+  defp update_conversation(%Changeset{model: message} = changeset) do
+    assoc(message, :conversation)
+    |> Repo.one
+    |> Changeset.change(%{last_message_sent_at: message.inserted_at})
+    |> Repo.update!
+
+    changeset
   end
 end
 
