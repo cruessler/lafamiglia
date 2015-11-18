@@ -34,10 +34,7 @@ class PlayerSelector extends React.Component {
   }
 
   componentDidMount() {
-    const rootNode  = $(React.findDOMNode(this))
-    const inputNode = rootNode.find("input")
-
-    inputNode
+    $(this.input.getDOMNode())
       .typeahead({
         minLength: 1
       }, {
@@ -76,7 +73,8 @@ class PlayerSelector extends React.Component {
 
     return <div className="form-control container">
              {playerSpans}
-             <input type="text" ref="name" valueLink={valueLink} />
+             <input type="text" ref={(i) => this.input = i}
+                    valueLink={valueLink} />
              {hiddenNodes}
            </div>
   }
