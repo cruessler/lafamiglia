@@ -8,9 +8,10 @@ defmodule LaFamiglia.ConversationController do
 
   def index(conn, _params) do
     conversations =
-      assoc(conn.assigns.current_player, :conversations)
+      from(c in assoc(conn.assigns.current_player, :conversations),
+        order_by: [desc: c.last_message_sent_at])
       |> Repo.all
-      |> Repo.preload([:messages, :players])
+      |> Repo.preload([:players])
 
     conn
     |> assign(:conversation, %Conversation{})
@@ -22,7 +23,8 @@ defmodule LaFamiglia.ConversationController do
   def show(conn, %{"id" => id}) do
     conversation  = Repo.get(Conversation, id) |> Repo.preload([messages: :sender])
     conversations =
-      assoc(conn.assigns.current_player, :conversations)
+      from(c in assoc(conn.assigns.current_player, :conversations),
+        order_by: [desc: c.last_message_sent_at])
       |> Repo.all
       |> Repo.preload([:players])
 

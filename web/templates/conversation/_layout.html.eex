@@ -9,6 +9,7 @@
         <li class="<%= li_class_for(c, @conversation) %>">
           <%= link to: conversation_path(@conn, :show, c) do %>
             <%= participants_except(c.players, @current_player) %>
+            <small><%= c.last_message_sent_at %></small>
           <% end %>
         </li>
       <% end %>

@@ -20,9 +20,14 @@ ul.conversations {
       width: 100%;
       height: 100%;
       margin: 0;
-      padding: 0.8em 2.0em;
+      padding: 0.6em 2.0em;
       color: $gray-dark;
       text-decoration: none;
+
+      small {
+        display: block;
+        color: $gray-light;
+      }
     }
 
     &.selected {
