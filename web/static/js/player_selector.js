@@ -55,7 +55,8 @@ class PlayerSelector extends React.Component {
 
     const playerSpans = this.state.players.map((p) => {
       return <span className="selected" key={p.id}>{p.name}
-               <button type="button" className="close" aria-label="Close" onClick={this.removePlayer.bind(this, p)}>
+               <button type="button" className="close" aria-label="Close"
+                       onClick={this.removePlayer.bind(this, p)}>
                  <span aria-hidden="true">&times;</span>
                </button>
              </span>
