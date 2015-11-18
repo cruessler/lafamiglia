@@ -6,11 +6,8 @@ import PlayerSelector from "web/static/js/player_selector"
 import Conversation from "web/static/js/conversation"
 
 window.InteractiveMap = InteractiveMap
+window.PlayerSelector = PlayerSelector
 window.Conversation = Conversation
-
-$(document).ready(() => {
-  PlayerSelector.init()
-})
 
 // let socket = new Socket("/ws")
 // socket.connect()

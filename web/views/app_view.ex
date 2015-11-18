@@ -20,14 +20,15 @@ defmodule LaFamiglia.AppView do
   end
 
   def player_select(%{name: name}, field) do
-    content_tag :div, "", name: "#{name}[#{field}]", class: "player-select"
+    react_component "PlayerSelector", %{name: "#{name}[#{field}]"},
+                                      [class: "player-select"]
   end
 
-  def react_component(class, props \\ %{}) do
+  def react_component(class, props \\ %{}, attrs \\ []) do
     data_attributes =
       [ "data-react-class": class,
         "data-react-props": html_escape(Poison.encode!(props)) ]
 
-    content_tag(:div, "", data_attributes)
+    content_tag(:div, "", Dict.merge(attrs, data_attributes))
   end
 end

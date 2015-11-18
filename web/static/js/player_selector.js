@@ -81,12 +81,6 @@ class PlayerSelector extends React.Component {
              {hiddenNodes}
            </div>
   }
-
-  static init() {
-    $("div.player-select").each((_, s) =>
-      React.render(<PlayerSelector name={$(s).attr("name")} />, s)
-    )
-  }
 }
 
 export default PlayerSelector
