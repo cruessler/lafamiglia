@@ -9,6 +9,8 @@ defmodule LaFamiglia.Conversation do
   alias LaFamiglia.ConversationStatus
 
   schema "conversations" do
+    field :last_message_sent_at, Ecto.DateTime
+
     has_many :messages, Message
 
     has_many :conversation_statuses, ConversationStatus
@@ -22,7 +24,7 @@ defmodule LaFamiglia.Conversation do
   after_insert :create_conversation_statuses
 
   @required_fields ~w(participants)
-  @optional_fields ~w(messages)
+  @optional_fields ~w(messages last_message_sent_at)
 
   @doc """
   Creates a changeset based on the `model` and `params`.
