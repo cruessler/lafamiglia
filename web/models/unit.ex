@@ -41,10 +41,7 @@ defmodule LaFamiglia.Unit do
     end
   end
 
-  def virtual_number(%Changeset{} = changeset, unit) do
-    number(changeset, unit) + enqueued_number(changeset, unit)
-  end
-  def virtual_number(%Villa{} = villa, unit) do
-    number(villa, unit) + enqueued_number(villa, unit)
+  def virtual_number(map, unit) do
+    number(map, unit) + enqueued_number(map, unit)
   end
 end
