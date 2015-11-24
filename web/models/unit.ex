@@ -20,8 +20,8 @@ defmodule LaFamiglia.Unit do
   def number(%Changeset{} = changeset, unit) do
     get_field(changeset, unit.key)
   end
-  def number(%Villa{} = villa, unit) do
-    Map.get(villa, unit.key)
+  def number(map, unit) do
+    Map.get(map, unit.key)
   end
 
   def enqueued_number(%Changeset{} = changeset, unit) do
