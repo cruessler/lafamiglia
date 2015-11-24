@@ -7,7 +7,7 @@ defmodule LaFamiglia.EventQueue do
   1. events coming from the webapp, e. g. new BuildingQueueItems. These events
     are put in the queue. The returned tuple contains a timeout that lasts until
     the first element of the queue is ready to be processed.
-  2. timeouts occuring whenever the first event of the queue is ready to be
+  2. timeouts occurring whenever the first event of the queue is ready to be
     processed. When that happens a message is sent to the event loop which in
     turn handles the event.
   """
