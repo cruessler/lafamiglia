@@ -46,7 +46,18 @@ defmodule LaFamiglia.MapController do
         where: v.x >= ^min_x and v.x <= ^max_x
                and v.y >= ^min_y and v.y <= ^max_y)
       |> Repo.all
+      |> Enum.map fn(v) -> add_url_for_action(conn, v) end
 
     render conn, :show, villas: villas
+  end
+
+  defp add_url_for_action(conn, villa) do
+    if villa.player.id == conn.assigns.current_player.id do
+      Map.put(villa, :switch_to_url, villa_url(conn, :show, villa.id))
+    else
+      Map.put(villa, :attack_url,
+        villa_attack_movement_url(conn, :new, conn.assigns.current_villa.id,
+                                              target_id: villa.id))
+    end
   end
 end

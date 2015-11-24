@@ -8,17 +8,21 @@ class InfoBox extends React.Component {
   }
 
   render() {
-    if(this.props.villa) {
+    const villa = this.props.villa
+
+    if(villa) {
       let actionNodes = []
 
-      if(this.props.villa.player.id == this.props.playerId) {
-        actionNodes.push(<a className="btn btn-primary">Switch to villa</a>)
+      if(villa.player.id == this.props.playerId) {
+        actionNodes.push(<a href={villa.switch_to_url}
+                            className="btn btn-primary">Switch to villa</a>)
       } else {
-        actionNodes.push(<a className="btn btn-primary">Attack</a>)
+        actionNodes.push(<a href={villa.attack_url}
+                            className="btn btn-primary">Attack</a>)
       }
 
       return <div className="info-box">
-               <h4>{this.villaToString(this.props.villa)}</h4>
+               <h4>{this.villaToString(villa)}</h4>
 
                <div className="actions">
                  {actionNodes}
