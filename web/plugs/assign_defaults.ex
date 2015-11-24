@@ -2,7 +2,7 @@ defmodule LaFamiglia.Plugs.AssignDefaults do
   import Plug.Conn
   import Phoenix.Controller
 
-  def init(_params), do: _params
+  def init(params), do: params
 
   def call(conn, _params) do
     conn
