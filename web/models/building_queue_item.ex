@@ -109,33 +109,45 @@ defmodule LaFamiglia.BuildingQueueItem do
     changeset = %Changeset{changeset | model: villa}
 
     unless last_of_its_kind?(villa.building_queue_items, item) do
-      {:error, "You can only cancel the last building of its kind."}
+      add_error(changeset, :building_queue_items, "You can only cancel the last building of its kind.")
     else
-      time_diff = case List.first(villa.building_queue_items) do
-        ^item ->
-          LaFamiglia.DateTime.time_diff(LaFamiglia.DateTime.now, item.completed_at)
-        _ ->
-          item.build_time
-      end
-
+      time_diff = build_time_left(villa.building_queue_items, item)
+      refunds   = refunds(villa, item, time_diff)
       new_building_queue_items =
         villa.building_queue_items
-        |> Enum.filter(fn(i) -> i != item end)
-        |> Enum.map fn(other_item) ->
-          case Ecto.DateTime.compare(other_item.completed_at, item.completed_at) do
-            :gt ->
-              new_completed_at = LaFamiglia.DateTime.add_seconds(other_item.completed_at, -time_diff)
-
-              %__MODULE__{other_item | completed_at: new_completed_at}
-            _ ->
-              other_item
-          end
-        end
+        |> remove_item(item)
+        |> shift_later_items(item, time_diff)
 
       changeset
-      |> Villa.add_resources(refunds(villa, item, time_diff))
+      |> Villa.add_resources(refunds)
       |> put_change(:building_queue_items, new_building_queue_items)
       |> Repo.update
+    end
+  end
+
+  defp build_time_left(building_queue_items, item) do
+    case List.first(building_queue_items) do
+      ^item ->
+        LaFamiglia.DateTime.time_diff(LaFamiglia.DateTime.now, item.completed_at)
+      _ ->
+        item.build_time
+    end
+  end
+
+  defp remove_item(building_queue_items, item) do
+    Enum.filter building_queue_items, fn(i) -> i != item end
+  end
+
+  defp shift_later_items(building_queue_items, item, time_diff) do
+    Enum.map building_queue_items, fn(other_item) ->
+      case Ecto.DateTime.compare(other_item.completed_at, item.completed_at) do
+        :gt ->
+          new_completed_at = LaFamiglia.DateTime.add_seconds(other_item.completed_at, -time_diff)
+
+          %__MODULE__{other_item | completed_at: new_completed_at}
+        _ ->
+          other_item
+      end
     end
   end
 end
