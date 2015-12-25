@@ -8,7 +8,9 @@ defmodule LaFamiglia.BuildingQueueItemController do
 
     if building do
       case BuildingQueueItem.enqueue!(conn.assigns.current_villa_changeset, building) do
-        {:error, message} ->
+        {:error, changeset} ->
+          [{_, message}|_] = changeset.errors
+
           conn
           |> put_flash(:info, message)
           |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))

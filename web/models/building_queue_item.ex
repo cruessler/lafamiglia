@@ -76,7 +76,7 @@ defmodule LaFamiglia.BuildingQueueItem do
     # Since `villa.building_queue_items` is never changed in the webapp except
     # via `enqueue!` and `dequeue!`, it is safe to assume that we can simply use
     # `villa.building_queue_items` to access the current building queue.
-    villa = Repo.preload(villa, :building_queue_items)
+    villa     = Repo.preload(villa, :building_queue_items)
     changeset = %Changeset{changeset | model: villa}
 
     level        = Building.virtual_level(villa, building)
@@ -86,22 +86,14 @@ defmodule LaFamiglia.BuildingQueueItem do
       completed_at(villa.building_queue_items)
       |> LaFamiglia.DateTime.add_seconds(build_time)
 
-    cond do
-      level >= building.maxlevel ->
-        {:error, "Building already at maxlevel."}
-      !Villa.has_resources?(changeset, costs) ->
-        {:error, "Not enough resources."}
-      true ->
-        new_item = Ecto.Model.build(villa, :building_queue_items,
-                                    building_id: building.id,
-                                    build_time: build_time / 1,
-                                    completed_at: completed_at)
+    new_item = Ecto.Model.build(villa, :building_queue_items,
+                                building_id: building.id,
+                                build_time: build_time / 1,
+                                completed_at: completed_at)
 
-        changeset
-        |> Villa.subtract_resources(costs)
-        |> put_change(:building_queue_items, villa.building_queue_items ++ [new_item])
-        |> Repo.update
-    end
+    changeset
+    |> Villa.build(new_item, costs)
+    |> Repo.update
   end
 
   def dequeue!(%Changeset{model: villa} = changeset, item) do

@@ -67,6 +67,34 @@ defmodule LaFamiglia.Villa do
     |> unique_constraint(:x, name: :villas_x_y_index)
   end
 
+  def build(%{model: villa} = changeset, new_item, costs) do
+    changeset
+    |> subtract_resources(costs)
+    |> Changeset.put_change(:building_queue_items, villa.building_queue_items ++ [new_item])
+    |> validate_maxlevel(new_item)
+    |> validate_resources
+  end
+
+  defp validate_maxlevel(%{model: villa} = changeset, item) do
+    building = Building.get_by_id(item.building_id)
+
+    case Building.virtual_level(villa, building) > building.maxlevel do
+      true -> add_error(changeset, building.id, "Building already at maxlevel.")
+      _    -> changeset
+    end
+  end
+
+  defp validate_resources(changeset) do
+    enough_resources =
+      @resources
+      |> Enum.all? fn(r) -> get_field(changeset, r) > 0 end
+
+    case enough_resources do
+      false -> add_error(changeset, :resources, "Not enough resources.")
+      _     -> changeset
+    end
+  end
+
   @max_x 10
   @max_y 10
   def max_x, do: @max_x
