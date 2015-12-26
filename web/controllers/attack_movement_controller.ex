@@ -19,18 +19,11 @@ defmodule LaFamiglia.AttackMovementController do
   end
 
   def create(conn, %{"attack_movement" => movement_params}) do
-    # To make validations check unit numbers, a map with all unit numbers
-    # set to 0 is merged into `movement_params`.
-    units =
-      LaFamiglia.Unit.all
-      |> Enum.map(fn({k, _u}) -> {Atom.to_string(k), 0} end)
-      |> Enum.into(%{})
-
     movement_params =
       movement_params
       |> Map.put("origin_id", conn.assigns.current_villa.id)
-      |> Map.merge units, fn
-        (_k, v1, v2) when is_nil(v1) -> v2
+      |> Map.merge default_units, fn
+        (_, v1, v2) when is_nil(v1) -> v2
         (_, v1, _) -> v1
       end
 
@@ -46,5 +39,12 @@ defmodule LaFamiglia.AttackMovementController do
         conn
         |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))
     end
+  end
+
+  defp default_units do
+    units =
+      LaFamiglia.Unit.all
+      |> Enum.map(fn({k, _u}) -> {Atom.to_string(k), 0} end)
+      |> Enum.into(%{})
   end
 end
