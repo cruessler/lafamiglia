@@ -94,7 +94,7 @@ defmodule LaFamiglia.Villa do
   end
 
   defp validate_supply(%{model: villa} = changeset) do
-    case villa.supply > villa.max_supply do
+    case get_field(changeset, :supply) > villa.max_supply do
       true -> add_error(changeset, :supply, "Not enough supply.")
       _    -> changeset
     end
