@@ -73,7 +73,7 @@ defmodule LaFamiglia.UnitQueueItem do
                                 completed_at: completed_at)
 
     changeset
-    |> Villa.recruit(new_item, costs)
+    |> Villa.recruit(new_item, costs, supply)
     |> Repo.update
   end
 

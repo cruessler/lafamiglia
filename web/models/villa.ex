@@ -75,9 +75,10 @@ defmodule LaFamiglia.Villa do
     |> validate_resources
   end
 
-  def recruit(%{model: villa} = changeset, new_item, costs) do
+  def recruit(%{model: villa} = changeset, new_item, costs, supply) do
     changeset
     |> subtract_resources(costs)
+    |> Changeset.put_change(:supply, Changeset.get_field(changeset, :supply) + supply)
     |> Changeset.put_change(:unit_queue_items, villa.unit_queue_items ++ [new_item])
     |> validate_supply
     |> validate_resources
