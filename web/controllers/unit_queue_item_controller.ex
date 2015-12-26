@@ -27,7 +27,9 @@ defmodule LaFamiglia.UnitQueueItemController do
     item = Repo.get_by!(UnitQueueItem, id: id, villa_id: conn.assigns.current_villa.id)
 
     case UnitQueueItem.dequeue!(conn.assigns.current_villa_changeset, item) do
-      {:error, message} ->
+      {:error, changeset} ->
+        [{_, message}|_] = changeset.errors
+
         conn
         |> put_flash(:info, message)
         |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))

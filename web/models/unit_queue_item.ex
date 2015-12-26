@@ -80,13 +80,7 @@ defmodule LaFamiglia.UnitQueueItem do
   def dequeue!(%Changeset{model: villa} = changeset, item) do
     unit_queue_items = get_field(changeset, :unit_queue_items)
 
-    time_diff = case List.first(unit_queue_items) do
-      ^item ->
-        LaFamiglia.DateTime.time_diff(LaFamiglia.DateTime.now, item.completed_at)
-      _ ->
-        item.build_time
-    end
-
+    time_diff   = build_time_left(unit_queue_items, item)
     unit        = Unit.get_by_id(item.unit_id)
     number_left = units_recruited_between(item, LaFamiglia.DateTime.now, item.completed_at)
 
@@ -99,17 +93,8 @@ defmodule LaFamiglia.UnitQueueItem do
 
     new_unit_queue_items =
       unit_queue_items
-      |> Enum.filter(fn(i) -> i != item end)
-      |> Enum.map fn(other_item) ->
-        case Ecto.DateTime.compare(other_item.completed_at, item.completed_at) do
-          :gt ->
-            new_completed_at = LaFamiglia.DateTime.add_seconds(other_item.completed_at, -time_diff)
-
-            %__MODULE__{other_item | completed_at: new_completed_at}
-          _ ->
-            other_item
-        end
-      end
+      |> remove_item(item)
+      |> shift_later_items(item, time_diff)
 
     changeset
     |> Villa.add_resources(refunds)
