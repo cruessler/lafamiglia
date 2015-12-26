@@ -44,4 +44,15 @@ defmodule LaFamiglia.Unit do
   def virtual_number(map, unit) do
     number(map, unit) + enqueued_number(map, unit)
   end
+
+  def filter(%Changeset{} = changeset) do
+    Enum.reduce all, %{}, fn({k, _}, map) ->
+      Map.put(map, k, get_field(changeset, k))
+    end
+  end
+  def filter(map) do
+    all
+    |> Enum.map(fn({k, u}) -> {k, Map.get(map, k)} end)
+    |> Enum.into(%{})
+  end
 end
