@@ -42,13 +42,12 @@ defmodule LaFamiglia.AttackMovement do
     |> assoc_constraint(:target)
   end
 
-  def attack!(%{model: villa} = changeset, attack) do
+  def attack(%{model: villa} = changeset, attack) do
     villa     = Repo.preload(villa, :attack_movements)
     changeset = %Changeset{changeset | model: villa}
 
     changeset
     |> Villa.order_units(attack, Unit.filter(attack))
-    |> Repo.update
   end
 
   def cancel!(attack) do

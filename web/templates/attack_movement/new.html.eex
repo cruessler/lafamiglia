@@ -1,10 +1,14 @@
 <%= form_for @changeset,
              villa_attack_movement_path(@conn, :create, @current_villa.id),
+             [method: :post],
              fn f -> %>
   <%= if f.errors != [] do %>
     <div class="alert alert-danger">
       <p>Please check the errors below:</p>
       <ul>
+        <!-- FIXME: This does not display the errors of the nested changeset.
+          After upgrading to phoenix_ecto 2.0, this has to be updated.
+          See https://github.com/phoenixframework/phoenix_ecto/blob/90989c881a4276d6768d339343cf71eacfadae3b/CHANGELOG.md#v200. -->
         <%= for {attr, message} <- f.errors do %>
           <li><%= humanize(attr) %> <%= message %></li>
         <% end %>
@@ -12,31 +16,33 @@
     </div>
   <% end %>
 
-  <%= hidden_input f, :target_id %>
+  <%= inputs_for f, :attack_movements, fn fa -> %>
+    <%= hidden_input fa, :target_id %>
 
-  <div class="form-group">
-    <label class="control-label">
-      Target:
-    </label>
-    <%= f.model.target %>
-  </div>
+    <div class="form-group">
+      <label class="control-label">
+        Target:
+      </label>
+      <%= fa.model.target %>
+    </div>
 
-  <div class="form-group">
-    <label class="control-label">
-      Units:
-    </label>
+    <div class="form-group">
+      <label class="control-label">
+        Units:
+      </label>
 
-    <table>
-      <tr>
-        <%= for {k, u} <- LaFamiglia.Unit.all do %>
-          <td>
-            <%= k %>: <%= text_input f, k, class: :"form-control" %>
-            (out of <%= LaFamiglia.Unit.number(@current_villa, u) %>)
-          </td>
-        <% end %>
-      </tr>
-    </table>
-  </div>
+      <table>
+        <tr>
+          <%= for {k, u} <- LaFamiglia.Unit.all do %>
+            <td>
+              <%= k %>: <%= text_input fa, k, class: :"form-control" %>
+              (out of <%= LaFamiglia.Unit.number(@current_villa, u) %>)
+            </td>
+          <% end %>
+        </tr>
+      </table>
+    </div>
+  <% end %>
 
   <button class="btn btn-primary" type="submit">Send</button>
 <% end %>

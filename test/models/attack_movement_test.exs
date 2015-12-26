@@ -30,6 +30,8 @@ defmodule LaFamiglia.AttackMovementTest do
     origin_changeset = Ecto.Changeset.change(origin_without_units)
     changeset        = AttackMovement.changeset(%AttackMovement{}, movement_params)
 
-    assert {:error, _} = AttackMovement.attack!(origin_changeset, changeset)
+    assert {:error, _} =
+      AttackMovement.attack(origin_changeset, changeset)
+      |> Repo.update
   end
 end
