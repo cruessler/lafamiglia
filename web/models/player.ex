@@ -5,6 +5,7 @@ defmodule LaFamiglia.Player do
 
   alias LaFamiglia.Villa
   alias LaFamiglia.ConversationStatus
+  alias LaFamiglia.Report
 
   schema "players" do
     field :email, :string
@@ -19,6 +20,8 @@ defmodule LaFamiglia.Player do
 
     has_many :conversation_statuses, ConversationStatus
     has_many :conversations, through: [:conversation_statuses, :conversation]
+
+    has_many :reports, Report
 
     timestamps
   end
