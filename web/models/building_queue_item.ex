@@ -112,7 +112,7 @@ defmodule LaFamiglia.BuildingQueueItem do
 
       changeset
       |> Villa.add_resources(refunds)
-      |> put_change(:building_queue_items, new_building_queue_items)
+      |> put_assoc(:building_queue_items, new_building_queue_items)
       |> Repo.update
     end
   end

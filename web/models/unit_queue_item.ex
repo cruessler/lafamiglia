@@ -99,7 +99,7 @@ defmodule LaFamiglia.UnitQueueItem do
     changeset
     |> Villa.add_resources(refunds)
     |> put_change(:supply, villa.supply - unit.supply * number_left)
-    |> put_change(:unit_queue_items, new_unit_queue_items)
+    |> put_assoc(:unit_queue_items, new_unit_queue_items)
     |> Repo.update
   end
 end

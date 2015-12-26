@@ -70,7 +70,7 @@ defmodule LaFamiglia.Villa do
   def build(%{model: villa} = changeset, new_item, costs) do
     changeset
     |> subtract_resources(costs)
-    |> Changeset.put_change(:building_queue_items, villa.building_queue_items ++ [new_item])
+    |> Changeset.put_assoc(:building_queue_items, villa.building_queue_items ++ [new_item])
     |> validate_maxlevel(new_item)
     |> validate_resources
   end
@@ -79,7 +79,7 @@ defmodule LaFamiglia.Villa do
     changeset
     |> subtract_resources(costs)
     |> Changeset.put_change(:supply, Changeset.get_field(changeset, :supply) + supply)
-    |> Changeset.put_change(:unit_queue_items, villa.unit_queue_items ++ [new_item])
+    |> Changeset.put_assoc(:unit_queue_items, villa.unit_queue_items ++ [new_item])
     |> validate_supply
     |> validate_resources
   end
@@ -87,7 +87,7 @@ defmodule LaFamiglia.Villa do
   def order_units(%{model: villa} = changeset, new_order, units) do
     changeset
     |> subtract_units(units)
-    |> Changeset.put_change(:attack_movements, villa.attack_movements ++ [new_order])
+    |> Changeset.put_assoc(:attack_movements, villa.attack_movements ++ [new_order])
     |> validate_units
   end
 
@@ -258,7 +258,7 @@ defmodule LaFamiglia.Villa do
 
         changeset
         |> put_change(key, get_field(changeset, key) + number_recruited)
-        |> put_change(:unit_queue_items, [first|rest])
+        |> put_assoc(:unit_queue_items, [first|rest])
       [] -> changeset
     end
   end
