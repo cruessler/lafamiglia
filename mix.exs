@@ -39,7 +39,7 @@ defmodule LaFamiglia.Mixfile do
      {:phoenix_ecto, "~> 1.1"},
      {:ecto, "~> 1.0"},
      {:mariaex, ">= 0.0.0"},
-     {:phoenix_html, "~> 2.0"},
+     {:phoenix_html, "~> 2.3"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      # https://github.com/elixircnx/comeonin
      {:comeonin, "~> 1.0"},
