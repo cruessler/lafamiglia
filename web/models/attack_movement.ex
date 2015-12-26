@@ -39,11 +39,19 @@ defmodule LaFamiglia.AttackMovement do
     |> validate_origin_and_target_are_different
     |> preload_associations
     |> validate_origin_and_target_belong_to_different_players
-    |> validate_unit_numbers
     |> validate_at_least_one_unit
     |> remove_associations
     |> assoc_constraint(:origin)
     |> assoc_constraint(:target)
+  end
+
+  def attack!(%{model: villa} = changeset, attack) do
+    villa     = Repo.preload(villa, :attack_movements)
+    changeset = %Changeset{changeset | model: villa}
+
+    changeset
+    |> Villa.order_units(attack, Unit.filter(attack))
+    |> Repo.update
   end
 
   def cancel!(attack) do
@@ -101,17 +109,6 @@ defmodule LaFamiglia.AttackMovement do
             add_error(changeset, :target, "must not be owned by you")
           true ->
             changeset
-        end
-      _ -> changeset
-    end
-  end
-
-  defp validate_unit_numbers(changeset) do
-    case changeset.changes do
-      %{origin: origin} ->
-        Enum.reduce LaFamiglia.Unit.all, changeset, fn({k, u}, changeset) ->
-          changeset
-          |> validate_number(k, less_than_or_equal_to: Unit.number(origin, u))
         end
       _ -> changeset
     end

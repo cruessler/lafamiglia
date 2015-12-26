@@ -84,6 +84,13 @@ defmodule LaFamiglia.Villa do
     |> validate_resources
   end
 
+  def order_units(%{model: villa} = changeset, new_order, units) do
+    changeset
+    |> subtract_units(units)
+    |> Changeset.put_change(:attack_movements, villa.attack_movements ++ [new_order])
+    |> validate_units
+  end
+
   defp validate_maxlevel(%{model: villa} = changeset, item) do
     building = Building.get_by_id(item.building_id)
 
@@ -108,6 +115,13 @@ defmodule LaFamiglia.Villa do
     case enough_resources do
       false -> add_error(changeset, :resources, "Not enough resources.")
       _     -> changeset
+    end
+  end
+
+  defp validate_units(changeset) do
+    Enum.reduce LaFamiglia.Unit.all, changeset, fn({k, _}, changeset) ->
+      changeset
+      |> validate_number(k, greater_than_or_equal_to: 0, message: "Not enough units.")
     end
   end
 
@@ -222,6 +236,13 @@ defmodule LaFamiglia.Villa do
       resource_2: time_diff * 0.01,
       resource_3: time_diff * 0.01
     }
+  end
+
+  def subtract_units(%Changeset{} = changeset, units) do
+    Enum.reduce LaFamiglia.Unit.all, changeset, fn({k, _}, changeset) ->
+      changeset
+      |> put_change(k, get_field(changeset, k) - Map.get(units, k))
+    end
   end
 
   def process_units_virtually_until(%Changeset{model: villa} = changeset, time) do

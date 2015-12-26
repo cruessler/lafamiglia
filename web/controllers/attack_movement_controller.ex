@@ -34,11 +34,10 @@ defmodule LaFamiglia.AttackMovementController do
         (_, v1, _) -> v1
       end
 
-    target    = Repo.get(Villa, movement_params["target_id"])
-    movement  = %AttackMovement{target: target}
-    changeset = AttackMovement.changeset(movement, movement_params)
+    target   = Repo.get(Villa, movement_params["target_id"])
+    movement = AttackMovement.changeset(%AttackMovement{}, movement_params)
 
-    case Repo.insert(changeset) do
+    case AttackMovement.attack!(conn.assigns.current_villa_changeset, movement) do
       {:error, changeset} ->
         conn
         |> assign(:changeset, changeset)

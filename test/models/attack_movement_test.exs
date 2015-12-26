@@ -24,12 +24,12 @@ defmodule LaFamiglia.AttackMovementTest do
 
     changeset = AttackMovement
                   .changeset(%AttackMovement{},
-                             %{movement_params | origin_id: origin_without_units.id})
-    refute changeset.valid?
-
-    changeset = AttackMovement
-                  .changeset(%AttackMovement{},
                              %{movement_params | target_id: origin.id})
     refute changeset.valid?
+
+    origin_changeset = Ecto.Changeset.change(origin_without_units)
+    changeset        = AttackMovement.changeset(%AttackMovement{}, movement_params)
+
+    assert {:error, _} = AttackMovement.attack!(origin_changeset, changeset)
   end
 end
