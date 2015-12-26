@@ -6,6 +6,7 @@ defmodule Forge do
   alias LaFamiglia.Villa
   alias LaFamiglia.Conversation
   alias LaFamiglia.Message
+  alias LaFamiglia.Report
 
   @save_one_function &Blacksmith.Config.save/2
   @save_all_function &Blacksmith.Config.save_all/2
@@ -42,4 +43,12 @@ defmodule Forge do
   register :message,
     __struct__: Message,
     text: "This is a text"
+
+  register :report,
+    __struct__: Report,
+    title: "This is a title",
+    data: %{"key" => "value"},
+    read: false,
+    player_id: Forge.saved_player(Repo).id,
+    delivered_at: LaFamiglia.DateTime.now
 end
