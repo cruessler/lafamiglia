@@ -59,5 +59,4 @@ defmodule LaFamiglia.MessageController do
   def create(conn, %{"message" => message} = params) do
     create(conn, %{params | "message" => Dict.put(message, "receivers", [])})
   end
-
 end
