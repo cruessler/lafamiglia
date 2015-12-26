@@ -36,10 +36,8 @@ defmodule LaFamiglia.AttackMovement do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
-    |> preload_associations
     |> validate_origin_and_target_belong_to_different_players
     |> validate_at_least_one_unit
-    |> remove_associations
     |> assoc_constraint(:origin)
     |> assoc_constraint(:target)
   end
@@ -73,34 +71,15 @@ defmodule LaFamiglia.AttackMovement do
     end
   end
 
-  # So far, there seems to be no standard way of validating fields of associated
-  # models. This is a hack to make `origin` and `target` available to the
-  # validations.
-  defp preload_associations(changeset) do
-    case changeset.changes do
-      %{origin_id: origin_id, target_id: target_id} ->
-        changeset
-        |> put_change(:origin, Repo.get(Villa, origin_id))
-        |> put_change(:target, Repo.get(Villa, target_id))
-      _ ->
-        changeset
-    end
-  end
-
-  defp remove_associations(%Changeset{changes: changes} = changeset) do
-    %Changeset{changeset | changes: Map.drop(changes, [:origin, :target])}
-  end
-
   defp validate_origin_and_target_belong_to_different_players(changeset) do
-    case changeset.changes do
-      %{origin: origin, target: target} ->
-        cond do
-          origin.player_id == target.player_id ->
-            add_error(changeset, :target, "must not be owned by you")
-          true ->
-            changeset
-        end
-      _ -> changeset
+    origin = Repo.get!(Villa, get_field(changeset, :origin_id))
+    target = Repo.get!(Villa, get_field(changeset, :target_id))
+
+    cond do
+      origin.player_id == target.player_id ->
+        add_error(changeset, :target, "must not be owned by you")
+      true ->
+        changeset
     end
   end
 
