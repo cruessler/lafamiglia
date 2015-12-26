@@ -10,7 +10,9 @@ defmodule LaFamiglia.UnitQueueItemController do
 
     if unit do
       case UnitQueueItem.enqueue!(conn.assigns.current_villa_changeset, unit, number) do
-        {:error, message} ->
+        {:error, changeset} ->
+          [{_, message}|_] = changeset.errors
+
           conn
           |> put_flash(:info, message)
           |> redirect(to: villa_path(conn, :show, villa_id))

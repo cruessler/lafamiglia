@@ -75,11 +75,26 @@ defmodule LaFamiglia.Villa do
     |> validate_resources
   end
 
+  def recruit(%{model: villa} = changeset, new_item, costs) do
+    changeset
+    |> subtract_resources(costs)
+    |> Changeset.put_change(:unit_queue_items, villa.unit_queue_items ++ [new_item])
+    |> validate_supply
+    |> validate_resources
+  end
+
   defp validate_maxlevel(%{model: villa} = changeset, item) do
     building = Building.get_by_id(item.building_id)
 
     case Building.virtual_level(villa, building) > building.maxlevel do
       true -> add_error(changeset, building.id, "Building already at maxlevel.")
+      _    -> changeset
+    end
+  end
+
+  defp validate_supply(%{model: villa} = changeset) do
+    case villa.supply > villa.max_supply do
+      true -> add_error(changeset, :supply, "Not enough supply.")
       _    -> changeset
     end
   end

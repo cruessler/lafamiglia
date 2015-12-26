@@ -66,24 +66,15 @@ defmodule LaFamiglia.UnitQueueItem do
       completed_at(unit_queue_items)
       |> LaFamiglia.DateTime.add_seconds(build_time)
 
-    cond do
-      !Villa.has_supply?(changeset, supply) ->
-        {:error, "You don’t have enough supply to recruit these units."}
-      !Villa.has_resources?(changeset, costs) ->
-        {:error, "You don’t have enough resources to recruit these units."}
-      true ->
-        new_item = Ecto.Model.build(villa, :unit_queue_items,
-                                    unit_id: unit.id,
-                                    number: number,
-                                    build_time: build_time / 1,
-                                    completed_at: completed_at)
+    new_item = Ecto.Model.build(villa, :unit_queue_items,
+                                unit_id: unit.id,
+                                number: number,
+                                build_time: build_time / 1,
+                                completed_at: completed_at)
 
-        changeset
-        |> Villa.subtract_resources(costs)
-        |> put_change(:supply, villa.supply + supply)
-        |> put_change(:unit_queue_items, unit_queue_items ++ [new_item])
-        |> Repo.update
-    end
+    changeset
+    |> Villa.recruit(new_item, costs)
+    |> Repo.update
   end
 
   def dequeue!(%Changeset{model: villa} = changeset, item) do
