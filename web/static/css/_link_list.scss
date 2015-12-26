@@ -1,0 +1,33 @@
+$link-list-border: $input-border;
+$link-list-bg: $input-bg;
+
+ul.link-list {
+  padding: 0;
+  border: 1px solid $link-list-border;
+  background-color: $link-list-bg;
+
+  li {
+    list-style: none;
+    width: 100%;
+
+    a {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0.6em 2.0em;
+      color: $gray-dark;
+      text-decoration: none;
+
+      small {
+        display: block;
+        color: $gray-light;
+      }
+    }
+
+    &.selected {
+      background-color: darken($link-list-bg, 5%);
+    }
+  }
+}

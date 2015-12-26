@@ -2,7 +2,7 @@
   <div class="col-sm-4">
     <h3>Conversations</h3>
 
-    <ul class="conversations">
+    <ul class="conversations link-list">
       <li><%= link "Write a message", to: conversation_path(@conn, :index) %></li>
 
       <%= for c <- @conversations do %>
