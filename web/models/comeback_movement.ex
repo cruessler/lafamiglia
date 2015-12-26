@@ -4,6 +4,8 @@ defmodule LaFamiglia.ComebackMovement do
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
 
+  alias LaFamiglia.Unit
+
   schema "comeback_movements" do
     belongs_to :origin, Villa
     belongs_to :target, Villa
@@ -38,6 +40,14 @@ defmodule LaFamiglia.ComebackMovement do
   end
 
   def arrive!(comeback) do
-    Repo.delete(comeback)
+    Repo.transaction fn ->
+      comeback = Repo.preload(comeback, :origin)
+
+      Ecto.Changeset.change(comeback.origin)
+      |> Villa.add_units(Unit.filter(comeback))
+      |> Repo.update!
+
+      Repo.delete(comeback)
+    end
   end
 end

@@ -238,6 +238,13 @@ defmodule LaFamiglia.Villa do
     }
   end
 
+  def add_units(%Changeset{} = changeset, units) do
+    Enum.reduce LaFamiglia.Unit.all, changeset, fn({k, _}, changeset) ->
+      changeset
+      |> put_change(k, get_field(changeset, k) + Map.get(units, k))
+    end
+  end
+
   def subtract_units(%Changeset{} = changeset, units) do
     Enum.reduce LaFamiglia.Unit.all, changeset, fn({k, _}, changeset) ->
       changeset
