@@ -36,7 +36,6 @@ defmodule LaFamiglia.AttackMovement do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
-    |> validate_origin_and_target_are_different
     |> preload_associations
     |> validate_origin_and_target_belong_to_different_players
     |> validate_at_least_one_unit
@@ -71,15 +70,6 @@ defmodule LaFamiglia.AttackMovement do
     Repo.transaction fn ->
       Repo.delete(attack)
       Repo.insert!(changeset)
-    end
-  end
-
-  defp validate_origin_and_target_are_different(changeset) do
-    validate_change changeset, :origin_id, fn _field, value ->
-      case get_change(changeset, :target_id) do
-        ^value -> [{:target, "must not be the origin"}]
-        _      -> []
-      end
     end
   end
 
