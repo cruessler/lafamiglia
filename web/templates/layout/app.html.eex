@@ -32,6 +32,7 @@
                 <li><%= link "Troops", to: movement_path(@conn, :index) %></li>
                 <li><%= link "Map", to: map_path(@conn, :show, @current_villa.x, @current_villa.y) %></li>
                 <li><%= link "Messages", to: conversation_path(@conn, :index) %></li>
+                <li><%= link "Reports", to: report_path(@conn, :index) %></li>
 
                 <li><%= resources @current_villa %></li>
                 <li><div class="supply">Supply: <%= @current_villa.supply %>/<%= @current_villa.max_supply %></div></li>

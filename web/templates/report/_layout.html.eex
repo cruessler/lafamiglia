@@ -1,0 +1,19 @@
+<div class="row">
+  <div class="col-sm-4">
+    <h3>Reports</h3>
+
+    <ul class="reports link-list">
+      <%= for r <- @reports do %>
+        <li class="<%= li_class_for(r, @report) %>">
+          <%= link to: report_path(@conn, :show, r) do %>
+            <%= r.title %>
+            <small><%= r.delivered_at %></small>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+  <div class="col-sm-8">
+    <%= @inner %>
+  </div>
+</div>
