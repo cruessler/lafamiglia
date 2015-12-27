@@ -18,6 +18,12 @@ defmodule LaFamiglia.Web do
 
   def model do
     quote do
+      use Ecto.Schema
+
+      # FIXME: As soon as the deprecated callbacks have been replaced by a
+      # superior alternative, `use Eco.Model` has to be changed to `import
+      # Ecto`.
+      # http://www.phoenixframework.org/v1.0.0/blog/upgrading-from-v10-to-v11
       use Ecto.Model
     end
   end
@@ -28,7 +34,7 @@ defmodule LaFamiglia.Web do
 
       # Alias the data repository and import query/model functions
       alias LaFamiglia.Repo
-      import Ecto.Model
+      import Ecto
       import Ecto.Query, only: [from: 2]
 
       # Import URL helpers from the router
@@ -68,7 +74,7 @@ defmodule LaFamiglia.Web do
 
       # Alias the data repository and import query/model functions
       alias LaFamiglia.Repo
-      import Ecto.Model
+      import Ecto
       import Ecto.Query, only: [from: 2]
 
     end

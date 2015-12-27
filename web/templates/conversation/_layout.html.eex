@@ -16,6 +16,6 @@
     </ul>
   </div>
   <div class="col-sm-8">
-    <%= @inner %>
+    <%= render @view_module, @view_template, assigns %>
   </div>
 </div>
