@@ -13,11 +13,12 @@ defmodule LaFamiglia.ReportController do
   end
 
   def show(conn, %{"id" => id}) do
-    report =
-      Repo.get(Report, id)
+    report      = Repo.get(Report, id)
+    report_data = LaFamiglia.ReportData.from_map(report.data)
 
     conn
     |> assign(:report, report)
+    |> assign(:report_data, report_data)
     |> render("show.html")
   end
 
