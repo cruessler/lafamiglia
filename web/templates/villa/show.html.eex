@@ -1,3 +1,8 @@
+<ul class="info-box">
+  <li><%= resources @current_villa %></li>
+  <li><div class="supply">Supply: <%= @current_villa.supply %>/<%= @current_villa.max_supply %></div></li>
+</ul>
+
 <p>The villa bearing the name <%= @current_villa.name %> is at your service.</p>
 
 <h2>

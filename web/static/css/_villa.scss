@@ -1,3 +1,13 @@
+ul.info-box {
+  @include overlay-box;
+  @include box-shadow(0 1px 3px rgba(0, 0, 0, .175));
+
+  li {
+    display: inline-block;
+    list-style: none;
+  }
+}
+
 th.recruit {
   min-width: 10em;
 }
