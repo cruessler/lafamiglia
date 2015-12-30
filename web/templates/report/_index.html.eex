@@ -1,1 +1,11 @@
 <h2>Nothing to see here</h2>
+
+<ul class="reports">
+  <%= for r <- @reports do %>
+    <li>
+      <%= link to: report_path(@conn, :show, r.id) do %>
+        <%= r.title %> <small><%= r.delivered_at %></small>
+      <% end %>
+    </li>
+  <% end %>
+</ul>

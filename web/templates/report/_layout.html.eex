@@ -2,11 +2,11 @@
   <div class="col-sm-4">
     <h3>Reports</h3>
 
-    <ul class="reports link-list">
-      <%= for r <- @reports do %>
-        <li class="<%= li_class_for(r, @report) %>">
-          <%= link to: report_path(@conn, :show, r) do %>
-            <%= r.title %>
+    <ul class="link-list">
+      <%= for r <- @grouped_reports do %>
+        <li class="">
+          <%= link to: villa_report_path(@conn, :index, r.villa.id) do %>
+            <%= r.villa.name %> (<%= r.villa.x %>|<%= r.villa.y %>)
             <small><%= r.delivered_at %></small>
           <% end %>
         </li>
