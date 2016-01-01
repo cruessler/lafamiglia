@@ -1,0 +1,10 @@
+<h1>Ranking</h1>
+
+<table class="table table-striped">
+  <%= for p <- @players do %>
+    <tr>
+      <td><%= p.name %></td>
+      <td><%= p.villa_count %></td>
+    </tr>
+  <% end %>
+</table>

@@ -39,6 +39,8 @@ defmodule LaFamiglia.Router do
         get "/search/:query", PlayerController, :search
       end
 
+      resources "/players", PlayerController, only: [ :index ]
+
       resources "/villas", VillaController, only: [ :index, :show ] do
         resources "/building_queue_items", BuildingQueueItemController, only: [ :create ]
         resources "/unit_queue_items", UnitQueueItemController, only: [ :create ]

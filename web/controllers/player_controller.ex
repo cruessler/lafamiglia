@@ -24,6 +24,20 @@ defmodule LaFamiglia.PlayerController do
     end
   end
 
+  def index(conn, _params) do
+    players =
+      from(p in Player,
+        left_join: v in assoc(p, :villas),
+        group_by: p.id,
+        order_by: [desc: count(v.id), asc: p.id],
+        select: %{name: p.name, villa_count: count(v.id)})
+      |> Repo.all
+
+    conn
+    |> assign(:players, players)
+    |> render("index.html")
+  end
+
   def search(conn, %{"query" => query}) do
     query = "%" <> query <> "%"
 
