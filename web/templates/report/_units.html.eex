@@ -1,12 +1,20 @@
 <table class="table table-striped units">
   <tr>
+    <th></th>
     <%= Enum.map LaFamiglia.Unit.all, fn({k, _}) -> %>
       <th><%= k %></th>
     <% end %>
   </tr>
   <tr>
+    <td>Units</td>
     <%= Enum.map LaFamiglia.Unit.all, fn({k, _}) -> %>
       <td><%= @units[k] %></td>
+    <% end %>
+  </tr>
+  <tr>
+    <td>Losses</td>
+    <%= Enum.map LaFamiglia.Unit.all, fn({k, _}) -> %>
+      <td><%= @losses[k] %></td>
     <% end %>
   </tr>
 </table>
