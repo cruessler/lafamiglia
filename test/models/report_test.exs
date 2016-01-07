@@ -2,8 +2,11 @@ defmodule LaFamiglia.ReportTest do
   use LaFamiglia.ModelCase
 
   alias LaFamiglia.Report
+  alias LaFamiglia.ReportData
 
-  @valid_attrs %{title: "This is a title", data: %{"key" => "value"}, player_id: 1}
+  @valid_attrs %{title: "This is a title",
+                 data: %ReportData{winner: :attacker},
+                 player_id: 1}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do

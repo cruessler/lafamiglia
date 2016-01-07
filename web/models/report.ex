@@ -8,7 +8,7 @@ defmodule LaFamiglia.Report do
     belongs_to :player, Player
 
     field :title, :string
-    field :data, :map
+    field :data, LaFamiglia.ReportData
     field :read, :boolean
 
     field :delivered_at, Ecto.DateTime

@@ -1,14 +1,23 @@
 defmodule LaFamiglia.ReportData do
-  defstruct [:attacker, :defender, :winner]
+  @behavior Ecto.Type
+  def type, do: :map
 
-  def atomize_keys(map) when is_map(map) do
-    Enum.map map, fn({k, v}) ->
-      {String.to_existing_atom(k), atomize_keys(v)}
-    end
-  end
-  def atomize_keys(value), do: value
+  defstruct [:attacker, :attacker_losses, :defender, :defender_losses, :winner]
 
-  def from_map(data) do
-    struct(__MODULE__, atomize_keys(data))
+  def cast(%LaFamiglia.ReportData{} = data), do: {:ok, data}
+  def cast(_), do: :error
+
+  # Even though `type` returns `:map`, the data gets passed to `load` as a
+  # string. This seems to be in contrast to the Ecto documentation which states
+  # that “load should receive the db type and output your custom Ecto type”.
+  #
+  # See http://hexdocs.pm/ecto/Ecto.Type.html
+  def load(string) when is_binary(string) do
+    {:ok, Poison.decode!(string, as: LaFamiglia.ReportData, keys: :atoms!)}
   end
+
+  def dump(%LaFamiglia.ReportData{} = report_data) do
+    {:ok, Map.from_struct(report_data)}
+  end
+  def dump(_), do: :error
 end

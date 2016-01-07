@@ -1,11 +1,11 @@
 <h1><%= @report.title %> <small><%= @report.delivered_at %></small></h1>
 
-<h2>The <%= @report_data.winner %> has won.</h2>
+<h2>The <%= @report.data.winner %> has won.</h2>
 
 <h3>The attacker</h3>
 
-<%= render "_units.html", units: @report_data.attacker %>
+<%= render "_units.html", units: @report.data.attacker %>
 
 <h3>The defender</h3>
 
-<%= render "_units.html", units: @report_data.defender %>
+<%= render "_units.html", units: @report.data.defender %>
