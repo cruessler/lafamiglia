@@ -15,10 +15,8 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
 
     LaFamiglia.DateTime.clock!
 
-    # `target` has to be dropped from `model` because it would still be present
-    # when the event is sent to the queue by the respective controller action.
-    # In that case, the preloading of `target.player` would not work when the
-    # event is handled.
+    # `attack` is reloaded because its associations might have changed since
+    # the event’s creation.
     attack =
       Repo.get(AttackMovement, attack.id)
       |> Repo.preload([target: :player, origin: :player])
