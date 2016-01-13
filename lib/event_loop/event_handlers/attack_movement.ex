@@ -1,9 +1,12 @@
 defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
   require Logger
 
+  alias Ecto.Changeset
+
   alias LaFamiglia.Repo
   alias LaFamiglia.Combat
   alias LaFamiglia.AttackMovement
+  alias LaFamiglia.ComebackMovement
   alias LaFamiglia.CombatReport
 
   def happens_at(movement) do
@@ -22,10 +25,17 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
       |> Repo.preload([target: :player, origin: :player])
     result = Combat.calculate(attack, attack.target)
 
+    changeset = ComebackMovement.from_combat(attack, result)
+    origin_changeset =
+      Changeset.change(attack.origin)
+      |> Changeset.put_change(:supply, result.attacker_supply_loss)
+
     Repo.transaction fn ->
       CombatReport.deliver!(attack.origin, attack.target, result)
+      Repo.delete(attack)
+      Repo.update!(origin_changeset)
 
-      {:ok, comeback} = AttackMovement.cancel!(attack)
+      {:ok, comeback} = Repo.insert(changeset)
 
       LaFamiglia.EventQueue.cast({:new_event, comeback})
     end
