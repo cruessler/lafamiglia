@@ -1,6 +1,8 @@
 defmodule LaFamiglia.AttackMovement do
   use LaFamiglia.Web, :model
 
+  import LaFamiglia.Movement
+
   alias Ecto.Changeset
 
   alias LaFamiglia.Repo
@@ -113,25 +115,5 @@ defmodule LaFamiglia.AttackMovement do
 
     arrives_at = LaFamiglia.DateTime.from_now(duration)
     put_change(changeset, :arrives_at, arrives_at)
-  end
-
-  defp units(movement) do
-    Enum.filter LaFamiglia.Unit.all, fn({_k, u}) ->
-      Map.get(movement, u.key) > 0
-    end
-  end
-
-  defp duration(origin, target, units) do
-    distance_between(origin, target) / speed(units)
-  end
-
-  defp distance_between(origin, target) do
-    :math.sqrt(:math.pow(origin.x - target.x, 2) + :math.pow(origin.y - target.y, 2))
-  end
-
-  defp speed(units) do
-    units
-    |> Enum.map(fn({_k, u}) -> u.speed end)
-    |> Enum.min
   end
 end
