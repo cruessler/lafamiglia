@@ -38,10 +38,26 @@ defmodule LaFamiglia.Combat do
       end)
       |> Enum.into(%{})
 
+    attacker_supply_loss = Unit.supply(attacker_losses)
+    defender_supply_loss = Unit.supply(defender_losses)
+
+    attacker_after_combat =
+      Map.merge attacking_units, attacker_losses, fn(k, v1, v2) ->
+        v1 - v2
+      end
+    defender_after_combat =
+      Map.merge defending_units, defender_losses, fn(k, v1, v2) ->
+        v1 - v2
+      end
+
     %ReportData{attacker: attacking_units,
                 attacker_losses: attacker_losses,
+                attacker_after_combat: attacker_after_combat,
+                attacker_supply_loss: attacker_supply_loss,
                 defender: defending_units,
                 defender_losses: defender_losses,
+                defender_after_combat: defender_after_combat,
+                defender_supply_loss: defender_supply_loss,
                 winner: winner}
   end
 end
