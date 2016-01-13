@@ -55,4 +55,10 @@ defmodule LaFamiglia.Unit do
     |> Enum.map(fn({k, u}) -> {k, Map.get(map, k)} end)
     |> Enum.into(%{})
   end
+
+  def supply(map) do
+    Enum.reduce all, 0, fn({k, u}, acc) ->
+      acc + Map.get(map, k) * u.supply
+    end
+  end
 end
