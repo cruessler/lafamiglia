@@ -1,6 +1,8 @@
 defmodule LaFamiglia.ComebackMovement do
   use LaFamiglia.Web, :model
 
+  import LaFamiglia.Movement
+
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
 
@@ -37,6 +39,24 @@ defmodule LaFamiglia.ComebackMovement do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
+  end
+
+  @doc """
+  This function creates a ComebackMovement.
+
+  It does so by applying the `result` of a combat to an AttackMovement.
+  """
+  def from_combat(attack, result) do
+    duration_of_return = duration(attack.origin, attack.target, units(result.attacker_after_combat))
+    new_arrives_at = LaFamiglia.DateTime.from_now(duration_of_return)
+
+    params =
+      Map.from_struct(attack)
+      |> Map.merge(result.attacker_after_combat)
+      |> Map.put(:arrives_at, new_arrives_at)
+      |> Map.drop([:origin, :target])
+
+    changeset = changeset(%LaFamiglia.ComebackMovement{}, params)
   end
 
   def arrive!(comeback) do
