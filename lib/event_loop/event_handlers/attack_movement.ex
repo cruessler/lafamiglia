@@ -4,6 +4,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
   alias Ecto.Changeset
 
   alias LaFamiglia.Repo
+  alias LaFamiglia.Villa
   alias LaFamiglia.Combat
   alias LaFamiglia.AttackMovement
   alias LaFamiglia.ComebackMovement
@@ -28,11 +29,16 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
     origin_changeset =
       Changeset.change(attack.origin)
       |> Changeset.put_change(:supply, result.attacker_supply_loss)
+    target_changeset =
+      Changeset.change(attack.target)
+      |> Villa.subtract_units(result.defender_losses)
+      |> Changeset.put_change(:supply, result.defender_supply_loss)
 
     Repo.transaction fn ->
       CombatReport.deliver!(attack.origin, attack.target, result)
       Repo.delete(attack)
       Repo.update!(origin_changeset)
+      Repo.update!(target_changeset)
 
       if result.attacker_survived? do
         changeset = ComebackMovement.from_combat(attack, result)
