@@ -25,7 +25,6 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
       |> Repo.preload([target: :player, origin: :player])
     result = Combat.calculate(attack, attack.target)
 
-    changeset = ComebackMovement.from_combat(attack, result)
     origin_changeset =
       Changeset.change(attack.origin)
       |> Changeset.put_change(:supply, result.attacker_supply_loss)
@@ -35,9 +34,12 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
       Repo.delete(attack)
       Repo.update!(origin_changeset)
 
-      {:ok, comeback} = Repo.insert(changeset)
+      if result.attacker_survived? do
+        changeset = ComebackMovement.from_combat(attack, result)
 
-      LaFamiglia.EventQueue.cast({:new_event, comeback})
+        {:ok, comeback} = Repo.insert(changeset)
+        LaFamiglia.EventQueue.cast({:new_event, comeback})
+      end
     end
   end
 end

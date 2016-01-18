@@ -50,6 +50,8 @@ defmodule LaFamiglia.Combat do
         v1 - v2
       end
 
+    attacker_survived = Enum.any?(attacker_after_combat, fn({_, n}) -> n > 0 end)
+
     %ReportData{attacker: attacking_units,
                 attacker_losses: attacker_losses,
                 attacker_after_combat: attacker_after_combat,
@@ -58,6 +60,7 @@ defmodule LaFamiglia.Combat do
                 defender_losses: defender_losses,
                 defender_after_combat: defender_after_combat,
                 defender_supply_loss: defender_supply_loss,
-                winner: winner}
+                winner: winner,
+                attacker_survived?: attacker_survived}
   end
 end

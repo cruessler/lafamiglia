@@ -45,6 +45,7 @@ defmodule LaFamiglia.ComebackMovement do
   This function creates a ComebackMovement.
 
   It does so by applying the `result` of a combat to an AttackMovement.
+  It assumes that at least one attacking unit has survived the attack.
   """
   def from_combat(attack, result) do
     duration_of_return = duration(attack.origin, attack.target, units(result.attacker_after_combat))
