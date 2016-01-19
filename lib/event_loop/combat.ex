@@ -1,6 +1,6 @@
 defmodule LaFamiglia.Combat do
   alias LaFamiglia.Unit
-  alias LaFamiglia.ReportData
+  alias LaFamiglia.CombatResult
 
   def calculate(attacker, defender) do
     attacking_units = Unit.filter(attacker)
@@ -52,7 +52,7 @@ defmodule LaFamiglia.Combat do
 
     attacker_survived = Enum.any?(attacker_after_combat, fn({_, n}) -> n > 0 end)
 
-    %ReportData{attacker: attacking_units,
+    %CombatResult{attacker: attacking_units,
                 attacker_losses: attacker_losses,
                 attacker_after_combat: attacker_after_combat,
                 attacker_supply_loss: attacker_supply_loss,

@@ -3,10 +3,8 @@ defmodule LaFamiglia.ReportData do
   def type, do: :map
 
   defstruct [:attacker, :attacker_losses,
-             :attacker_after_combat, :attacker_supply_loss,
              :defender, :defender_losses,
-             :defender_after_combat, :defender_supply_loss,
-             :winner, :attacker_survived?]
+             :winner]
 
   def cast(%LaFamiglia.ReportData{} = data), do: {:ok, data}
   def cast(_), do: :error
