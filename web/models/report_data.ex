@@ -2,8 +2,8 @@ defmodule LaFamiglia.ReportData do
   @behavior Ecto.Type
   def type, do: :map
 
-  defstruct [:attacker, :attacker_losses,
-             :defender, :defender_losses,
+  defstruct [:attacker_before_combat, :attacker_losses,
+             :defender_before_combat, :defender_losses,
              :winner]
 
   def cast(%LaFamiglia.ReportData{} = data), do: {:ok, data}

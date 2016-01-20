@@ -3,38 +3,60 @@ defmodule LaFamiglia.Combat do
   alias LaFamiglia.CombatResult
 
   def calculate(attacker, defender) do
-    attacking_units = Unit.filter(attacker)
-    defending_units = Unit.filter(defender)
+    %CombatResult{
+      attacker: attacker,
+      defender: defender,
+      attacker_before_combat: Unit.filter(attacker),
+      defender_before_combat: Unit.filter(defender)
+      }
+      |> calculate_combat_values
+      |> calculate_winner
+      |> calculate_percent_loss
+      |> calculate_losses
+  end
 
+  defp calculate_combat_values(result) do
     attack_value = Enum.reduce Unit.all, 0, fn({k, u}, acc) ->
-      acc + Map.get(attacking_units, k) * u.attack
+      acc + Map.get(result.attacker_before_combat, k) * u.attack
     end
     defense_value = Enum.reduce Unit.all, 0, fn({k, u}, acc) ->
-      acc + Map.get(defending_units, k) * u.defense
+      acc + Map.get(result.defender_before_combat, k) * u.defense
     end
     defense_value = Enum.reduce Building.all, defense_value, fn({k, b}, acc) ->
-      acc + b.defense.(Map.get(defender, k))
+      acc + b.defense.(Map.get(result.defender, k))
     end
 
-    winner = if attack_value > defense_value, do: :attacker, else: :defender
+    %{result |
+      attack_value: attack_value,
+      defense_value: defense_value}
+  end
 
-    case winner do
-      :attacker ->
-        attacker_percent_loss = :math.pow(defense_value / attack_value, 1.5)
-        defender_percent_loss = 1
-      :defender ->
-        attacker_percent_loss = 1
-        defender_percent_loss = :math.pow(attack_value / defense_value, 1.5)
-    end
+  defp calculate_winner(result) do
+    winner = if result.attack_value > result.defense_value, do: :attacker, else: :defender
 
+    %{result | winner: winner}
+  end
+
+  defp calculate_percent_loss(%CombatResult{winner: :attacker} = result) do
+    %{result |
+      attacker_percent_loss: :math.pow(result.defense_value / result.attack_value, 1.5),
+      defender_percent_loss: 1}
+  end
+  defp calculate_percent_loss(%CombatResult{winner: :defender} = result) do
+    %{result |
+      attacker_percent_loss: 1,
+      defender_percent_loss: :math.pow(result.attack_value / result.defense_value, 1.5)}
+  end
+
+  defp calculate_losses(result) do
     attacker_losses =
       Enum.map(Unit.all, fn({k, u}) ->
-        {k, round(Map.get(attacker, k) * attacker_percent_loss)}
+        {k, round(Map.get(result.attacker_before_combat, k) * result.attacker_percent_loss)}
       end)
       |> Enum.into(%{})
     defender_losses =
       Enum.map(Unit.all, fn({k, u}) ->
-        {k, round(Map.get(defender, k) * defender_percent_loss)}
+        {k, round(Map.get(result.defender_before_combat, k) * result.defender_percent_loss)}
       end)
       |> Enum.into(%{})
 
@@ -42,25 +64,23 @@ defmodule LaFamiglia.Combat do
     defender_supply_loss = Unit.supply(defender_losses)
 
     attacker_after_combat =
-      Map.merge attacking_units, attacker_losses, fn(k, v1, v2) ->
+      Map.merge result.attacker_before_combat, attacker_losses, fn(k, v1, v2) ->
         v1 - v2
       end
     defender_after_combat =
-      Map.merge defending_units, defender_losses, fn(k, v1, v2) ->
+      Map.merge result.defender_before_combat, defender_losses, fn(k, v1, v2) ->
         v1 - v2
       end
 
     attacker_survived = Enum.any?(attacker_after_combat, fn({_, n}) -> n > 0 end)
 
-    %CombatResult{attacker: attacking_units,
-                attacker_losses: attacker_losses,
-                attacker_after_combat: attacker_after_combat,
-                attacker_supply_loss: attacker_supply_loss,
-                defender: defending_units,
-                defender_losses: defender_losses,
-                defender_after_combat: defender_after_combat,
-                defender_supply_loss: defender_supply_loss,
-                winner: winner,
-                attacker_survived?: attacker_survived}
+    %{result |
+      attacker_losses: attacker_losses,
+      defender_losses: defender_losses,
+      attacker_supply_loss: attacker_supply_loss,
+      defender_supply_loss: defender_supply_loss,
+      attacker_after_combat: attacker_after_combat,
+      defender_after_combat: defender_after_combat,
+      attacker_survived?: attacker_survived}
   end
 end
