@@ -109,8 +109,7 @@ defmodule LaFamiglia.Villa do
 
   defp validate_resources(changeset) do
     enough_resources =
-      @resources
-      |> Enum.all? fn(r) -> get_field(changeset, r) > 0 end
+      Enum.all? @resources, fn(r) -> get_field(changeset, r) > 0 end
 
     case enough_resources do
       false -> add_error(changeset, :resources, "Not enough resources.")
@@ -153,7 +152,7 @@ defmodule LaFamiglia.Villa do
           { x_1, x_range_mean - 1, y_1, y_2 },
           { x_range_mean, x_2, y_1, y_2 } ]
         |> Enum.sort_by(fn (_) -> :random.uniform end)
-        |> Enum.find_value fn(rectangle) -> empty_coordinates(rectangle) end
+        |> Enum.find_value(fn(rectangle) -> empty_coordinates(rectangle) end)
       end
     end
   end

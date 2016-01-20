@@ -7,7 +7,7 @@ defmodule LaFamiglia.MessageTest do
     sender_id = Forge.saved_player(Repo).id
     receivers =
       Forge.saved_player_list(Repo, 2)
-      |> Enum.map fn(p) -> %{id: p.id} end
+      |> Enum.map(fn(p) -> %{id: p.id} end)
 
     invalid_messages = [
       %{text: "This is a text"}, # has neither sender nor receivers
@@ -16,7 +16,7 @@ defmodule LaFamiglia.MessageTest do
         text: ""}                # has no text
       ]
 
-    invalid_messages |> Enum.map fn(m) ->
+    Enum.map invalid_messages, fn(m) ->
       assert {:error, _} = Message.changeset(%Message{}, m)
                            |> Repo.insert
     end

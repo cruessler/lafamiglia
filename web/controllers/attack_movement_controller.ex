@@ -27,10 +27,10 @@ defmodule LaFamiglia.AttackMovementController do
     movement_params =
       movement_params
       |> Map.put("origin_id", conn.assigns.current_villa.id)
-      |> Map.merge default_units, fn
+      |> Map.merge(default_units, fn
         (_, v1, v2) when is_nil(v1) -> v2
         (_, v1, _) -> v1
-      end
+      end)
 
     target   = Repo.get!(Villa, movement_params["target_id"])
     movement = %AttackMovement{target: target}

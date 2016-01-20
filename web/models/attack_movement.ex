@@ -89,7 +89,7 @@ defmodule LaFamiglia.AttackMovement do
       unit_number_given?(changeset) ->
         total_unit_number =
           LaFamiglia.Unit.all
-          |> Enum.reduce 0, fn({k, _u}, acc) -> acc + (changes[k] || 0) end
+          |> Enum.reduce(0, fn({k, _u}, acc) -> acc + (changes[k] || 0) end)
 
         case total_unit_number == 0 do
           true -> add_error(changeset, :unit_count, "must be greater than 0")

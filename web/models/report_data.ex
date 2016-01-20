@@ -1,5 +1,5 @@
 defmodule LaFamiglia.ReportData do
-  @behavior Ecto.Type
+  @behaviour Ecto.Type
   def type, do: :map
 
   defstruct [:attacker_before_combat, :attacker_losses,

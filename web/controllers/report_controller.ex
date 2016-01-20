@@ -52,7 +52,7 @@ defmodule LaFamiglia.ReportController do
       |> Repo.all
       # Using max(…) in a select makes Ecto not cast the respective column
       # automatically.
-      |> Enum.map fn(r) -> update_in(r, [:delivered_at], &Ecto.DateTime.cast!(&1)) end
+      |> Enum.map(fn(r) -> update_in(r, [:delivered_at], &Ecto.DateTime.cast!(&1)) end)
 
     conn
     |> assign(:grouped_reports, grouped_reports)

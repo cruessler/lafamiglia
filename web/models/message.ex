@@ -93,7 +93,7 @@ defmodule LaFamiglia.Message do
         select: %{id: c.id, participant_count: count(s.id)},
         where: c.id in ^conversation_ids)
       |> Repo.all
-      |> Enum.find fn(c) -> c.participant_count == length(participants) end
+      |> Enum.find(fn(c) -> c.participant_count == length(participants) end)
     end
     # Return nil if no conversation was found.
   end
