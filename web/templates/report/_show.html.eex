@@ -4,10 +4,10 @@
 
 <h3>The attacker</h3>
 
-<%= render "_units.html", units: @report.data.attacker,
+<%= render "_units.html", units: @report.data.attacker_before_combat,
                           losses: @report.data.attacker_losses %>
 
 <h3>The defender</h3>
 
-<%= render "_units.html", units: @report.data.defender,
+<%= render "_units.html", units: @report.data.defender_before_combat,
                           losses: @report.data.defender_losses %>
