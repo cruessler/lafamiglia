@@ -7,6 +7,7 @@ defmodule Forge do
   alias LaFamiglia.Conversation
   alias LaFamiglia.Message
   alias LaFamiglia.Report
+  alias LaFamiglia.AttackMovement
 
   @save_one_function &Blacksmith.Config.save/2
   @save_all_function &Blacksmith.Config.save_all/2
@@ -51,4 +52,11 @@ defmodule Forge do
     read: false,
     player_id: Forge.saved_player(Repo).id,
     delivered_at: LaFamiglia.DateTime.now
+
+  register :attack_movement,
+    __struct__: AttackMovement,
+    origin_id: Forge.saved_villa(Repo).id,
+    target_id: Forge.saved_villa(Repo).id,
+    unit_1: 100,
+    unit_2: 0
 end
