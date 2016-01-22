@@ -61,4 +61,10 @@ defmodule LaFamiglia.Unit do
       acc + Map.get(map, k) * u.supply
     end
   end
+
+  def multiply(map, percentage) do
+    Map.new map, fn({k, u}) ->
+      {k, round(Map.get(map, k) * percentage)}
+    end
+  end
 end

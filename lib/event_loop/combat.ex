@@ -50,15 +50,9 @@ defmodule LaFamiglia.Combat do
 
   defp calculate_losses(result) do
     attacker_losses =
-      Enum.map(Unit.all, fn({k, u}) ->
-        {k, round(Map.get(result.attacker_before_combat, k) * result.attacker_percent_loss)}
-      end)
-      |> Enum.into(%{})
+      Unit.multiply(result.attacker_before_combat, result.attacker_percent_loss)
     defender_losses =
-      Enum.map(Unit.all, fn({k, u}) ->
-        {k, round(Map.get(result.defender_before_combat, k) * result.defender_percent_loss)}
-      end)
-      |> Enum.into(%{})
+      Unit.multiply(result.defender_before_combat, result.defender_percent_loss)
 
     attacker_supply_loss = Unit.supply(attacker_losses)
     defender_supply_loss = Unit.supply(defender_losses)
