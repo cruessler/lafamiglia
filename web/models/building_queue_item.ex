@@ -65,8 +65,7 @@ defmodule LaFamiglia.BuildingQueueItem do
     refund_ratio   = time_diff / item.build_time
 
     building.costs.(previous_level)
-    |> Enum.map(fn({k, v}) -> {k, v * refund_ratio} end)
-    |> Enum.into(%{})
+    |> Map.new(fn({k, v}) -> {k, v * refund_ratio} end)
   end
 
   @doc """

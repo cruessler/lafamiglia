@@ -52,8 +52,7 @@ defmodule LaFamiglia.Unit do
   end
   def filter(map) do
     all
-    |> Enum.map(fn({k, u}) -> {k, Map.get(map, k)} end)
-    |> Enum.into(%{})
+    |> Map.new(fn({k, u}) -> {k, Map.get(map, k)} end)
   end
 
   def supply(map) do

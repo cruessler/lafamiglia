@@ -52,7 +52,6 @@ defmodule LaFamiglia.AttackMovementController do
   defp default_units do
     units =
       LaFamiglia.Unit.all
-      |> Enum.map(fn({k, _u}) -> {Atom.to_string(k), 0} end)
-      |> Enum.into(%{})
+      |> Map.new(fn({k, _u}) -> {Atom.to_string(k), 0} end)
   end
 end

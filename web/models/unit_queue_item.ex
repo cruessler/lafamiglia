@@ -57,9 +57,7 @@ defmodule LaFamiglia.UnitQueueItem do
   def enqueue!(%Changeset{model: villa} = changeset, unit, number) do
     unit_queue_items = get_field(changeset, :unit_queue_items)
 
-    costs      = unit.costs
-                 |> Enum.map(fn({k, v}) -> {k, v * number} end)
-                 |> Enum.into(%{})
+    costs      = Map.new(unit.costs, fn({k, v}) -> {k, v * number} end)
     supply     = unit.supply * number
     build_time = unit.build_time * number
     completed_at =
@@ -88,8 +86,7 @@ defmodule LaFamiglia.UnitQueueItem do
     # being recruited.
     refunds =
       unit.costs
-      |> Enum.map(fn({k, v}) -> {k, v * (number_left - 1)} end)
-      |> Enum.into(%{})
+      |> Map.new(fn({k, v}) -> {k, v * (number_left - 1)} end)
 
     new_unit_queue_items =
       unit_queue_items
