@@ -21,10 +21,12 @@ defmodule LaFamiglia.AttackMovementTest do
 
   test "gets handled", %{attack: attack} do
     old_report_count = report_count
+    old_supply       = attack.origin.supply
 
     assert LaFamiglia.Event.handle(attack)
 
     assert report_count == old_report_count + 2
+    assert Repo.get(Villa, attack.origin.id).supply < old_supply
   end
 
   test "should respect validations" do

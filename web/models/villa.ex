@@ -229,6 +229,10 @@ defmodule LaFamiglia.Villa do
     end
   end
 
+  def subtract_supply(%Changeset{} = changeset, supply) do
+    put_change(changeset, :supply, get_field(changeset, :supply) - supply)
+  end
+
   def resource_gains(time_diff) do
     %{
       resource_1: time_diff * 0.01,
