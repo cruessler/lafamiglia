@@ -2,6 +2,30 @@ defmodule LaFamiglia.AttackMovementTest do
   use LaFamiglia.ModelCase
 
   alias LaFamiglia.AttackMovement
+  alias LaFamiglia.Report
+
+  setup do
+    LaFamiglia.DateTime.clock!
+
+    attack =
+      Forge.saved_attack_movement(Repo)
+      |> Repo.preload([:origin, :target])
+
+    {:ok, %{attack: attack}}
+  end
+
+  defp report_count do
+    from(r in Report, select: count(r.id))
+    |> Repo.one
+  end
+
+  test "gets handled", %{attack: attack} do
+    old_report_count = report_count
+
+    assert LaFamiglia.Event.handle(attack)
+
+    assert report_count == old_report_count + 2
+  end
 
   test "should respect validations" do
     origin_without_units = Forge.saved_villa(Repo)
