@@ -62,6 +62,12 @@ defmodule LaFamiglia.Unit do
     end
   end
 
+  def subtract(map1, map2) do
+    Map.merge map1, map2, fn(k, v1, v2) ->
+      v1 - v2
+    end
+  end
+
   def multiply(map, percentage) do
     Map.new map, fn({k, u}) ->
       {k, round(Map.get(map, k) * percentage)}

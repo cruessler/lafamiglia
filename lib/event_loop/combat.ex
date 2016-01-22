@@ -58,13 +58,9 @@ defmodule LaFamiglia.Combat do
     defender_supply_loss = Unit.supply(defender_losses)
 
     attacker_after_combat =
-      Map.merge result.attacker_before_combat, attacker_losses, fn(k, v1, v2) ->
-        v1 - v2
-      end
+      Unit.subtract(result.attacker_before_combat, attacker_losses)
     defender_after_combat =
-      Map.merge result.defender_before_combat, defender_losses, fn(k, v1, v2) ->
-        v1 - v2
-      end
+      Unit.subtract(result.defender_before_combat, defender_losses)
 
     attacker_survived = Enum.any?(attacker_after_combat, fn({_, n}) -> n > 0 end)
 
