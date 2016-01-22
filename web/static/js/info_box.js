@@ -11,7 +11,8 @@ class InfoBox extends React.Component {
     const villa = this.props.villa
 
     if(villa) {
-      let actionNodes = []
+      let actionNodes = [<a href={villa.reports_url}
+                            className="btn btn-primary">Show reports</a>]
 
       if(villa.player.id == this.props.playerId) {
         actionNodes.push(<a href={villa.switch_to_url}
