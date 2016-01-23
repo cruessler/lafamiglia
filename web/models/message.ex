@@ -1,6 +1,4 @@
 defmodule LaFamiglia.Message do
-  @derive [Poison.Encoder]
-
   use LaFamiglia.Web, :model
 
   alias Ecto.Changeset
