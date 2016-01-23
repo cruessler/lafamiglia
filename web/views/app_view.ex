@@ -12,7 +12,7 @@ defmodule LaFamiglia.AppView do
 
   def resources(%{resource_1: resource_1, resource_2: resource_2, resource_3: resource_3}) do
     content_tag :div, class: "resources" do
-      "R1: #{resource_1}, R2: #{resource_2}, R3: #{resource_3}"
+      "R1: #{trunc resource_1}, R2: #{trunc resource_2}, R3: #{trunc resource_3}"
     end
   end
   def resources(_) do
