@@ -19,9 +19,9 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+import_config "buildings.exs"
+import_config "units.exs"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
-
-import_config "buildings.exs"
-import_config "units.exs"

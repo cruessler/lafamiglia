@@ -13,10 +13,12 @@ defmodule LaFamiglia.Movement do
   will take 1 hour to go from 0|0 to 0|1.
   """
   defp speed(units) do
-    units
-    |> Enum.map(fn({_k, u}) -> u.speed end)
-    |> Enum.min
-    |> Kernel./(3600)
+    speed =
+      units
+      |> Enum.map(fn({_k, u}) -> u.speed end)
+      |> Enum.min
+
+    speed / 3600
   end
 
   defp distance_between(origin, target) do
