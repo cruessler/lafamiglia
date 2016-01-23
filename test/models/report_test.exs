@@ -68,4 +68,15 @@ defmodule LaFamiglia.ReportTest do
     assert second.id == context.target.id
     assert first.id  == context.origin.id
   end
+
+  test "has title", context do
+    CombatReport.deliver!(context.origin, context.target, context.result)
+
+    [first, second] =
+      from(r in Report, order_by: [desc: r.id], limit: 2)
+      |> Repo.all
+
+    assert first.title  == "Attack from #{context.origin}"
+    assert second.title == "Attack on #{context.target}"
+  end
 end

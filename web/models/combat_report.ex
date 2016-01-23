@@ -8,11 +8,11 @@ defmodule LaFamiglia.CombatReport do
     report_data = struct(ReportData, Map.from_struct(result))
 
     report_for_attacker =
-      Ecto.Changeset.change(%Report{}, title: "Attack",
+      Ecto.Changeset.change(%Report{}, title: title_for(origin, result),
                                        data: report_data,
                                        player_id: origin.player.id)
     report_for_defender =
-      Ecto.Changeset.change(%Report{}, title: "Attack",
+      Ecto.Changeset.change(%Report{}, title: title_for(target, result),
                                        data: report_data,
                                        player_id: target.player.id)
 
@@ -35,5 +35,13 @@ defmodule LaFamiglia.CombatReport do
                                  %{related_report_id: report_for_defender.id,
                                  villa_id: target.id})
     |> Repo.insert!
+  end
+
+  defp title_for(villa, result) do
+    if villa == result.attacker.origin do
+      "Attack on #{result.defender}"
+    else
+      "Attack from #{result.attacker.origin}"
+    end
   end
 end
