@@ -62,7 +62,7 @@ defmodule LaFamiglia.EventQueue do
   def handle_cast({:cancel_event, event}, queue) do
     Logger.info "removing event ##{event.id} from queue with length #{length(queue)}"
 
-    new_queue = :ordsets.filter(fn({happens_at, e}) ->
+    new_queue = :ordsets.filter(fn({_happens_at, e}) ->
       !(event.__struct__ == e.__struct__ && event.id == e.id)
     end, queue)
 
@@ -71,7 +71,7 @@ defmodule LaFamiglia.EventQueue do
   def handle_cast({:update_event, event}, queue) do
     Logger.info "updating event ##{event.id} in queue with length #{length(queue)}"
 
-    new_queue = :ordsets.filter(fn({happens_at, e}) ->
+    new_queue = :ordsets.filter(fn({_happens_at, e}) ->
       !(event.__struct__ == e.__struct__ && event.id == e.id)
     end, queue)
 

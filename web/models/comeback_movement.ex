@@ -57,7 +57,7 @@ defmodule LaFamiglia.ComebackMovement do
       |> Map.put(:arrives_at, new_arrives_at)
       |> Map.drop([:origin, :target])
 
-    changeset = changeset(%LaFamiglia.ComebackMovement{}, params)
+    changeset(%LaFamiglia.ComebackMovement{}, params)
   end
 
   def arrive!(comeback) do

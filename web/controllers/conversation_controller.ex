@@ -1,8 +1,6 @@
 defmodule LaFamiglia.ConversationController do
   use LaFamiglia.Web, :controller
 
-  alias LaFamiglia.Player
-  alias LaFamiglia.ConversationStatus
   alias LaFamiglia.Conversation
   alias LaFamiglia.Message
 

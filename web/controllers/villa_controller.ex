@@ -1,8 +1,6 @@
 defmodule LaFamiglia.VillaController do
   use LaFamiglia.Web, :controller
 
-  alias Ecto.Changeset
-
   def index(conn, _params) do
     conn
     |> assign(:villas, assoc(conn.assigns.current_player, :villas) |> Repo.all)

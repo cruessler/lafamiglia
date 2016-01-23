@@ -1,7 +1,6 @@
 defmodule LaFamiglia.ReportController do
   use LaFamiglia.Web, :controller
 
-  alias LaFamiglia.Player
   alias LaFamiglia.Report
 
   plug :load_grouped_reports

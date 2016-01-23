@@ -1,6 +1,5 @@
 defmodule LaFamiglia.Plugs.AssignDefaults do
   import Plug.Conn
-  import Phoenix.Controller
 
   def init(params), do: params
 

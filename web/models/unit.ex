@@ -52,7 +52,7 @@ defmodule LaFamiglia.Unit do
   end
   def filter(map) do
     all
-    |> Map.new(fn({k, u}) -> {k, Map.get(map, k)} end)
+    |> Map.new(fn({k, _u}) -> {k, Map.get(map, k)} end)
   end
 
   def supply(map) do
@@ -62,13 +62,13 @@ defmodule LaFamiglia.Unit do
   end
 
   def subtract(map1, map2) do
-    Map.merge map1, map2, fn(k, v1, v2) ->
+    Map.merge map1, map2, fn(_k, v1, v2) ->
       v1 - v2
     end
   end
 
   def multiply(map, percentage) do
-    Map.new map, fn({k, u}) ->
+    Map.new map, fn({k, _u}) ->
       {k, round(Map.get(map, k) * percentage)}
     end
   end

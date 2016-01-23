@@ -3,7 +3,6 @@ defmodule LaFamiglia.MessageController do
 
   alias LaFamiglia.Player
   alias LaFamiglia.ConversationStatus
-  alias LaFamiglia.Conversation
   alias LaFamiglia.Message
 
   def create(conn, %{"message" => %{"text" => text, "conversation_id" => conversation_id}} = _params) do

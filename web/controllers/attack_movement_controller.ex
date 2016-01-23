@@ -50,8 +50,7 @@ defmodule LaFamiglia.AttackMovementController do
   end
 
   defp default_units do
-    units =
-      LaFamiglia.Unit.all
-      |> Map.new(fn({k, _u}) -> {Atom.to_string(k), 0} end)
+    LaFamiglia.Unit.all
+    |> Map.new(fn({k, _u}) -> {Atom.to_string(k), 0} end)
   end
 end
