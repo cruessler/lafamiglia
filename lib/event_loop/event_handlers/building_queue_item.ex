@@ -20,7 +20,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.BuildingQueueItem do
     key      = building.key
     villa    = assoc(item, :villa) |> Repo.one
 
-    changeset = Villa.changeset(villa, Map.put(%{}, key, Map.get(villa, key) + 1))
+    changeset = Villa.changeset(villa, %{key => Map.get(villa, key) + 1})
 
     Repo.transaction fn ->
       Repo.update!(changeset)
