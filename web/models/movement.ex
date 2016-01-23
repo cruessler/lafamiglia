@@ -5,10 +5,18 @@ defmodule LaFamiglia.Movement do
     end
   end
 
+  @doc """
+  This function returns the speed of an array of units in coordinates per
+  second.
+
+  The speed of a unit is given in coordinates per hour. A unit with a speed of 1
+  will take 1 hour to go from 0|0 to 0|1.
+  """
   defp speed(units) do
     units
     |> Enum.map(fn({_k, u}) -> u.speed end)
     |> Enum.min
+    |> Kernel./(3600)
   end
 
   defp distance_between(origin, target) do
