@@ -1,6 +1,7 @@
 use Mix.Config
 
 config :la_famiglia,
+  unit_speed: 10,
   units: [
     unit_1: %{
       id: 1,
