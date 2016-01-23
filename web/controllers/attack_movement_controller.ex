@@ -23,7 +23,10 @@ defmodule LaFamiglia.AttackMovementController do
   # FIXME: As soon as ecto supports belongs_to associations in changesets,
   # the hierarchy of changesets can be reversed for increased elegance.
   # scrub_params can be reintroduced then.
-  def create(conn, %{"villa" => %{"attack_movements" => %{"0" => movement_params}}}) do
+  # Also see the comment in the template.
+  def create(conn, %{"villa" => %{"attack_movements" => movements}}) do
+    {_, movement_params} = movements |> Map.to_list |> List.last
+
     movement_params =
       movement_params
       |> Map.put("origin_id", conn.assigns.current_villa.id)
