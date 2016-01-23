@@ -1,6 +1,8 @@
 defmodule LaFamiglia.BuildingQueueItemTest do
   use LaFamiglia.ModelCase
 
+  alias LaFamiglia.Building
+
   alias LaFamiglia.BuildingQueueItem
 
   test "should add building queue item" do

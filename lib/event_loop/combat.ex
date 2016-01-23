@@ -1,4 +1,5 @@
 defmodule LaFamiglia.Combat do
+  alias LaFamiglia.Building
   alias LaFamiglia.Unit
   alias LaFamiglia.CombatResult
 

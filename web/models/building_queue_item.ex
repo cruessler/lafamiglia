@@ -5,6 +5,8 @@ defmodule LaFamiglia.BuildingQueueItem do
 
   import LaFamiglia.Queue
 
+  alias LaFamiglia.Building
+
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
 

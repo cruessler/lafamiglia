@@ -55,7 +55,9 @@ defmodule LaFamiglia.Web do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
+      alias LaFamiglia.Building
       alias LaFamiglia.Unit
+
       alias LaFamiglia.Villa
 
       import LaFamiglia.AppView

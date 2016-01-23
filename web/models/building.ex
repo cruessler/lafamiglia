@@ -1,4 +1,4 @@
-defmodule Building do
+defmodule LaFamiglia.Building do
   import Ecto.Changeset
   alias Ecto.Changeset
 

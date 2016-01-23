@@ -1,6 +1,8 @@
 defmodule LaFamiglia.BuildingQueueItemController do
   use LaFamiglia.Web, :controller
 
+  alias LaFamiglia.Building
+
   alias LaFamiglia.BuildingQueueItem
 
   def create(conn, %{"building_id" => building_id}) do

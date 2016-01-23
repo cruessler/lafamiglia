@@ -1,10 +1,12 @@
 defmodule LaFamiglia.Villa do
   use LaFamiglia.Web, :model
 
+  alias LaFamiglia.Building
+  alias LaFamiglia.Unit
+
   alias LaFamiglia.Repo
   alias LaFamiglia.Player
   alias LaFamiglia.Villa
-  alias LaFamiglia.Unit
   alias LaFamiglia.BuildingQueueItem
   alias LaFamiglia.UnitQueueItem
   alias LaFamiglia.AttackMovement

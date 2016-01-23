@@ -3,6 +3,8 @@ defimpl LaFamiglia.Event, for: LaFamiglia.BuildingQueueItem do
 
   import Ecto.Model
 
+  alias LaFamiglia.Building
+
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
   alias LaFamiglia.BuildingQueueItem
