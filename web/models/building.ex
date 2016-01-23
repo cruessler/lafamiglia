@@ -38,4 +38,8 @@ defmodule LaFamiglia.Building do
       item.building_id == building.id
     end
   end
+
+  def build_time(building, level) do
+    building.build_time.(level) / Application.get_env(:la_famiglia, :game_speed)
+  end
 end

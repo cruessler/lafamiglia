@@ -44,12 +44,19 @@ defmodule LaFamiglia.UnitQueueItem do
     LaFamiglia.DateTime.add_seconds(completed_at([item]), -item.build_time)
   end
 
+  @doc """
+  This function return the number of units recruited between time_begin and
+  time_start.
+
+  It returns incorrect results when the game speed is changed once an order has
+  been saved to the database.
+  """
   def units_recruited_between(item, time_begin, time_end) do
     start_time = start_time(item)
-    unit       = Unit.get_by_id(item.unit_id)
+    build_time = Unit.get_by_id(item.unit_id) |> Unit.build_time()
 
-    start_number = trunc(LaFamiglia.DateTime.time_diff(start_time, time_begin) / unit.build_time)
-    end_number = trunc(LaFamiglia.DateTime.time_diff(start_time, time_end) / unit.build_time)
+    start_number = trunc(LaFamiglia.DateTime.time_diff(start_time, time_begin) / build_time)
+    end_number = trunc(LaFamiglia.DateTime.time_diff(start_time, time_end) / build_time)
 
     end_number - start_number
   end
@@ -59,7 +66,7 @@ defmodule LaFamiglia.UnitQueueItem do
 
     costs      = Map.new(unit.costs, fn({k, v}) -> {k, v * number} end)
     supply     = unit.supply * number
-    build_time = unit.build_time * number
+    build_time = Unit.build_time(unit, number)
     completed_at =
       completed_at(unit_queue_items)
       |> LaFamiglia.DateTime.add_seconds(build_time)

@@ -60,7 +60,7 @@ defmodule LaFamiglia.VillaTest do
 
     changeset = Ecto.Changeset.change(villa)
 
-    changeset = Villa.process_units_virtually_until(changeset, LaFamiglia.DateTime.add_seconds(LaFamiglia.DateTime.now, unit.build_time + 1))
+    changeset = Villa.process_units_virtually_until(changeset, LaFamiglia.DateTime.add_seconds(LaFamiglia.DateTime.now, Unit.build_time(unit) + 1))
 
     assert Unit.number(changeset, unit) == number + 1
     assert Unit.virtual_number(changeset, unit) == number + 10

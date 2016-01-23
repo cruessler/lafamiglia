@@ -34,4 +34,5 @@ config :la_famiglia, LaFamiglia.Repo,
   database: "la_famiglia_dev",
   pool_size: 10
 
+config :la_famiglia, game_speed: 2
 config :la_famiglia, unit_speed: 200

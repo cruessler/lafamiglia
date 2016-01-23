@@ -82,7 +82,7 @@ defmodule LaFamiglia.BuildingQueueItem do
 
     level        = Building.virtual_level(villa, building)
     costs        = building.costs.(level)
-    build_time   = building.build_time.(level)
+    build_time   = Building.build_time(building, level)
     completed_at =
       completed_at(villa.building_queue_items)
       |> LaFamiglia.DateTime.add_seconds(build_time)

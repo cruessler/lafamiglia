@@ -28,7 +28,7 @@
       <td><%= Building.level(@current_villa, b) %> (<%= Building.virtual_level(@current_villa, b) %>)</td>
       <td><%= @current_villa |> Map.get(k) |> b.points.() %></td>
       <td><%= @current_villa |> Map.get(k) |> b.costs.() |> resources %></td>
-      <td><%= @current_villa |> Map.get(k) |> b.build_time.() %></td>
+      <td><%= Building.build_time(b, Map.get(@current_villa, k)) %></td>
       <td><%= link_to_build_start(@conn, @current_villa, b) %></td>
     </tr>
   <% end %>
@@ -49,7 +49,7 @@
       <td><%= Unit.number(@current_villa, u) %> (<%= Unit.virtual_number(@current_villa, u) %>)</td>
       <td><%= resources(u.costs) %></td>
       <td><%= u.supply %></td>
-      <td><%= u.build_time %></td>
+      <td><%= Unit.build_time(u) %></td>
       <td>
         <%= for n <- [ 1, 5, 20, 100 ] do %>
           <%= link_to_recruit_start(@conn, @current_villa, u, n) %>

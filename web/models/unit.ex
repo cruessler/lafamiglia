@@ -72,4 +72,8 @@ defmodule LaFamiglia.Unit do
       {k, round(Map.get(map, k) * percentage)}
     end
   end
+
+  def build_time(unit, number \\ 1) do
+    number * unit.build_time / Application.get_env(:la_famiglia, :game_speed)
+  end
 end
