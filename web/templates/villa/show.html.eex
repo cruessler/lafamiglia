@@ -22,7 +22,7 @@
     <th>Build time</th>
     <th>Build</th>
   </tr>
-  <%= for {k, b} <- Application.get_env(:la_famiglia, :buildings) do %>
+  <%= for {k, b} <- Building.all do %>
     <tr>
       <td><%= k %></td>
       <td><%= Building.level(@current_villa, b) %> (<%= Building.virtual_level(@current_villa, b) %>)</td>
@@ -43,7 +43,7 @@
     <th>Recruiting time</th>
     <th class="recruit">Recruit</th>
   </tr>
-  <%= for {k, u} <- Application.get_env(:la_famiglia, :units) do %>
+  <%= for {k, u} <- Unit.all do %>
     <tr>
       <td><%= k %></td>
       <td><%= Unit.number(@current_villa, u) %> (<%= Unit.virtual_number(@current_villa, u) %>)</td>
