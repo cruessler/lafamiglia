@@ -50,7 +50,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
     changeset = Ecto.Changeset.change(villa)
 
     for _ <- 1..number_to_recruit do
-      changeset = Villa.process_units_virtually_until(changeset, LaFamiglia.DateTime.add_seconds(LaFamiglia.DateTime.now, Unit.build_time(unit) * 0.9))
+      changeset = Villa.process_units_virtually_until(changeset, LaFamiglia.DateTime.from_now(Unit.build_time(unit) * 0.9))
 
       assert total_number == Unit.virtual_number(changeset, unit)
       assert total_number == Unit.number(changeset, unit) + hd(changeset.model.unit_queue_items).number
