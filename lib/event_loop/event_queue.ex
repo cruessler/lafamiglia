@@ -27,7 +27,7 @@ defmodule LaFamiglia.EventQueue do
   alias LaFamiglia.ComebackMovement
 
   def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, :ok, Dict.put(opts, :name, __MODULE__))
+    GenServer.start_link(__MODULE__, :ok, Dict.put(opts, :name, LaFamiglia.EventQueue))
   end
 
   def cast(request) do
