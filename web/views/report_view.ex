@@ -2,8 +2,8 @@ defmodule LaFamiglia.ReportView do
   use LaFamiglia.Web, :view
 
   def li_class_for(report, nil), do: ""
-  def li_class_for(report, [villa1, villa2]) do
-    if report.villa.id == villa1.id || report.villa.id == villa2.id do
+  def li_class_for(report, [related_villa1, related_villa2]) do
+    if report.villa.id == related_villa1.id || report.villa.id == related_villa2.id do
       "selected"
     end
   end
