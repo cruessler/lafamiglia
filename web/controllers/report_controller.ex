@@ -26,13 +26,12 @@ defmodule LaFamiglia.ReportController do
     reports = Repo.all(query)
 
     conn
-    |> assign(:report, %Report{})
     |> assign(:reports, reports)
     |> render("index.html")
   end
 
   def show(conn, %{"id" => id}) do
-    report      = Repo.get(Report, id)
+    report = Repo.get(Report, id)
 
     conn
     |> assign(:report, report)
