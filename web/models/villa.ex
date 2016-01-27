@@ -74,7 +74,7 @@ defmodule LaFamiglia.Villa do
     |> unique_constraint(:x, name: :villas_x_y_index)
   end
 
-  def build(%{model: villa} = changeset, new_item, costs) do
+  def build_changeset(%{model: villa} = changeset, new_item, costs) do
     changeset
     |> subtract_resources(costs)
     |> Changeset.put_assoc(:building_queue_items, villa.building_queue_items ++ [new_item])
@@ -82,7 +82,7 @@ defmodule LaFamiglia.Villa do
     |> validate_resources
   end
 
-  def recruit(%{model: villa} = changeset, new_item, costs, supply) do
+  def recruit_changeset(%{model: villa} = changeset, new_item, costs, supply) do
     changeset
     |> subtract_resources(costs)
     |> Changeset.put_change(:supply, Changeset.get_field(changeset, :supply) + supply)
@@ -91,7 +91,7 @@ defmodule LaFamiglia.Villa do
     |> validate_resources
   end
 
-  def order_units(%{model: villa} = changeset, new_order, units) do
+  def order_units_changeset(%{model: villa} = changeset, new_order, units) do
     changeset
     |> subtract_units(units)
     |> Changeset.put_assoc(:attack_movements, villa.attack_movements ++ [new_order])

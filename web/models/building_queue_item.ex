@@ -93,7 +93,7 @@ defmodule LaFamiglia.BuildingQueueItem do
                                 completed_at: completed_at)
 
     changeset
-    |> Villa.build(new_item, costs)
+    |> Villa.build_changeset(new_item, costs)
     |> Repo.update
   end
 

@@ -49,7 +49,7 @@ defmodule LaFamiglia.AttackMovement do
     changeset = %Changeset{changeset | model: villa}
 
     changeset
-    |> Villa.order_units(attack, Unit.filter(attack))
+    |> Villa.order_units_changeset(attack, Unit.filter(attack))
   end
 
   def cancel!(attack) do
