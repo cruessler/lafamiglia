@@ -6,7 +6,7 @@ defmodule LaFamiglia.Mixfile do
      version: "0.0.1",
      elixir: "~> 1.2",
      elixirc_paths: elixirc_paths(Mix.env),
-     compilers: [:phoenix] ++ Mix.compilers,
+     compilers: [:phoenix, :gettext] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps]
@@ -27,7 +27,7 @@ defmodule LaFamiglia.Mixfile do
 
   defp applications(:dev),  do: applications(:test)
   defp applications(:test), do: applications(:all) ++ [:blacksmith, :faker]
-  defp applications(_),     do: [:phoenix, :phoenix_html, :cowboy, :logger,
+  defp applications(_),     do: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
                                  :phoenix_ecto, :mariaex, :comeonin]
 
 
@@ -48,6 +48,7 @@ defmodule LaFamiglia.Mixfile do
      # https://github.com/batate/blacksmith/
      {:blacksmith, "~> 0.1", only: [:dev, :test]},
      # https://github.com/igas/faker/
-     {:faker, "~> 0.5", only: [:dev, :test]}]
+     {:faker, "~> 0.5", only: [:dev, :test]},
+     {:gettext, "~> 0.9"}]
   end
 end
