@@ -117,7 +117,7 @@ defmodule LaFamiglia.Message do
   defp update_conversation(%Changeset{model: message} = changeset) do
     assoc(message, :conversation)
     |> Repo.one
-    |> Changeset.change(%{last_message_sent_at: message.inserted_at})
+    |> change(%{last_message_sent_at: message.inserted_at})
     |> Repo.update!
 
     changeset

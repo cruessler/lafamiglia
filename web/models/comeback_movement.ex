@@ -64,7 +64,7 @@ defmodule LaFamiglia.ComebackMovement do
     Repo.transaction fn ->
       comeback = Repo.preload(comeback, :origin)
 
-      Ecto.Changeset.change(comeback.origin)
+      change(comeback.origin)
       |> Villa.add_units(Unit.filter(comeback))
       |> Repo.update!
 
