@@ -25,6 +25,9 @@ defmodule LaFamiglia.Web do
       # Ecto`.
       # http://www.phoenixframework.org/v1.0.0/blog/upgrading-from-v10-to-v11
       use Ecto.Model
+
+      import Ecto.Changeset
+      import Ecto.Query, only: [from: 1, from: 2]
     end
   end
 
@@ -35,7 +38,7 @@ defmodule LaFamiglia.Web do
       # Alias the data repository and import query/model functions
       alias LaFamiglia.Repo
       import Ecto
-      import Ecto.Query, only: [from: 2]
+      import Ecto.Query, only: [from: 1, from: 2]
 
       # Import URL helpers from the router
       import LaFamiglia.Router.Helpers
@@ -56,6 +59,7 @@ defmodule LaFamiglia.Web do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
+      import LaFamiglia.Router.Helpers
       import LaFamiglia.ErrorHelpers
       import LaFamiglia.Gettext
 
@@ -81,7 +85,7 @@ defmodule LaFamiglia.Web do
       # Alias the data repository and import query/model functions
       alias LaFamiglia.Repo
       import Ecto
-      import Ecto.Query, only: [from: 2]
+      import Ecto.Query, only: [from: 1, from: 2]
       import LaFamiglia.Gettext
     end
   end
