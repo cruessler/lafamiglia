@@ -1,9 +1,10 @@
 defmodule LaFamiglia.ReportController do
   use LaFamiglia.Web, :controller
 
-  alias LaFamiglia.Report
+  alias LaFamiglia.{Villa, Report}
 
   plug :load_grouped_reports
+  plug :load_villa_grouped_by
 
   def index(conn, params) do
     query =
@@ -36,6 +37,19 @@ defmodule LaFamiglia.ReportController do
     conn
     |> assign(:report, report)
     |> render("show.html")
+  end
+
+  defp load_villa_grouped_by(%{params: %{"villa_id" => villa_id}} = conn, _) do
+    villa =
+      from(v in Villa, where: v.id == ^villa_id)
+      |> Repo.one
+
+    conn
+    |> assign(:grouped_by_villa, villa)
+  end
+  defp load_villa_grouped_by(conn, _) do
+    conn
+    |> assign(:grouped_by_villa, nil)
   end
 
   defp load_grouped_reports(conn, _params) do
