@@ -46,6 +46,16 @@ defmodule LaFamiglia.ReportController do
     conn
     |> assign(:grouped_by_villa, villa)
   end
+  defp load_villa_grouped_by(%{params: %{"id" => villa_id}} = conn, _) do
+    villas =
+      from(v in Villa,
+        join: r in assoc(v, :related_reports),
+        where: r.id == ^villa_id)
+      |> Repo.all
+
+    conn
+    |> assign(:grouped_by_villa, villas)
+  end
   defp load_villa_grouped_by(conn, _) do
     conn
     |> assign(:grouped_by_villa, nil)
