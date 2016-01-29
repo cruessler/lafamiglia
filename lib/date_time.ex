@@ -7,39 +7,46 @@ defmodule LaFamiglia.DateTime do
   time does not change across multiple calls of `now/0`.
   """
 
-  def to_seconds %Ecto.DateTime{usec: usecs} = datetime do
-    datetime
-    |> Ecto.DateTime.to_erl
-    |> :calendar.datetime_to_gregorian_seconds
-    |> +(usecs / 1_000_000)
-  end
-
-  def add_seconds(%Ecto.DateTime{usec: usecs} = datetime, seconds) when is_integer(seconds) do
-    new_datetime =
+  defp to_seconds %Ecto.DateTime{usec: usecs} = datetime do
+    seconds =
       datetime
       |> Ecto.DateTime.to_erl
       |> :calendar.datetime_to_gregorian_seconds
-      |> +(seconds)
+
+    {seconds, usecs}
+  end
+
+  defp to_datetime({seconds, usecs}) do
+    new_datetime =
+      seconds
       |> :calendar.gregorian_seconds_to_datetime
       |> Ecto.DateTime.from_erl
 
     %Ecto.DateTime{new_datetime | usec: usecs}
   end
-  def add_seconds(%Ecto.DateTime{} = datetime, seconds) when is_float(seconds) do
-    new_seconds = to_seconds(datetime) + seconds
-    frac        = new_seconds - Float.floor(new_seconds)
-    new_seconds = trunc(new_seconds)
 
-    new_datetime =
-      new_seconds
-      |> :calendar.gregorian_seconds_to_datetime
-      |> Ecto.DateTime.from_erl
+  def add_seconds(%Ecto.DateTime{} = datetime, seconds2) when is_integer(seconds2) do
+    {seconds1, usecs} = to_seconds(datetime)
 
-    %Ecto.DateTime{new_datetime | usec: trunc(frac * 1_000_000)}
+    to_datetime({seconds1 + seconds2, usecs})
+  end
+  def add_seconds(%Ecto.DateTime{} = datetime, seconds2) when is_float(seconds2) do
+    {seconds1, usecs1} = to_seconds(datetime)
+
+    usecs = usecs1 + trunc(seconds2 * 1_000_000)
+
+    {seconds1 + div(usecs, 1_000_000), rem(usecs, 1_000_000)}
+    |> to_datetime
   end
 
+  def time_diff({seconds1, usecs1}, {seconds2, usecs2}) when usecs2 > usecs1 do
+    seconds1 - seconds2 - 1 + ((usecs1 - usecs2) + 1_000_000) / 1_000_000
+  end
+  def time_diff({seconds1, usecs1}, {seconds2, usecs2}) do
+    seconds1 - seconds2 + (usecs1 - usecs2) / 1_000_000
+  end
   def time_diff(%Ecto.DateTime{} = time1, %Ecto.DateTime{} = time2) do
-    to_seconds(time2) - to_seconds(time1)
+    time_diff(to_seconds(time2), to_seconds(time1))
   end
 
   def from_now(seconds) do
