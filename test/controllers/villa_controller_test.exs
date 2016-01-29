@@ -21,6 +21,6 @@ defmodule LaFamiglia.VillaControllerTest do
 
     conn = get conn, "/villas/#{villa.id}"
 
-    html_response(conn, 200) =~ "The villa bearing the name"
+    assert html_response(conn, 200) =~ "The villa bearing the name"
   end
 end
