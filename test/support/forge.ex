@@ -12,12 +12,14 @@ defmodule Forge do
   @save_one_function &Blacksmith.Config.save/2
   @save_all_function &Blacksmith.Config.save_all/2
 
+  @hashed_password Comeonin.Bcrypt.hashpwsalt("password")
+
   register :player,
     __struct__: Player,
     email: Sequence.next(:email, &"test#{&1}@example.com"),
     password: "password",
     password_confirmation: "password",
-    hashed_password: Comeonin.Bcrypt.hashpwsalt("password"),
+    hashed_password: @hashed_password,
     name: Faker.Name.name,
     points: 0
 
