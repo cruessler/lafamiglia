@@ -13,8 +13,8 @@ defmodule LaFamiglia.DateTimeTest do
     assert DateTime.now != nil
   end
 
-  test "add_second" do
-    time = DateTime.add_seconds(DateTime.now, 0.7)
+  test "from_now" do
+    time = DateTime.from_now(0.7)
 
     %{usec: usec} = time
 
