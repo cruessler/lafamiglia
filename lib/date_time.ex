@@ -53,7 +53,7 @@ defmodule LaFamiglia.DateTime do
     add_seconds(now, seconds)
   end
 
-  def clock!(time \\ Ecto.DateTime.utc) do
+  def clock!(time \\ Ecto.DateTime.utc(:usec)) do
     Process.put(:la_famiglia_now, time)
   end
 
