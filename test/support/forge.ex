@@ -51,7 +51,7 @@ defmodule Forge do
   register :report,
     __struct__: Report,
     title: "This is a title",
-    data: %{"key" => "value"},
+    data: %LaFamiglia.ReportData{},
     read: false,
     player_id: Forge.saved_player(Repo).id,
     delivered_at: LaFamiglia.DateTime.now
