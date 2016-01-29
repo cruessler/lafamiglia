@@ -30,6 +30,8 @@ defmodule LaFamiglia.ConnCase do
 
       # The default endpoint for testing
       @endpoint LaFamiglia.Endpoint
+
+      import LaFamiglia.ConnHelper
     end
   end
 
