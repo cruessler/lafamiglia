@@ -1,29 +1,32 @@
 defmodule LaFamiglia.VillaControllerTest do
   use LaFamiglia.ConnCase
 
-  alias LaFamiglia.Player
   alias LaFamiglia.Villa
 
-  test "GET /villas" do
-    changeset = Player.changeset(%Player{}, %{name: "Name", email: "e@ma.il", password: "password", password_confirmation: "password"})
-    player = Repo.insert!(changeset)
+  defp with_login(conn, player) do
+    conn = post conn, "/session", [ session: [ email: player.email, password: "password" ]]
 
-    conn = post conn(), "/session", [ session: [ email: player.email, password: "password" ]]
     assert html_response(conn, 302)
     assert redirected_to(conn)
 
+    conn
+  end
+
+  setup do
+    player = Forge.saved_player(Repo)
+    conn   = conn |> with_login(player)
+
+    {:ok, %{conn: conn, player: player}}
+  end
+
+  test "GET /villas", %{conn: conn} do
     conn = get conn, "/villas"
+
     assert html_response(conn, 200) =~ "at your service"
   end
 
-  test "GET /villas/1" do
-    changeset = Player.changeset(%Player{}, %{name: "Name", email: "e@ma.il", password: "password", password_confirmation: "password"})
-    player = Repo.insert!(changeset)
+  test "GET /villas/1", %{conn: conn, player: player} do
     villa  = Villa.create_for player
-
-    conn = post conn(), "/session", [ session: [ email: player.email, password: "password" ]]
-    assert html_response(conn, 302)
-    assert redirected_to(conn)
 
     conn = get conn, "/villas/#{villa.id}"
 

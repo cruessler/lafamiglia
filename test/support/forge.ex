@@ -17,6 +17,7 @@ defmodule Forge do
     email: Sequence.next(:email, &"test#{&1}@example.com"),
     password: "password",
     password_confirmation: "password",
+    hashed_password: Comeonin.Bcrypt.hashpwsalt("password"),
     name: Faker.Name.name,
     points: 0
 
