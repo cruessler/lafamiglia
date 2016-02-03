@@ -94,7 +94,7 @@ defmodule LaFamiglia.EventQueue do
   end
 
   defp milliseconds_until(%Ecto.DateTime{} = time) do
-    diff_seconds = LaFamiglia.DateTime.to_seconds(time) - LaFamiglia.DateTime.to_seconds(Ecto.DateTime.utc)
+    diff_seconds = LaFamiglia.DateTime.time_diff(Ecto.DateTime.utc(:usec), time)
     trunc(diff_seconds * 1_000)
   end
 end
