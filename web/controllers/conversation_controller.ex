@@ -15,7 +15,9 @@ defmodule LaFamiglia.ConversationController do
 
   def show(conn, %{"id" => id}) do
     conversation =
-      Repo.get(Conversation, id)
+      from(c in assoc(conn.assigns.current_player, :conversations),
+        where: c.id == ^id)
+      |> Repo.one
       |> Repo.preload([messages: :sender])
     changeset =
       Ecto.Changeset.change(%Message{},
