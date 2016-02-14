@@ -8,18 +8,16 @@ defmodule LaFamiglia.UnitQueueItemController do
     unit   = Unit.get_by_id(String.to_integer(unit_id))
     number = String.to_integer(number)
 
-    if unit do
-      case UnitQueueItem.enqueue!(conn.assigns.current_villa_changeset, unit, number) do
-        {:error, changeset} ->
-          [{_, message}|_] = changeset.errors
+    case UnitQueueItem.enqueue!(conn.assigns.current_villa_changeset, unit, number) do
+      {:error, changeset} ->
+        [{_, message}|_] = changeset.errors
 
-          conn
-          |> put_flash(:info, message)
-          |> redirect(to: villa_path(conn, :show, villa_id))
-        {:ok, _villa} ->
-          conn
-          |> redirect(to: villa_path(conn, :show, villa_id))
-      end
+        conn
+        |> put_flash(:info, message)
+        |> redirect(to: villa_path(conn, :show, villa_id))
+      {:ok, _villa} ->
+        conn
+        |> redirect(to: villa_path(conn, :show, villa_id))
     end
   end
 

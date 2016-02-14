@@ -61,6 +61,9 @@ defmodule LaFamiglia.UnitQueueItem do
     end_number - start_number
   end
 
+  def enqueue!(%Changeset{} = changeset, nil, _) do
+    {:error, add_error(changeset, :unit, "This unit does not exist.")}
+  end
   def enqueue!(%Changeset{model: villa} = changeset, unit, number) do
     unit_queue_items = get_field(changeset, :unit_queue_items)
 

@@ -73,6 +73,9 @@ defmodule LaFamiglia.BuildingQueueItem do
   @doc """
   This function adds an item to the building queue.
   """
+  def enqueue!(%Changeset{} = changeset, nil) do
+    {:error, add_error(changeset, :building, "This building does not exist.")}
+  end
   def enqueue!(%Changeset{model: villa} = changeset, building) do
     # Since `villa.building_queue_items` is never changed in the webapp except
     # via `enqueue!` and `dequeue!`, it is safe to assume that we can simply use
