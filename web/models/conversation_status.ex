@@ -1,12 +1,16 @@
 defmodule LaFamiglia.ConversationStatus do
   use LaFamiglia.Web, :model
 
+  alias LaFamiglia.Repo
+
   alias LaFamiglia.Player
   alias LaFamiglia.Conversation
 
   schema "conversation_statuses" do
     belongs_to :player, Player
     belongs_to :conversation, Conversation
+
+    field :read_until, Ecto.DateTime
 
     timestamps
   end
@@ -25,5 +29,11 @@ defmodule LaFamiglia.ConversationStatus do
     |> cast(params, @required_fields, @optional_fields)
     |> assoc_constraint(:player)
     |> assoc_constraint(:conversation)
+  end
+
+  def update_read_until!(conversation, player) do
+    from(s in assoc(conversation, :conversation_statuses),
+      where: s.player_id == ^player.id)
+    |> Repo.update_all([set: [read_until: conversation.last_message_sent_at]])
   end
 end

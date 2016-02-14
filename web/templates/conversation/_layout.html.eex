@@ -10,6 +10,10 @@
           <%= link to: conversation_path(@conn, :show, c) do %>
             <%= participants_except(c.players, @current_player) %>
             <small><%= c.last_message_sent_at %></small>
+
+            <%= if c.new_messages do %>
+              <small>New messages</small>
+            <% end %>
           <% end %>
         </li>
       <% end %>

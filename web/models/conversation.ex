@@ -10,6 +10,7 @@ defmodule LaFamiglia.Conversation do
 
   schema "conversations" do
     field :last_message_sent_at, Ecto.DateTime
+    field :new_messages, :boolean, virtual: true
 
     has_many :messages, Message
 
