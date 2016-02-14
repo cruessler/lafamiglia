@@ -5,10 +5,9 @@ defmodule LaFamiglia.ConversationController do
   alias LaFamiglia.ConversationStatus
   alias LaFamiglia.Message
 
-  plug :load_conversations
-
   def index(conn, _params) do
     conn
+    |> load_conversations
     |> assign(:conversation, %Conversation{})
     |> assign(:changeset, Ecto.Changeset.change(%Message{}))
     |> render("index.html")
@@ -29,12 +28,13 @@ defmodule LaFamiglia.ConversationController do
                               sender_id: conn.assigns.current_player.id})
 
     conn
+    |> load_conversations
     |> assign(:conversation, conversation)
     |> assign(:changeset, changeset)
     |> render("show.html")
   end
 
-  defp load_conversations(conn, _params) do
+  defp load_conversations(conn) do
     current_player = conn.assigns.current_player
 
     conversations =
