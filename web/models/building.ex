@@ -9,8 +9,7 @@ defmodule LaFamiglia.Building do
   end
 
   def get_by_id(id) do
-    case Application.get_env(:la_famiglia, :buildings)
-         |> Enum.find(fn({_k, b}) -> b.id == id end)
+    case all |> Enum.find(fn({_k, b}) -> b.id == id end)
     do
       {_k, b} -> b
       _       -> nil
