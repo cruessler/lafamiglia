@@ -46,7 +46,7 @@ defmodule LaFamiglia.EventQueue do
       queries
       |> Enum.map(&Repo.all/1)
       |> Enum.concat
-      |> Enum.map(fn(e) -> {Event.happens_at(e), e} end)
+      |> Enum.map(fn(e) -> to_tuple(e) end)
       |> :ordsets.from_list
 
     {:ok, queue, timeout(queue)}
@@ -55,15 +55,28 @@ defmodule LaFamiglia.EventQueue do
   def handle_cast({:new_event, event}, queue) do
     Logger.info "adding event ##{event.id} to queue with length #{length(queue)}"
 
-    new_queue = :ordsets.add_element({Event.happens_at(event), event}, queue)
+    new_queue = :ordsets.add_element(to_tuple(event), queue)
 
     {:noreply, new_queue, timeout(new_queue)}
   end
   def handle_cast({:cancel_event, event}, queue) do
     Logger.info "removing event ##{event.id} from queue with length #{length(queue)}"
 
-    new_queue = :ordsets.filter(fn({_happens_at, e}) ->
-      !(event.__struct__ == e.__struct__ && event.id == e.id)
+    # This is a workaround for MySQL. Even though MySQL supports microseconds
+    # precision in datetimes (since 5.6.4), by default it is not used in Ecto.
+    # Thus, datetimes are currently only saved with seconds precision.
+    #
+    # Therefore, the following line does not work in case the event has been
+    # loaded from MySQL because it would only have seconds precision while the
+    # event already in the queue has microseconds precision (assuming the event
+    # loop has not been restarted).
+    #
+    #   new_queue = :ordsets.del_element(to_tuple(event), queue)
+    #
+    # See http://dev.mysql.com/doc/refman/5.6/en/fractional-seconds.html,
+    # https://github.com/elixir-lang/ecto/pull/515),
+    new_queue = :ordsets.filter(fn({_, module, id}) ->
+      !(module == event.__struct__ && id == event.id)
     end, queue)
 
     {:noreply, new_queue, timeout(new_queue)}
@@ -71,25 +84,31 @@ defmodule LaFamiglia.EventQueue do
   def handle_cast({:update_event, event}, queue) do
     Logger.info "updating event ##{event.id} in queue with length #{length(queue)}"
 
-    new_queue = :ordsets.filter(fn({_happens_at, e}) ->
-      !(event.__struct__ == e.__struct__ && event.id == e.id)
+    new_queue = :ordsets.filter(fn({_, module, id}) ->
+      !(module == event.__struct__ && id == event.id)
     end, queue)
 
-    new_queue = :ordsets.add_element({Event.happens_at(event), event}, new_queue)
+    new_queue = :ordsets.add_element(to_tuple(event), new_queue)
 
     {:noreply, new_queue, timeout(new_queue)}
   end
 
-  def handle_info(:timeout, [{_completed_at, event}|queue]) do
+  def handle_info(:timeout, [{_completed_at, module, id}|queue]) do
+    event = Repo.get!(module, id)
+
     LaFamiglia.EventLoop.notify(event)
 
     {:noreply, queue, timeout(queue)}
   end
 
+  defp to_tuple(event) do
+    {Event.happens_at(event), event.__struct__, event.id}
+  end
+
   defp timeout([]) do
     :infinity
   end
-  defp timeout([{happens_at, _event}|_]) do
+  defp timeout([{happens_at, _, _}|_]) do
     max(milliseconds_until(happens_at), 0)
   end
 
