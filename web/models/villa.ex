@@ -158,7 +158,7 @@ defmodule LaFamiglia.Villa do
           { x_1, x_2, y_range_mean, y_2 },
           { x_1, x_range_mean - 1, y_1, y_2 },
           { x_range_mean, x_2, y_1, y_2 } ]
-        |> Enum.sort_by(fn (_) -> :random.uniform end)
+        |> Enum.sort_by(fn (_) -> :rand.uniform end)
         |> Enum.find_value(fn(rectangle) -> empty_coordinates(rectangle) end)
       end
     end
