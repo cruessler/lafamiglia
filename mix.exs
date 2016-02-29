@@ -28,7 +28,7 @@ defmodule LaFamiglia.Mixfile do
   defp applications(:dev),  do: applications(:test)
   defp applications(:test), do: applications(:all) ++ [:blacksmith, :faker]
   defp applications(_),     do: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
-                                 :phoenix_ecto, :mariaex, :comeonin]
+                                 :phoenix_ecto, :postgrex, :comeonin]
 
 
   # Specifies your project dependencies
@@ -38,7 +38,11 @@ defmodule LaFamiglia.Mixfile do
     [{:phoenix, "~> 1.1"},
      {:phoenix_ecto, "~> 2.0"},
      {:ecto, "~> 1.0"},
-     {:mariaex, ">= 0.0.0"},
+     # `postgrex` needs to be pinned because of bugs in preparation for a
+     # 1.0 release
+     # https://github.com/phoenixframework/phoenix/issues/1489
+     {:postgrex, "0.10.0"},
+     {:poison, "~> 2.0", override: true},
      {:phoenix_html, "~> 2.3"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      # https://github.com/elixircnx/comeonin

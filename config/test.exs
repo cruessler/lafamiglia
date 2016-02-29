@@ -11,9 +11,9 @@ config :logger, level: :warn
 
 # Configure your database
 config :la_famiglia, LaFamiglia.Repo,
-  adapter: Ecto.Adapters.MySQL,
-  username: "root",
-  password: "",
+  adapter: Ecto.Adapters.Postgres,
+  username: "la_famiglia",
+  password: "la_famiglia",
   database: "la_famiglia_test",
   pool: Ecto.Adapters.SQL.Sandbox, # Use a sandbox for transactional testing
   pool_size: 1

@@ -6,9 +6,22 @@ defmodule LaFamiglia.ReportData do
              :defender_before_combat, :defender_losses,
              :winner]
 
+  defp atomify_keys(map) when is_map(map) do
+    Enum.reduce map, %{}, fn({k, v}, acc) ->
+      Map.put(acc, String.to_existing_atom(k), atomify_keys(v))
+    end
+  end
+  defp atomify_keys(value), do: value
+
   def cast(%LaFamiglia.ReportData{} = data), do: {:ok, data}
   def cast(_), do: :error
 
+  def load(map) when is_map(map) do
+    {:ok, struct(LaFamiglia.ReportData, atomify_keys(map))}
+  end
+  # The following function clause is due to the way Ecto handles custom types
+  # when using MySQL (PostgreSQL correctly returns a map).
+  #
   # Even though `type` returns `:map`, the data gets passed to `load` as a
   # string. This seems to be in contrast to the Ecto documentation which states
   # that “load should receive the db type and output your custom Ecto type”.

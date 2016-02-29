@@ -28,9 +28,9 @@ config :la_famiglia, LaFamiglia.Endpoint,
 
 # Configure your database
 config :la_famiglia, LaFamiglia.Repo,
-  adapter: Ecto.Adapters.MySQL,
-  username: "root",
-  password: "",
+  adapter: Ecto.Adapters.Postgres,
+  username: "la_famiglia",
+  password: "la_famiglia",
   database: "la_famiglia_dev",
   pool_size: 10
 
