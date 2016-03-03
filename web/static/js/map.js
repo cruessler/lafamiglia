@@ -134,7 +134,7 @@ class InteractiveMap extends React.Component {
 
   getVisibleXAxisLabels() {
     const upperLeftCorner  = this.getMapCoordinates(0, 0)
-    const width = Math.floor(this.mapDimensions.width / this.cellDimensions.width) + 1
+    const width = Math.ceil(this.mapDimensions.width / this.cellDimensions.width) + 1
 
     return Array(width)
              .fill()
@@ -143,7 +143,7 @@ class InteractiveMap extends React.Component {
 
   getVisibleYAxisLabels() {
     const upperLeftCorner  = this.getMapCoordinates(0, 0)
-    const height = Math.floor(this.mapDimensions.height / this.cellDimensions.height) + 1
+    const height = Math.ceil(this.mapDimensions.height / this.cellDimensions.height) + 1
 
     return Array(height)
              .fill()
