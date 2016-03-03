@@ -197,16 +197,20 @@ class InteractiveMap extends React.Component {
       mapCells = <div className="cell" ref={(c) => this.firstCell = c}></div>
     }
 
+    const mapStyle = { transform: `translate(${this.state.x}px, ${this.state.y}px)` }
+
     return (
       <div className="container-fluid map-viewport">
-        <div className="x-axis-labels" style={{left: this.state.x}}>{xAxisLabels}</div>
-        <div className="y-axis-labels" style={{top: this.state.y}}>{yAxisLabels}</div>
+        <div className="x-axis-labels"
+             style={{transform: `translateX(${this.state.x}px)`}}>{xAxisLabels}</div>
+        <div className="y-axis-labels"
+             style={{transform: `translateY(${this.state.y}px)`}}>{yAxisLabels}</div>
         <div className="map-inner-viewport" ref={(v) => this.innerViewport = v}
            onMouseDown={this.onMouseDown}
            onMouseMove={this.onMouseMove}
            onMouseUp={this.onMouseUp}
            onMouseOut={this.onMouseOut}>
-          <div className="map" style={{left: this.state.x, top: this.state.y}}
+          <div className="map" style={mapStyle}
                ref={(m) => this.map = m}>
             {mapCells}
           </div>
