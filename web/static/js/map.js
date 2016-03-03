@@ -20,6 +20,10 @@ class InteractiveMap extends React.Component {
     this.onMouseUp   = this.onMouseUp.bind(this)
     this.onMouseOut  = this.onMouseOut.bind(this)
 
+    this.onTouchStart = this.onTouchStart.bind(this)
+    this.onTouchMove = this.onTouchMove.bind(this)
+    this.onTouchEnd = this.onTouchEnd.bind(this)
+
     this.mounted = false
 
     this.FADE_IN_TIMEOUT = 400
@@ -58,6 +62,33 @@ class InteractiveMap extends React.Component {
   }
 
   onMouseOut(e) {
+    this.stopDragging()
+  }
+
+  onTouchStart(e) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if(e.touches.length == 1) {
+      const touch = e.touches[0]
+      this.setState({ dragging: true, moved: false,
+                      startPosition: { x: touch.pageX - this.state.x, y: touch.pageY - this.state.y }})
+    }
+  }
+
+  onTouchMove(e) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if(e.touches.length == 1 && this.state.dragging) {
+      const touch = e.touches[0]
+      this.setState({ moved: true,
+                      x: touch.pageX - this.state.startPosition.x,
+                      y: touch.pageY - this.state.startPosition.y })
+    }
+  }
+
+  onTouchEnd(e) {
     this.stopDragging()
   }
 
@@ -209,7 +240,10 @@ class InteractiveMap extends React.Component {
            onMouseDown={this.onMouseDown}
            onMouseMove={this.onMouseMove}
            onMouseUp={this.onMouseUp}
-           onMouseOut={this.onMouseOut}>
+           onMouseOut={this.onMouseOut}
+           onTouchStart={this.onTouchStart}
+           onTouchMove={this.onTouchMove}
+           onTouchEnd={this.onTouchEnd}>
           <div className="map" style={mapStyle}
                ref={(m) => this.map = m}>
             {mapCells}
