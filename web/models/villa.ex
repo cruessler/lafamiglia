@@ -33,6 +33,8 @@ defmodule LaFamiglia.Villa do
     field :unit_1, :integer
     field :unit_2, :integer
 
+    field :points, :integer
+
     field :supply, :integer
     field :max_supply, :integer
 
