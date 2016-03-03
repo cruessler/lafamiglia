@@ -15,8 +15,8 @@ div.map-viewport {
     padding-bottom: 1em;
 
     position: absolute;
-    left: 5%;
-    top: 12%;
+    top: calc(#{$map-x-axis-labels-height} + 2%);
+    left: calc(#{$map-y-axis-labels-width} + 3%);
 
     div.actions {
       padding-top: 0.5em;
@@ -28,8 +28,8 @@ div.map-viewport {
     @include overlay-box;
 
     position: absolute;
-    left: 5%;
-    bottom: 4%;
+    left: calc(#{$map-y-axis-labels-width} + 3%);
+    bottom: 2%;
 
     small {
       display: block;
