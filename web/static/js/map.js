@@ -163,6 +163,25 @@ class InteractiveMap extends React.Component {
                                y: upperLeftCorner.y + Math.floor(i / width)}))
   }
 
+  saveCellDimensions() {
+    const mapCellNode   = $(this.firstCell.getDOMNode())
+    this.cellDimensions = { width:  mapCellNode.outerWidth(),
+                            height: mapCellNode.outerHeight() }
+
+  }
+
+  saveMapDimensions() {
+    const mapNode      = $(this.map.getDOMNode())
+    this.mapDimensions = { width:  mapNode.width(),
+                            height: mapNode.height() }
+
+    const minX = this.props.centerX -
+                 ((this.mapDimensions.width - this.cellDimensions.width) / this.cellDimensions.width) / 2
+    const minY = this.props.centerY -
+                 ((this.mapDimensions.height - this.cellDimensions.height) / this.cellDimensions.height) / 2
+    this.setState({ minX: minX, minY: minY })
+  }
+
   /*
    * This function saves the dimensions of map elements which are not known
    * prior to the first `render()` call.
@@ -170,21 +189,12 @@ class InteractiveMap extends React.Component {
   componentDidMount() {
     this.mounted = true
 
-    let mapNode     = $(this.map.getDOMNode())
-    let mapCellNode = $(this.firstCell.getDOMNode())
-
-    this.mapDimensions  = { width:  mapNode.width(),
-                            height: mapNode.height() }
-    this.cellDimensions = { width:  mapCellNode.outerWidth(),
-                            height: mapCellNode.outerHeight() }
-
-    const minX = this.props.centerX -
-                 ((this.mapDimensions.width - this.cellDimensions.width) / this.cellDimensions.width) / 2
-    const minY = this.props.centerY -
-                 ((this.mapDimensions.height - this.cellDimensions.height) / this.cellDimensions.height) / 2
-    this.setState({ minX: minX, minY: minY })
+    this.saveCellDimensions()
+    this.saveMapDimensions()
 
     setTimeout(() => this.fetchData(), 0)
+
+    $(window).on("resize", (e) => this.saveMapDimensions())
   }
 
   componentDidUpdate() {
