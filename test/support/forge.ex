@@ -36,6 +36,7 @@ defmodule Forge do
     building_2: 0,
     unit_1: 0,
     unit_2: 0,
+    points: 1,
     supply: 0,
     max_supply: 100,
     processed_until: LaFamiglia.DateTime.now,

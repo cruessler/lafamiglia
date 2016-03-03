@@ -65,4 +65,14 @@ defmodule LaFamiglia.VillaTest do
     assert Unit.number(changeset, unit) == number + 1
     assert Unit.virtual_number(changeset, unit) == number + 10
   end
+
+  test "recalc_points" do
+    villa      = Forge.saved_villa(Repo)
+    old_points = villa.points
+    changeset  = Ecto.Changeset.change(villa, %{building_1: villa.building_1 + 1})
+
+    changeset = Villa.recalc_points(changeset)
+    refute is_nil(Ecto.Changeset.get_field(changeset, :points))
+    assert Ecto.Changeset.get_field(changeset, :points) != old_points
+  end
 end
