@@ -25,8 +25,6 @@ class InteractiveMap extends React.Component {
     this.onTouchEnd = this.onTouchEnd.bind(this)
 
     this.mounted = false
-
-    this.FADE_IN_TIMEOUT = 400
   }
 
   mergeVillas(villas, newVillas) {
@@ -195,11 +193,6 @@ class InteractiveMap extends React.Component {
     setTimeout(() => this.fetchData(), 0)
 
     $(window).on("resize", (e) => this.saveMapDimensions())
-  }
-
-  componentDidUpdate() {
-    setTimeout(() => $(this.map.getDOMNode()).find("div.cell").addClass("in"),
-               this.FADE_IN_TIMEOUT)
   }
 
   renderXAxisLabel(x) {

@@ -13,10 +13,10 @@ class MapCells extends React.Component {
 
   classNamesForVilla(villa) {
     if(villa && villa.player.id != this.props.playerId) {
-      return "cell fade foreign"
+      return "cell foreign"
     }
     else {
-      return "cell fade"
+      return "cell"
     }
  }
 

@@ -102,7 +102,13 @@ div.cell {
   bottom: 0;
   right: 0;
 
+  animation: 0.4s ease-in 0s fade-in;
+
   &.foreign {
     background-color: $brand-warning;
   }
+}
+
+@keyframes fade-in {
+  from { opacity: 0 } to { opacity: 1 }
 }
