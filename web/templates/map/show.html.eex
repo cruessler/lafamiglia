@@ -1,6 +1,2 @@
-<h2>
-  On this map you can explore your neighbourhood
-</h2>
-
 <%= react_component("InteractiveMap", %{centerX: @center_x, centerY: @center_y,
                                         playerId: @current_player.id}) %>
