@@ -34,7 +34,7 @@ class MapCells extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return !nextProps.dragging
+    return !nextProps.touchDragging
   }
 
   render() {

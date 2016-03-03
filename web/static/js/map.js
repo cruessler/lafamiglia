@@ -8,7 +8,7 @@ class InteractiveMap extends React.Component {
     this.state = { villas: this.mergeVillas(new Map(), this.props.villas),
                    x: 0, y: 0,
                    origin: {},
-                   dragging: false,
+                   dragging: false, touchDragging: false,
                    hoveredVilla: undefined,
                    clickedVilla: undefined }
 
@@ -69,7 +69,7 @@ class InteractiveMap extends React.Component {
 
     if(e.touches.length == 1) {
       const touch = e.touches[0]
-      this.setState({ dragging: true, moved: false,
+      this.setState({ touchDragging: true, moved: false,
                       startPosition: { x: touch.pageX - this.state.x, y: touch.pageY - this.state.y }})
     }
   }
@@ -78,7 +78,7 @@ class InteractiveMap extends React.Component {
     e.preventDefault()
     e.stopPropagation()
 
-    if(e.touches.length == 1 && this.state.dragging) {
+    if(e.touches.length == 1 && this.state.touchDragging) {
       const touch = e.touches[0]
       this.setState({ moved: true,
                       x: touch.pageX - this.state.startPosition.x,
@@ -91,11 +91,11 @@ class InteractiveMap extends React.Component {
   }
 
   stopDragging() {
-    if(!this.state.dragging) {
+    if(!(this.state.dragging || this.state.touchDragging)) {
       return
     }
 
-    this.setState({ dragging: false })
+    this.setState({ dragging: false, touchDragging: false })
 
     if(this.state.moved) {
       this.fetchData()
@@ -225,7 +225,7 @@ class InteractiveMap extends React.Component {
                            playerId={this.props.playerId}
                            visibleCoordinates={this.getVisibleCoordinates()}
                            getViewportOffset={this.getViewportOffset.bind(this)}
-                           dragging={this.state.dragging} />
+                           touchDragging={this.state.touchDragging} />
 
       xAxisLabels = this.getVisibleXAxisLabels().map(x => this.renderXAxisLabel(x))
       yAxisLabels = this.getVisibleYAxisLabels().map(y => this.renderYAxisLabel(y))
