@@ -124,7 +124,7 @@ class InteractiveMap extends React.Component {
 
   getViewportOffset(mapX, mapY) {
     return { x: (mapX - this.state.minX) * this.cellDimensions.width,
-             y: (mapY - this.state.minY) * this.cellDimensions.width }
+             y: (mapY - this.state.minY) * this.cellDimensions.height }
   }
 
   getMapCoordinates(viewportX, viewportY) {
