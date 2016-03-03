@@ -1,2 +1,25 @@
+<style>
+/*
+ * These styles make the address bar stay on screen in mobile browsers. This
+ * makes sure that moving the map doesn’t interfere with hiding the address bar
+ * (which is typically done by scrolling down).
+ *
+ * http://stackoverflow.com/questions/23672065/how-to-keep-the-safari-toolbar-and-address-bar-display-when-user-scrolled-the-pa
+ */
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: scroll;
+}
+</style>
+
 <%= react_component("InteractiveMap", %{centerX: @center_x, centerY: @center_y,
                                         playerId: @current_player.id}) %>
