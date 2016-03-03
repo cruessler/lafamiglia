@@ -1,4 +1,5 @@
 import InfoBox from "web/static/js/info_box"
+import MapCells from "web/static/js/map_cells"
 import StatusBar from "web/static/js/status_bar"
 
 class InteractiveMap extends React.Component {
@@ -174,37 +175,6 @@ class InteractiveMap extends React.Component {
     return <div key={y} className="y-axis-label" style={style}>{y}</div>
   }
 
-  nameForVilla(villa) {
-    if(villa) {
-      return `${villa.name} ${villa.x}|${villa.y}`
-    } else {
-      return ""
-    }
-  }
-
-  classNamesForVilla(villa) {
-    if(villa && villa.player.id != this.props.playerId) {
-      return "cell fade foreign"
-    }
-    else {
-      return "cell fade"
-    }
- }
-
-  renderMapCell(x, y) {
-    const offset = this.getViewportOffset(x, y)
-    const style  = { left: offset.x, top: offset.y }
-
-    const villa = this.state.villas[[x, y]]
-
-    return (<div key={[x, y]}
-                 className={this.classNamesForVilla(villa)}
-                 style={style}>
-              {this.nameForVilla(villa)}
-            </div>)
-  }
-
-
   render() {
     let mapCells = undefined
     let xAxisLabels = [], yAxisLabels = []
@@ -215,7 +185,11 @@ class InteractiveMap extends React.Component {
      * has been rendered to the DOM.
      */
     if(this.mounted) {
-      mapCells = this.getVisibleCoordinates().map(c => this.renderMapCell(c.x, c.y))
+      mapCells = <MapCells villas={this.state.villas}
+                           playerId={this.props.playerId}
+                           visibleCoordinates={this.getVisibleCoordinates()}
+                           getViewportOffset={this.getViewportOffset.bind(this)}
+                           dragging={this.state.dragging} />
 
       xAxisLabels = this.getVisibleXAxisLabels().map(x => this.renderXAxisLabel(x))
       yAxisLabels = this.getVisibleYAxisLabels().map(y => this.renderYAxisLabel(y))
