@@ -4,9 +4,10 @@ $map-y-axis-labels-width: 2em;
 $map-x-axis-labels-height: 2.5em;
 
 div.map-viewport {
-  position: relative;
+  height: calc(100vh - 100px);
   overflow: hidden;
   padding-left: 0;
+  padding-right: 0;
 
   div.info-box {
     @include overlay-box;
@@ -38,6 +39,7 @@ div.map-viewport {
 }
 div.map-inner-viewport {
   position: relative;
+  height: calc(100% - #{$map-x-axis-labels-height});
   overflow: hidden;
   margin-left: $map-y-axis-labels-width;
 }
@@ -58,7 +60,7 @@ div.map-inner-viewport:before {
 
 div.map {
   position: relative;
-  height: 30em;
+  height: 100%;
 
   div.row {
     clear: both;
@@ -72,14 +74,9 @@ div.x-axis-labels {
   margin-left: $map-y-axis-labels-width;
   height: $map-x-axis-labels-height;
   background-color: $body-bg;
-  margin-bottom: 0.3em;
 }
 div.y-axis-labels {
-  position: absolute;
-  width: $map-y-axis-labels-width;
-  margin-top: $map-x-axis-labels-height;
-  margin-right: 0;
-  padding-right: 0.2em;
+  position: relative;
   background-color: $body-bg;
 }
 div.x-axis-label {
