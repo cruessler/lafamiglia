@@ -7,7 +7,7 @@ class InteractiveMap extends React.Component {
     super(props)
     this.state = { villas: this.mergeVillas(new Map(), this.props.villas),
                    x: 0, y: 0,
-                   minX: undefined, minY: undefined,
+                   origin: {},
                    dragging: false,
                    hoveredVilla: undefined,
                    clickedVilla: undefined }
@@ -121,13 +121,13 @@ class InteractiveMap extends React.Component {
   }
 
   getViewportOffset(mapX, mapY) {
-    return { x: (mapX - this.state.minX) * this.cellDimensions.width,
-             y: (mapY - this.state.minY) * this.cellDimensions.height }
+    return { x: (mapX - this.state.origin.x) * this.cellDimensions.width,
+             y: (mapY - this.state.origin.y) * this.cellDimensions.height }
   }
 
   getMapCoordinates(viewportX, viewportY) {
-    return { x: Math.floor((viewportX - this.state.x) / this.cellDimensions.width + this.state.minX),
-             y: Math.floor((viewportY - this.state.y) / this.cellDimensions.height + this.state.minY) }
+    return { x: Math.floor((viewportX - this.state.x) / this.cellDimensions.width + this.state.origin.x),
+             y: Math.floor((viewportY - this.state.y) / this.cellDimensions.height + this.state.origin.y) }
   }
 
   getVisibleXAxisLabels() {
@@ -173,11 +173,13 @@ class InteractiveMap extends React.Component {
     this.mapDimensions = { width:  mapNode.width(),
                             height: mapNode.height() }
 
-    const minX = this.props.centerX -
-                 ((this.mapDimensions.width - this.cellDimensions.width) / this.cellDimensions.width) / 2
-    const minY = this.props.centerY -
-                 ((this.mapDimensions.height - this.cellDimensions.height) / this.cellDimensions.height) / 2
-    this.setState({ minX: minX, minY: minY })
+    const originX =
+      this.props.centerX -
+      ((this.mapDimensions.width - this.cellDimensions.width) / this.cellDimensions.width) / 2
+    const originY =
+      this.props.centerY -
+      ((this.mapDimensions.height - this.cellDimensions.height) / this.cellDimensions.height) / 2
+    this.setState({ origin: { x: originX, y: originY }})
   }
 
   /*
