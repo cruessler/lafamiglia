@@ -44,11 +44,7 @@ defmodule LaFamiglia.ConversationController do
         select: {c, c.last_message_sent_at > s.read_until or is_nil(s.read_until)},
         order_by: [desc: c.last_message_sent_at])
       |> Repo.all
-      # FIXME: This code is specific to MySQL. MySQL does not have native
-      # boolean data types and uses `1` and `0` for `true` and `false`, both of
-      # which cannot be cast automatically by Ecto as it does not know we want
-      # a boolean here.
-      |> Enum.map(fn {c, new_messages} -> %{c | new_messages: new_messages == 1} end)
+      |> Enum.map(fn {c, new_messages} -> %{c | new_messages: new_messages} end)
       |> Repo.preload([:players])
 
     conn
