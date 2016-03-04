@@ -8,12 +8,18 @@ defmodule LaFamiglia.Building do
     Application.get_env(:la_famiglia, :buildings)
   end
 
-  def get_by_id(id) do
-    case all |> Enum.find(fn({_k, b}) -> b.id == id end)
+  def get(fun) when is_function(fun) do
+    case all |> Enum.find(fun)
     do
       {_k, b} -> b
       _       -> nil
     end
+  end
+  def get(id) when is_integer(id) do
+    get fn({_k, b}) -> b.id == id end
+  end
+  def get(key) when is_atom(key) do
+    get fn({_k, b}) -> b.key == key end
   end
 
   def level(%Changeset{} = changeset, building) do

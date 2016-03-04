@@ -18,7 +18,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.BuildingQueueItem do
   def handle(item) do
     Logger.info "processing build event ##{item.id}"
 
-    building = Building.get_by_id(item.building_id)
+    building = Building.get(item.building_id)
     key      = building.key
     villa    = from(v in assoc(item, :villa), preload: :player) |> Repo.one
 

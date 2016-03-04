@@ -8,7 +8,7 @@ defmodule LaFamiglia.BuildingQueueItemTest do
   test "should add building queue item" do
     villa     = Forge.saved_villa(Repo) |> Repo.preload(:building_queue_items)
     changeset = Ecto.Changeset.change(villa)
-    building  = Building.get_by_id(1)
+    building  = Building.get(1)
 
     assert Building.virtual_level(villa, building) == 1
 
@@ -28,7 +28,7 @@ defmodule LaFamiglia.BuildingQueueItemTest do
   test "should cancel building queue item" do
     villa     = Forge.saved_villa(Repo)
     changeset = Ecto.Changeset.change(villa)
-    building  = Building.get_by_id(1)
+    building  = Building.get(1)
 
     assert {:ok, _} = BuildingQueueItem.enqueue!(changeset, building)
 
@@ -41,7 +41,7 @@ defmodule LaFamiglia.BuildingQueueItemTest do
   test "should respect validations" do
     villa     = Forge.saved_villa(Repo)
     changeset = Villa.changeset(villa, %{resource_1: 0})
-    building  = Building.get_by_id(1)
+    building  = Building.get(1)
 
     assert {:error, _} = changeset |> BuildingQueueItem.enqueue!(building)
 

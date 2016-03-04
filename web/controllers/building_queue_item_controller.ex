@@ -6,7 +6,7 @@ defmodule LaFamiglia.BuildingQueueItemController do
   alias LaFamiglia.BuildingQueueItem
 
   def create(conn, %{"building_id" => building_id}) do
-    building = Building.get_by_id(String.to_integer(building_id))
+    building = Building.get(String.to_integer(building_id))
 
     case BuildingQueueItem.enqueue!(conn.assigns.current_villa_changeset, building) do
       {:error, changeset} ->

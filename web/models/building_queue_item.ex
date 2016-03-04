@@ -61,7 +61,7 @@ defmodule LaFamiglia.BuildingQueueItem do
   end
 
   def refunds(villa, item, time_diff) do
-    building = Building.get_by_id(item.building_id)
+    building = Building.get(item.building_id)
 
     previous_level = Building.virtual_level(villa, building) - 1
     refund_ratio   = time_diff / item.build_time
