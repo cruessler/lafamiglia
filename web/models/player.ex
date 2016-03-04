@@ -3,6 +3,8 @@ defmodule LaFamiglia.Player do
 
   alias Comeonin.Bcrypt
 
+  alias LaFamiglia.Repo
+  alias LaFamiglia.Player
   alias LaFamiglia.Villa
   alias LaFamiglia.ConversationStatus
   alias LaFamiglia.Report
@@ -61,5 +63,14 @@ defmodule LaFamiglia.Player do
     else
       changeset
     end
+  end
+
+  def recalc_points!(player) do
+    player_points =
+      from(v in assoc(player, :villas), select: sum(v.points))
+      |> Repo.one
+
+    from(p in Player, where: p.id == ^player.id)
+    |> Repo.update_all(set: [points: player_points])
   end
 end
