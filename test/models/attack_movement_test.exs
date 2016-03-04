@@ -9,7 +9,7 @@ defmodule LaFamiglia.AttackMovementTest do
 
     attack =
       Forge.saved_attack_movement(Repo)
-      |> Repo.preload([:origin, :target])
+      |> Repo.preload(origin: :player, target: :player)
 
     movement_params =
       %{origin_id: Forge.saved_villa(Repo, unit_1: 10).id,
