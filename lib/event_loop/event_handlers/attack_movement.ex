@@ -19,11 +19,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
 
     LaFamiglia.DateTime.clock!
 
-    # `attack` is reloaded because its associations might have changed since
-    # the event’s creation.
-    attack =
-      Repo.get(AttackMovement, attack.id)
-      |> Repo.preload([target: :player, origin: :player])
+    attack = Repo.preload(attack, target: :player, origin: :player)
     result = Combat.calculate(attack, attack.target)
 
     origin_changeset =
