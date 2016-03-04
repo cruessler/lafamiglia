@@ -10,7 +10,7 @@ ul.link-list {
     list-style: none;
     width: 100%;
 
-    a {
+    a, span {
       position: relative;
       display: block;
       width: 100%;
@@ -18,12 +18,14 @@ ul.link-list {
       margin: 0;
       padding: 0.6em 2.0em;
       color: $gray-dark;
-      text-decoration: none;
 
       small {
         display: block;
         color: $gray-light;
       }
+    }
+    a {
+      text-decoration: none;
     }
 
     &.selected {

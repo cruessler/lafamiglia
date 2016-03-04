@@ -3,6 +3,10 @@
     <h3>Reports</h3>
 
     <ul class="link-list">
+      <%= if Enum.empty? @grouped_reports do %>
+        <li><span>You have no reports</span></li>
+      <% end %>
+
       <%= for r <- @grouped_reports do %>
         <li class="<%= li_class_for(r, @grouped_by) %>">
           <%= link to: villa_report_path(@conn, :index, r.villa.id) do %>
