@@ -2,10 +2,12 @@ defimpl LaFamiglia.Event, for: LaFamiglia.BuildingQueueItem do
   require Logger
 
   import Ecto.Model
+  import Ecto.Query, only: [from: 2]
 
   alias LaFamiglia.Building
 
   alias LaFamiglia.Repo
+  alias LaFamiglia.Player
   alias LaFamiglia.Villa
   alias LaFamiglia.BuildingQueueItem
 
@@ -18,13 +20,18 @@ defimpl LaFamiglia.Event, for: LaFamiglia.BuildingQueueItem do
 
     building = Building.get_by_id(item.building_id)
     key      = building.key
-    villa    = assoc(item, :villa) |> Repo.one
+    villa    = from(v in assoc(item, :villa), preload: :player) |> Repo.one
 
-    changeset = Villa.changeset(villa, %{key => Map.get(villa, key) + 1})
+    changeset =
+      villa
+      |> Villa.changeset(%{key => Map.get(villa, key) + 1})
+      |> Villa.recalc_points
 
     Repo.transaction fn ->
       Repo.update!(changeset)
       Repo.delete!(%BuildingQueueItem{item | processed: true})
+
+      Player.recalc_points!(villa.player)
     end
   end
 end
