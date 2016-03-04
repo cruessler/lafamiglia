@@ -285,7 +285,7 @@ defmodule LaFamiglia.Villa do
   def recalc_points(%Changeset{} = changeset) do
     changeset
     |> put_change(:points, Enum.reduce(Building.all, 0, fn({k, b}, points) ->
-      points + b.points.(Building.level(changeset, b))
+      points + round(b.points.(Building.level(changeset, b)))
     end))
   end
 end
