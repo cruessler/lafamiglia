@@ -53,7 +53,7 @@ defmodule LaFamiglia.UnitQueueItem do
   """
   def units_recruited_between(item, time_begin, time_end) do
     start_time = start_time(item)
-    build_time = Unit.get_by_id(item.unit_id) |> Unit.build_time()
+    build_time = Unit.get(item.unit_id) |> Unit.build_time()
 
     start_number = trunc(LaFamiglia.DateTime.time_diff(start_time, time_begin) / build_time)
     end_number = trunc(LaFamiglia.DateTime.time_diff(start_time, time_end) / build_time)
@@ -89,7 +89,7 @@ defmodule LaFamiglia.UnitQueueItem do
     unit_queue_items = get_field(changeset, :unit_queue_items)
 
     time_diff   = build_time_left(unit_queue_items, item)
-    unit        = Unit.get_by_id(item.unit_id)
+    unit        = Unit.get(item.unit_id)
     number_left = units_recruited_between(item, LaFamiglia.DateTime.now, item.completed_at)
 
     # Don’t refund resources for the first unit that has already started

@@ -267,7 +267,7 @@ defmodule LaFamiglia.Villa do
   def process_units_virtually_until(%Changeset{model: villa} = changeset, time) do
     case get_field(changeset, :unit_queue_items) do
       [first|rest] ->
-        unit = Unit.get_by_id(first.unit_id)
+        unit = Unit.get(first.unit_id)
         key  = unit.key
 
         number_recruited =

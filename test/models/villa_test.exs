@@ -53,7 +53,7 @@ defmodule LaFamiglia.VillaTest do
   test "process_units_virtually_until" do
     villa     = Forge.saved_villa(Repo) |> Repo.preload(:unit_queue_items)
     changeset = Ecto.Changeset.change(villa)
-    unit   = Unit.get_by_id(1)
+    unit   = Unit.get(1)
     number = Map.get(villa, unit.key)
 
     {:ok, villa} = UnitQueueItem.enqueue!(changeset, unit, 10)

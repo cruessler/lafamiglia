@@ -8,13 +8,18 @@ defmodule LaFamiglia.Unit do
     Application.get_env(:la_famiglia, :units)
   end
 
-  def get_by_id(id) do
-    case Application.get_env(:la_famiglia, :units)
-         |> Enum.find(fn({_k, b}) -> b.id == id end)
+  def get(fun) when is_function(fun) do
+    case all |> Enum.find(fun)
     do
-      {_k, b} -> b
+      {_k, u} -> u
       _       -> nil
     end
+  end
+  def get(id) when is_integer(id) do
+    get fn({_k, u}) -> u.id == id end
+  end
+  def get(key) when is_atom(key) do
+    get fn({_k, u}) -> u.key == key end
   end
 
   def number(%Changeset{} = changeset, unit) do

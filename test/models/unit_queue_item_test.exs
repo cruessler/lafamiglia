@@ -7,7 +7,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
   test "should add unit queue item" do
     villa     = Forge.saved_villa(Repo) |> Repo.preload(:unit_queue_items)
     changeset = Ecto.Changeset.change(villa)
-    unit      = Unit.get_by_id(1)
+    unit      = Unit.get(1)
 
     assert Unit.number(villa, unit) == 0
 
@@ -26,7 +26,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
   test "should cancel unit queue item" do
     villa     = Forge.saved_villa(Repo) |> Repo.preload(:unit_queue_items)
     changeset = Ecto.Changeset.change(villa)
-    unit      = Unit.get_by_id(1)
+    unit      = Unit.get(1)
 
     assert {:ok, _item} = UnitQueueItem.enqueue!(changeset, unit, 1)
 
@@ -39,7 +39,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
   test "should recruit in discrete steps" do
     villa     = Forge.saved_villa(Repo) |> Repo.preload(:unit_queue_items)
     changeset = Ecto.Changeset.change(villa)
-    unit      = Unit.get_by_id(1)
+    unit      = Unit.get(1)
 
     start_number      = Unit.number(villa, unit)
     number_to_recruit = 10
@@ -60,7 +60,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
   test "should refund costs" do
     villa     = Forge.saved_villa(Repo) |> Repo.preload(:unit_queue_items)
     changeset = Ecto.Changeset.change(villa)
-    unit      = Unit.get_by_id(1)
+    unit      = Unit.get(1)
     resources = Villa.get_resources(villa)
 
     {:ok, villa} = UnitQueueItem.enqueue!(changeset, unit, 1)

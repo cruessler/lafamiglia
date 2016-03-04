@@ -15,7 +15,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.UnitQueueItem do
   def handle(item) do
     Logger.info "processing recruiting event ##{item.id}"
 
-    unit  = Unit.get_by_id(item.unit_id)
+    unit  = Unit.get(item.unit_id)
     key   = unit.key
     villa = assoc(item, :villa) |> Repo.one
 

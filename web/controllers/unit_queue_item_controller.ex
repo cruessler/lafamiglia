@@ -5,7 +5,7 @@ defmodule LaFamiglia.UnitQueueItemController do
   alias LaFamiglia.UnitQueueItem
 
   def create(conn, %{"villa_id" => villa_id, "unit_id" => unit_id, "number" => number}) do
-    unit   = Unit.get_by_id(String.to_integer(unit_id))
+    unit   = Unit.get(String.to_integer(unit_id))
     number = String.to_integer(number)
 
     case UnitQueueItem.enqueue!(conn.assigns.current_villa_changeset, unit, number) do
