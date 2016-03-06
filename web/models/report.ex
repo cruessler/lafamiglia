@@ -2,6 +2,7 @@ defmodule LaFamiglia.Report do
   use LaFamiglia.Web, :model
 
   alias LaFamiglia.Player
+  alias LaFamiglia.Villa
   alias LaFamiglia.RelatedReportVilla
 
   schema "reports" do
@@ -13,9 +14,8 @@ defmodule LaFamiglia.Report do
 
     field :delivered_at, Ecto.DateTime
 
-    has_many :related_reports_villas, {"related_reports_villas", RelatedReportVilla},
-             foreign_key: :related_report_id
-    has_many :related_villas, through: [:related_reports_villas, :villa]
+    many_to_many :related_villas, Villa, join_through: RelatedReportVilla,
+                                         join_keys: [related_report_id: :id, villa_id: :id]
 
     timestamps
   end

@@ -10,6 +10,7 @@ defmodule LaFamiglia.Villa do
   alias LaFamiglia.BuildingQueueItem
   alias LaFamiglia.UnitQueueItem
   alias LaFamiglia.AttackMovement
+  alias LaFamiglia.Report
   alias LaFamiglia.RelatedReportVilla
 
   alias Ecto.Changeset
@@ -52,9 +53,8 @@ defmodule LaFamiglia.Villa do
     has_many :attack_movements, AttackMovement, on_replace: :delete,
                                                 foreign_key: :origin_id
 
-    has_many :related_reports_villas, {"related_reports_villas", RelatedReportVilla},
-             foreign_key: :villa_id
-    has_many :related_reports, through: [:related_reports_villas, :related_report]
+    many_to_many :related_reports, Report, join_through: RelatedReportVilla,
+                                           join_keys: [related_report_id: :id, villa_id: :id]
 
     timestamps
   end
