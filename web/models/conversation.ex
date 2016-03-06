@@ -2,6 +2,7 @@ defmodule LaFamiglia.Conversation do
   use LaFamiglia.Web, :model
 
   alias Ecto.Changeset
+  alias Ecto.Multi
 
   alias LaFamiglia.Repo
 
@@ -22,6 +23,18 @@ defmodule LaFamiglia.Conversation do
     timestamps
   end
 
+  def create(params) do
+    changeset =
+      change(%__MODULE__{})
+      |> put_change(:participants, params.participants)
+
+    Multi.new
+    |> Multi.insert(:conversation, changeset)
+    |> Multi.run(:create_statuses, fn
+      %{conversation: conversation} -> {:ok, create_conversation_statuses(conversation)}
+    end)
+  end
+
   @required_fields ~w(participants)
   @optional_fields ~w(messages last_message_sent_at)
 
@@ -36,17 +49,18 @@ defmodule LaFamiglia.Conversation do
     |> cast(params, @required_fields, @optional_fields)
   end
 
-  def create_conversation_statuses(changeset) do
+  def create_conversation_statuses(conversation) do
     # The association has to be preloaded as otherwise an exception is thrown.
-    conversation = changeset.data |> Repo.preload(:conversation_statuses)
+    conversation = conversation |> Repo.preload(:conversation_statuses)
 
     statuses =
-      for p <- changeset.changes.participants do
-        Ecto.Model.build(conversation, :conversation_statuses, %{player_id: p.id})
-        |> Repo.insert!
+      Enum.map conversation.participants, fn(p) ->
+        Ecto.build_assoc(conversation, :conversation_statuses, %{player_id: p.id})
       end
 
-    Changeset.put_change(%Changeset{changeset | data: conversation},
-      :conversation_statuses, statuses)
+    conversation
+    |> change
+    |> put_assoc(:conversation_statuses, statuses)
+    |> Repo.update!
   end
 end
