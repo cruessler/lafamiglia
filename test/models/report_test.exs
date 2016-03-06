@@ -79,4 +79,10 @@ defmodule LaFamiglia.ReportTest do
     assert first.title  == "Attack from #{context.origin}"
     assert second.title == "Attack on #{context.target}"
   end
+
+  test "can be deleted" do
+    report = Forge.saved_report(Repo)
+
+    assert {:ok, _} = Repo.delete(report)
+  end
 end
