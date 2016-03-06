@@ -31,7 +31,7 @@ defmodule LaFamiglia.ReportController do
   end
 
   def show(conn, %{"id" => id}) do
-    report = Repo.get(Report, id)
+    report = Repo.get!(assoc(conn.assigns.current_player, :reports), id)
 
     conn
     |> assign(:report, report)
