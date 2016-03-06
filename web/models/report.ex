@@ -33,13 +33,7 @@ defmodule LaFamiglia.Report do
     model
     |> cast(params, @required_fields, @optional_fields)
     |> assoc_constraint(:player)
-  end
-
-  defp set_delivered_at(changeset) do
-    put_change(changeset, :delivered_at, LaFamiglia.DateTime.now)
-  end
-
-  defp set_default_values(changeset) do
-    put_change(changeset, :read, false)
+    |> put_change(:delivered_at, LaFamiglia.DateTime.now)
+    |> put_change(:read, false)
   end
 end

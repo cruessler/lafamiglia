@@ -39,6 +39,7 @@ defmodule LaFamiglia.AttackMovement do
     |> validate_at_least_one_unit
     |> assoc_constraint(:origin)
     |> assoc_constraint(:target)
+    |> calculate_arrives_at
   end
 
   def attack(%{data: villa} = changeset, attack) do
@@ -102,6 +103,9 @@ defmodule LaFamiglia.AttackMovement do
     end
   end
 
+  defp calculate_arrives_at(%{valid?: false} = changeset) do
+    changeset
+  end
   defp calculate_arrives_at(changeset) do
     %{changes: changes} = changeset
 
