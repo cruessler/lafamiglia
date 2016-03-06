@@ -2,6 +2,7 @@ defmodule LaFamiglia.Message do
   use LaFamiglia.Web, :model
 
   alias Ecto.Changeset
+  alias Ecto.Multi
 
   alias LaFamiglia.Repo
 
@@ -20,6 +21,17 @@ defmodule LaFamiglia.Message do
     timestamps
   end
 
+  def create(params) do
+    changeset =
+      changeset(%__MODULE__{}, params)
+      |> find_or_create_conversation
+
+    Multi.new
+    |> Multi.insert(:message, changeset)
+    |> Multi.run(:update_conversation, fn
+      %{message: message} -> {:ok, update_conversation(message)}
+    end)
+  end
 
   @required_fields ~w(sender_id receivers text)
   @optional_fields ~w(conversation_id)
@@ -95,14 +107,14 @@ defmodule LaFamiglia.Message do
   end
 
   defp find_or_create_conversation(%Changeset{changes: changes} = changeset) do
-    if changes.conversation_id do
-      changeset
-    else
+    unless Map.has_key?(changes, :conversation_id) do
       conversation = case find_conversation(changeset) do
         nil ->
-          Conversation.changeset(%Conversation{},
-            %{participants: [%{id: changes.sender_id}|changes.receivers]})
-          |> Repo.insert!
+          {:ok, %{conversation: conversation}} =
+            Conversation.create(%{participants: [%{id: changes.sender_id}|changes.receivers]})
+            |> Repo.transaction
+
+          conversation
         conversation ->
           conversation
       end
@@ -112,13 +124,11 @@ defmodule LaFamiglia.Message do
     end
   end
 
-  defp update_conversation(%Changeset{data: message} = changeset) do
+  defp update_conversation(message) do
     assoc(message, :conversation)
     |> Repo.one
     |> change(%{last_message_sent_at: message.inserted_at})
     |> Repo.update!
-
-    changeset
   end
 end
 

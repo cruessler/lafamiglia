@@ -44,9 +44,14 @@ defmodule LaFamiglia.MessageTest do
   test "add message to existing conversation", context do
     old_conversation_count = conversation_count
 
-    message = Message.changeset(%Message{}, context.message_params)
+    multi = Message.create(context.message_params)
 
-    for _ <- 0..2 do assert {:ok, _} = Repo.insert(message) end
+    for _ <- 0..2 do
+      assert {:ok, %{message: message}} = Repo.transaction(multi)
+      message = Repo.preload(message, :conversation)
+
+      assert message.inserted_at == message.conversation.last_message_sent_at
+    end
 
     assert conversation_count == old_conversation_count + 1
   end
