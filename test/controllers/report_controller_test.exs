@@ -15,7 +15,7 @@ defmodule LaFamiglia.ReportControllerTest do
   end
 
   test "GET /reports/1", %{conn: conn, player: player} do
-    report = Forge.saved_report(Repo, player: player)
+    report = Forge.saved_report(Repo, player_id: player.id)
 
     conn = get conn, "/reports/#{report.id}"
 
