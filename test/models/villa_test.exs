@@ -36,7 +36,7 @@ defmodule LaFamiglia.VillaTest do
   test "should create new villas" do
     player = Forge.saved_player(Repo)
 
-    villas_count     = assoc(player, :villas) |> Repo.all |> Enum.count
+    villas_count     = Ecto.assoc(player, :villas) |> Repo.all |> Enum.count
     number_to_create = 121
 
     :random.seed(:erlang.monotonic_time)
@@ -45,7 +45,7 @@ defmodule LaFamiglia.VillaTest do
       Villa.create_for(player)
     end
 
-    assert (villas_count + number_to_create) == assoc(player, :villas) |> Repo.all |> Enum.count
+    assert (villas_count + number_to_create) == Ecto.assoc(player, :villas) |> Repo.all |> Enum.count
   end
 
   test "has_resources?" do

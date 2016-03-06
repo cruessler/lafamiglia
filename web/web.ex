@@ -20,12 +20,7 @@ defmodule LaFamiglia.Web do
     quote do
       use Ecto.Schema
 
-      # FIXME: As soon as the deprecated callbacks have been replaced by a
-      # superior alternative, `use Eco.Model` has to be changed to `import
-      # Ecto`.
-      # http://www.phoenixframework.org/v1.0.0/blog/upgrading-from-v10-to-v11
-      use Ecto.Model
-
+      import Ecto
       import Ecto.Changeset
       import Ecto.Query, only: [from: 1, from: 2]
     end

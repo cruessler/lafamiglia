@@ -22,10 +22,6 @@ defmodule LaFamiglia.BuildingQueueItem do
     timestamps
   end
 
-  after_insert LaFamiglia.EventCallbacks, :after_insert
-  after_update LaFamiglia.EventCallbacks, :after_update
-  after_delete LaFamiglia.EventCallbacks, :after_delete
-
   @required_fields ~w(building_id completed_at villa_id)
   @optional_fields ~w()
 
@@ -71,12 +67,12 @@ defmodule LaFamiglia.BuildingQueueItem do
   def enqueue!(%Changeset{} = changeset, nil) do
     {:error, add_error(changeset, :building, "This building does not exist.")}
   end
-  def enqueue!(%Changeset{model: villa} = changeset, building) do
+  def enqueue!(%Changeset{data: villa} = changeset, building) do
     # Since `villa.building_queue_items` is never changed in the webapp except
     # via `enqueue!` and `dequeue!`, it is safe to assume that we can simply use
     # `villa.building_queue_items` to access the current building queue.
     villa     = Repo.preload(villa, :building_queue_items)
-    changeset = %Changeset{changeset | model: villa}
+    changeset = %Changeset{changeset | data: villa}
 
     level        = Building.virtual_level(villa, building)
     costs        = building.costs.(level)
@@ -85,7 +81,7 @@ defmodule LaFamiglia.BuildingQueueItem do
       completed_at(villa.building_queue_items)
       |> LaFamiglia.DateTime.add_seconds(build_time)
 
-    new_item = Ecto.Model.build(villa, :building_queue_items,
+    new_item = Ecto.build_assoc(villa, :building_queue_items,
                                 building_id: building.id,
                                 build_time: build_time / 1,
                                 completed_at: completed_at)
@@ -95,9 +91,9 @@ defmodule LaFamiglia.BuildingQueueItem do
     |> Repo.update
   end
 
-  def dequeue!(%Changeset{model: villa} = changeset, item) do
+  def dequeue!(%Changeset{data: villa} = changeset, item) do
     villa = Repo.preload(villa, :building_queue_items)
-    changeset = %Changeset{changeset | model: villa}
+    changeset = %Changeset{changeset | data: villa}
 
     unless last_of_its_kind?(villa.building_queue_items, item) do
       add_error(changeset, :building_queue_items, "You can only cancel the last building of its kind.")

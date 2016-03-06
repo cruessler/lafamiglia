@@ -36,14 +36,10 @@ defmodule LaFamiglia.Mixfile do
   # Type `mix help deps` for examples and options
   defp deps do
     [{:phoenix, "~> 1.1"},
-     {:phoenix_ecto, "~> 2.0"},
-     {:ecto, "~> 1.0"},
-     # `postgrex` needs to be pinned because of bugs in preparation for a
-     # 1.0 release
-     # https://github.com/phoenixframework/phoenix/issues/1489
-     {:postgrex, "0.10.0"},
+     {:phoenix_ecto, "~> 3.0.0-beta"},
+     {:postgrex, "~> 0.11.0"},
      {:poison, "~> 2.0", override: true},
-     {:phoenix_html, "~> 2.3"},
+     {:phoenix_html, "~> 2.5"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      # https://github.com/elixircnx/comeonin
      {:comeonin, "~> 1.0"},

@@ -20,9 +20,6 @@ defmodule LaFamiglia.Report do
     timestamps
   end
 
-  before_insert :set_delivered_at
-  before_insert :set_default_values
-
   @required_fields ~w(title data player_id)
   @optional_fields ~w()
 

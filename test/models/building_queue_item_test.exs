@@ -18,7 +18,7 @@ defmodule LaFamiglia.BuildingQueueItemTest do
 
     for i <- 1..3 do
       changeset |> BuildingQueueItem.enqueue!(building)
-      items = assoc(villa, :building_queue_items) |> Repo.all
+      items = Ecto.assoc(villa, :building_queue_items) |> Repo.all
 
       assert Enum.count(items) == i
     end

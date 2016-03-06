@@ -22,8 +22,6 @@ defmodule LaFamiglia.Conversation do
     timestamps
   end
 
-  after_insert :create_conversation_statuses
-
   @required_fields ~w(participants)
   @optional_fields ~w(messages last_message_sent_at)
 
@@ -40,7 +38,7 @@ defmodule LaFamiglia.Conversation do
 
   def create_conversation_statuses(changeset) do
     # The association has to be preloaded as otherwise an exception is thrown.
-    conversation = changeset.model |> Repo.preload(:conversation_statuses)
+    conversation = changeset.data |> Repo.preload(:conversation_statuses)
 
     statuses =
       for p <- changeset.changes.participants do
@@ -48,7 +46,7 @@ defmodule LaFamiglia.Conversation do
         |> Repo.insert!
       end
 
-    Changeset.put_change(%Changeset{changeset | model: conversation},
+    Changeset.put_change(%Changeset{changeset | data: conversation},
       :conversation_statuses, statuses)
   end
 end

@@ -17,7 +17,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
 
     for i <- 1..3 do
       changeset |> UnitQueueItem.enqueue!(unit, 10)
-      items = assoc(villa, :unit_queue_items) |> Repo.all
+      items = Ecto.assoc(villa, :unit_queue_items) |> Repo.all
 
       assert Enum.count(items) == i
     end
@@ -49,7 +49,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
       changeset = Villa.process_units_virtually_until(changeset, LaFamiglia.DateTime.from_now(Unit.build_time(unit) * 0.9))
 
       assert total_number == Unit.virtual_number(changeset, unit)
-      assert total_number == Unit.number(changeset, unit) + hd(changeset.model.unit_queue_items).number
+      assert total_number == Unit.number(changeset, unit) + hd(changeset.data.unit_queue_items).number
     end
   end
 

@@ -83,7 +83,7 @@ defmodule LaFamiglia.Villa do
     |> unique_constraint(:x, name: :villas_x_y_index)
   end
 
-  def build_changeset(%{model: villa} = changeset, new_item, costs) do
+  def build_changeset(%{data: villa} = changeset, new_item, costs) do
     changeset
     |> subtract_resources(costs)
     |> Changeset.put_assoc(:building_queue_items, villa.building_queue_items ++ [new_item])
@@ -91,7 +91,7 @@ defmodule LaFamiglia.Villa do
     |> validate_resources
   end
 
-  def recruit_changeset(%{model: villa} = changeset, new_item, costs, supply) do
+  def recruit_changeset(%{data: villa} = changeset, new_item, costs, supply) do
     changeset
     |> subtract_resources(costs)
     |> Changeset.put_change(:supply, Changeset.get_field(changeset, :supply) + supply)
@@ -100,14 +100,14 @@ defmodule LaFamiglia.Villa do
     |> validate_resources
   end
 
-  def order_units_changeset(%{model: villa} = changeset, new_order, units) do
+  def order_units_changeset(%{data: villa} = changeset, new_order, units) do
     changeset
     |> subtract_units(units)
     |> Changeset.put_assoc(:attack_movements, villa.attack_movements ++ [new_order])
     |> validate_units
   end
 
-  defp validate_maxlevel(%{model: villa} = changeset, item) do
+  defp validate_maxlevel(%{data: villa} = changeset, item) do
     building = Building.get(item.building_id)
 
     case Building.virtual_level(changeset, building) > building.maxlevel do
@@ -116,7 +116,7 @@ defmodule LaFamiglia.Villa do
     end
   end
 
-  defp validate_supply(%{model: villa} = changeset) do
+  defp validate_supply(%{data: villa} = changeset) do
     case get_field(changeset, :supply) > villa.max_supply do
       true -> add_error(changeset, :supply, "Not enough supply.")
       _    -> changeset
@@ -208,7 +208,7 @@ defmodule LaFamiglia.Villa do
   Processes resource gains and recruiting of units without saving
   the results to the database.
   """
-  def process_virtually_until(%Changeset{model: villa} = changeset, time) do
+  def process_virtually_until(%Changeset{data: villa} = changeset, time) do
     changeset
     |> gain_resources_until(time)
     |> process_units_virtually_until(time)
@@ -221,7 +221,7 @@ defmodule LaFamiglia.Villa do
   the caller, i. e. mostly the event handler, to guarantee that there is no
   change in resource gains between `villa.resources_gained_until` and `time`.
   """
-  def gain_resources_until(%Changeset{model: villa} = changeset, time) do
+  def gain_resources_until(%Changeset{data: villa} = changeset, time) do
     case LaFamiglia.DateTime.time_diff(villa.resources_gained_until, time) do
       0 ->
         changeset
@@ -289,7 +289,7 @@ defmodule LaFamiglia.Villa do
     end
   end
 
-  def process_units_virtually_until(%Changeset{model: villa} = changeset, time) do
+  def process_units_virtually_until(%Changeset{data: villa} = changeset, time) do
     case get_field(changeset, :unit_queue_items) do
       [first|rest] ->
         unit = Unit.get(first.unit_id)
@@ -298,11 +298,12 @@ defmodule LaFamiglia.Villa do
         number_recruited =
           UnitQueueItem.units_recruited_between(first, villa.units_recruited_until, time)
 
-        first = Map.update!(first, :number, fn(v) -> v - number_recruited end)
+        first      = Changeset.change(first, %{number: first.number - number_recruited})
+        changesets = [first | Enum.map(rest, &Changeset.change/1)]
 
         changeset
         |> put_change(key, get_field(changeset, key) + number_recruited)
-        |> put_assoc(:unit_queue_items, [first|rest])
+        |> put_assoc(:unit_queue_items, changesets)
         |> put_change(:units_recruited_until, time)
       [] -> changeset
     end

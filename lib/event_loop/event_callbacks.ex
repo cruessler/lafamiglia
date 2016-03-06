@@ -6,13 +6,13 @@ defmodule LaFamiglia.EventCallbacks do
   """
 
   def after_insert(changeset) do
-    LaFamiglia.EventQueue.cast({:new_event, changeset.model})
+    LaFamiglia.EventQueue.cast({:new_event, changeset.data})
 
     changeset
   end
 
   def after_update(changeset) do
-    LaFamiglia.EventQueue.cast({:update_event, changeset.model})
+    LaFamiglia.EventQueue.cast({:update_event, changeset.data})
 
     changeset
   end
@@ -21,8 +21,8 @@ defmodule LaFamiglia.EventCallbacks do
     # The flag `processed` indicates that the model has been deleted by the
     # event loop. In that case, it does not have to be removed from the event
     # loop.
-    unless changeset.model.processed do
-      LaFamiglia.EventQueue.cast({:cancel_event, changeset.model})
+    unless changeset.data.processed do
+      LaFamiglia.EventQueue.cast({:cancel_event, changeset.data})
     end
 
     changeset

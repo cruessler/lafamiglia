@@ -23,9 +23,6 @@ defmodule LaFamiglia.AttackMovement do
     timestamps
   end
 
-  before_insert :calculate_arrives_at
-  after_insert LaFamiglia.EventCallbacks, :after_insert
-
   @required_fields ~w(origin_id target_id unit_1 unit_2)
   @optional_fields ~w()
 
@@ -44,9 +41,9 @@ defmodule LaFamiglia.AttackMovement do
     |> assoc_constraint(:target)
   end
 
-  def attack(%{model: villa} = changeset, attack) do
+  def attack(%{data: villa} = changeset, attack) do
     villa     = Repo.preload(villa, :attack_movements)
-    changeset = %Changeset{changeset | model: villa}
+    changeset = %Changeset{changeset | data: villa}
 
     changeset
     |> Villa.order_units_changeset(attack, Unit.filter(attack))

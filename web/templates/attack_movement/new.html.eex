@@ -23,14 +23,14 @@
       can. Thus, this page depends on a Villa changeset where an AttackMovement
       changeset would provide a much more elegant solution.
       See https://github.com/elixir-lang/ecto/issues/1102 -->
-    <%= if is_nil fa.model.id do %>
+    <%= if is_nil fa.data.id do %>
       <%= hidden_input(fa, :target_id) %>
 
       <div class="form-group">
         <label class="control-label">
           Target:
         </label>
-        <%= fa.model.target %>
+        <%= fa.data.target %>
       </div>
 
       <div class="form-group">

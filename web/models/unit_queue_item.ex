@@ -22,10 +22,6 @@ defmodule LaFamiglia.UnitQueueItem do
     timestamps
   end
 
-  after_insert LaFamiglia.EventCallbacks, :after_insert
-  after_update LaFamiglia.EventCallbacks, :after_update
-  after_delete LaFamiglia.EventCallbacks, :after_delete
-
   @required_fields ~w(unit_id number completed_at villa_id)
   @optional_fields ~w()
 
@@ -68,7 +64,7 @@ defmodule LaFamiglia.UnitQueueItem do
   def enqueue!(%Changeset{} = changeset, nil, _) do
     {:error, add_error(changeset, :unit, "This unit does not exist.")}
   end
-  def enqueue!(%Changeset{model: villa} = changeset, unit, number) do
+  def enqueue!(%Changeset{data: villa} = changeset, unit, number) do
     unit_queue_items = get_field(changeset, :unit_queue_items)
 
     costs      = Map.new(unit.costs, fn({k, v}) -> {k, v * number} end)
@@ -78,7 +74,7 @@ defmodule LaFamiglia.UnitQueueItem do
       completed_at(unit_queue_items)
       |> LaFamiglia.DateTime.add_seconds(build_time)
 
-    new_item = Ecto.Model.build(villa, :unit_queue_items,
+    new_item = Ecto.build_assoc(villa, :unit_queue_items,
                                 unit_id: unit.id,
                                 number: number,
                                 build_time: build_time / 1,
@@ -89,7 +85,7 @@ defmodule LaFamiglia.UnitQueueItem do
     |> Repo.update
   end
 
-  def dequeue!(%Changeset{model: villa} = changeset, item) do
+  def dequeue!(%Changeset{data: villa} = changeset, item) do
     unit_queue_items = get_field(changeset, :unit_queue_items)
 
     time_diff   = build_time_left(unit_queue_items, item)

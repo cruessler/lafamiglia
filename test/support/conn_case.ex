@@ -35,13 +35,9 @@ defmodule LaFamiglia.ConnCase do
     end
   end
 
-  setup tags do
-    unless tags[:async] do
-      Ecto.Adapters.SQL.restart_test_transaction(LaFamiglia.Repo, [])
-    end
-
+  setup do
     LaFamiglia.DateTime.clock!
 
-    :ok
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(LaFamiglia.Repo, [])
   end
 end

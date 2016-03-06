@@ -24,8 +24,6 @@ defmodule LaFamiglia.ComebackMovement do
     timestamps
   end
 
-  after_insert LaFamiglia.EventCallbacks, :after_insert
-
   @required_fields ~w(origin_id target_id arrives_at
                       unit_1 unit_2)
   @optional_fields ~w(resource_1 resource_2 resource_3)

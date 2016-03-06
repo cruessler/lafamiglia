@@ -34,7 +34,7 @@ defmodule LaFamiglia.ReportTest do
   end
 
   defp reports_count(player) do
-    from(r in assoc(player, :reports), select: count(r.id)) |> Repo.one
+    from(r in Ecto.assoc(player, :reports), select: count(r.id)) |> Repo.one
   end
 
   test "gets gelivered", context do
