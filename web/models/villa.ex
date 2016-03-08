@@ -259,6 +259,12 @@ defmodule LaFamiglia.Villa do
     end
   end
 
+  def subtract_resources!(%Changeset{} = changeset, resources) do
+    changeset
+    |> subtract_resources(resources)
+    |> validate_resources
+  end
+
   def subtract_resources(%Changeset{} = changeset, resources) do
     Enum.reduce @resources, changeset, fn(r, changeset) ->
       changeset
