@@ -1,6 +1,7 @@
 defmodule LaFamiglia.VillaControllerTest do
   use LaFamiglia.ConnCase
 
+  alias LaFamiglia.Player
   alias LaFamiglia.Villa
 
   setup do
@@ -12,10 +13,12 @@ defmodule LaFamiglia.VillaControllerTest do
 
   test "GET /villas", %{conn: conn, player: player} do
     conn   = get conn, "/villas"
-    player = Repo.preload(player, :villas)
+
+    player = from(p in Player, preload: :villas) |> Repo.get(player.id)
     villa  = hd(player.villas)
 
     assert Enum.count(player.villas) == 1
+    assert player.points == villa.points
     assert html_response(conn, 200) =~ "at your service"
     assert html_response(conn, 200) =~ villa.name
   end

@@ -175,18 +175,20 @@ defmodule LaFamiglia.Villa do
   def create_for(player) do
     case empty_coordinates do
       {x, y} ->
-        changeset = Villa.changeset(%Villa{},
-                                    %{ name: "New villa",
-                                       x: x,
-                                       y: y,
-                                       resource_1: 0, resource_2: 0, resource_3: 0,
-                                       storage_capacity: 100,
-                                       building_1: 1, building_2: 0,
-                                       unit_1: 0, unit_2: 0,
-                                       supply: 0, max_supply: 100,
-                                       processed_until: LaFamiglia.DateTime.now,
-                                       player_id: player.id })
-        Repo.insert!(changeset)
+        %Villa{}
+        |> Villa.changeset(
+          %{ name: "New villa",
+             x: x,
+             y: y,
+             resource_1: 0, resource_2: 0, resource_3: 0,
+             storage_capacity: 100,
+             building_1: 1, building_2: 0,
+             unit_1: 0, unit_2: 0,
+             supply: 0, max_supply: 100,
+             processed_until: LaFamiglia.DateTime.now,
+             player_id: player.id })
+        |> Villa.recalc_points
+        |> Repo.insert!
       _ -> nil
     end
   end

@@ -11,6 +11,7 @@ defmodule LaFamiglia.Plugs.VillaLoader do
   import Ecto
 
   alias LaFamiglia.Repo
+  alias LaFamiglia.Player
   alias LaFamiglia.Villa
 
   def init(default), do: default
@@ -39,7 +40,12 @@ defmodule LaFamiglia.Plugs.VillaLoader do
   end
 
   defp create_new_villa(conn) do
-    Villa.create_for(conn.assigns.current_player)
+    player = conn.assigns.current_player
+    villa  = Villa.create_for(player)
+
+    Player.recalc_points!(player)
+
+    villa
   end
 
   defp load_villa(conn) do
