@@ -212,6 +212,9 @@ defmodule LaFamiglia.Villa do
   def has_supply?(%Changeset{} = changeset, supply) do
     get_field(changeset, :supply) + supply <= get_field(changeset, :max_supply)
   end
+  def has_supply?(%Villa{} = villa, supply) do
+    villa.supply + supply <= villa.max_supply
+  end
 
   def has_resources?(%Changeset{} = changeset, resources) do
     Enum.all? resources, fn({k, v}) ->

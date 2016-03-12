@@ -24,9 +24,13 @@ defmodule LaFamiglia.VillaView do
   end
 
   def link_to_recruit_start(conn, villa, unit, number) do
-    link Integer.to_string(number),
-         to: villa_unit_queue_item_path(conn, :create, villa.id, [unit_id: unit.id, number: number]),
-         method: :post, class: "btn btn-primary btn-sm"
+    if Villa.has_supply?(villa, unit.supply * number) do
+      link Integer.to_string(number),
+           to: villa_unit_queue_item_path(conn, :create, villa.id, [unit_id: unit.id, number: number]),
+           method: :post, class: "btn btn-primary btn-sm"
+    else
+      link Integer.to_string(number), to: "#", class: "btn btn-primary btn-sm disabled"
+    end
   end
 
   def link_to_recruit_cancel(conn, item) do
