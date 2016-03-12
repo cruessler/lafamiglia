@@ -4,11 +4,15 @@ defmodule LaFamiglia.UnitQueueItemTest do
   alias LaFamiglia.Unit
   alias LaFamiglia.UnitQueueItem
 
-  test "should add unit queue item" do
+  setup do
     villa     = Forge.saved_villa(Repo) |> Repo.preload(:unit_queue_items)
     changeset = Ecto.Changeset.change(villa)
     unit      = Unit.get(1)
 
+    {:ok, %{villa: villa, changeset: changeset, unit: unit}}
+  end
+
+  test "should add unit queue item", %{villa: villa, changeset: changeset, unit: unit} do
     assert Unit.number(villa, unit) == 0
 
     for i <- 1..3 do
@@ -23,11 +27,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
     assert Unit.enqueued_number(villa, unit) == 30
   end
 
-  test "should cancel unit queue item" do
-    villa     = Forge.saved_villa(Repo) |> Repo.preload(:unit_queue_items)
-    changeset = Ecto.Changeset.change(villa)
-    unit      = Unit.get(1)
-
+  test "should cancel unit queue item", %{villa: villa, changeset: changeset, unit: unit} do
     assert {:ok, _item} = UnitQueueItem.enqueue!(changeset, unit, 1)
 
     villa     = Repo.get(Villa, villa.id) |> Repo.preload(:unit_queue_items)
@@ -36,11 +36,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
     assert {:ok, _} = UnitQueueItem.dequeue!(changeset, List.last(villa.unit_queue_items))
   end
 
-  test "should recruit in discrete steps" do
-    villa     = Forge.saved_villa(Repo) |> Repo.preload(:unit_queue_items)
-    changeset = Ecto.Changeset.change(villa)
-    unit      = Unit.get(1)
-
+  test "should recruit in discrete steps", %{villa: villa, changeset: changeset, unit: unit} do
     start_number      = Unit.number(villa, unit)
     number_to_recruit = 10
     total_number      = start_number + number_to_recruit
@@ -57,10 +53,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
     end
   end
 
-  test "should refund costs" do
-    villa     = Forge.saved_villa(Repo) |> Repo.preload(:unit_queue_items)
-    changeset = Ecto.Changeset.change(villa)
-    unit      = Unit.get(1)
+  test "should refund costs", %{villa: villa, changeset: changeset, unit: unit} do
     resources = Villa.get_resources(villa)
 
     {:ok, villa} = UnitQueueItem.enqueue!(changeset, unit, 1)
