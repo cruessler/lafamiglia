@@ -198,13 +198,25 @@ defmodule LaFamiglia.Villa do
   the results to the database.
   """
   def process_virtually_until(%Changeset{model: villa} = changeset, time) do
+    changeset
+    |> gain_resources_until(time)
+    |> process_units_virtually_until(time)
+  end
+
+  @doc """
+  Processes resource gains.
+
+  This function assumes constant resource gains. It is the responsibility of
+  the caller, i. e. mostly the event handler, to guarantee that there is no
+  change in resource gains between `villa.processed_until` and `time`.
+  """
+  def gain_resources_until(%Changeset{model: villa} = changeset, time) do
     case LaFamiglia.DateTime.time_diff(villa.processed_until, time) do
       0 ->
         changeset
       time_diff ->
         changeset
         |> add_resources(resource_gains(time_diff))
-        |> process_units_virtually_until(time)
         |> put_change(:processed_until, time)
     end
   end
