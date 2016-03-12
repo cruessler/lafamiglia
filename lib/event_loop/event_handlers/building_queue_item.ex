@@ -20,12 +20,16 @@ defimpl LaFamiglia.Event, for: LaFamiglia.BuildingQueueItem do
 
     building = Building.get(item.building_id)
     key      = building.key
-    villa    = from(v in assoc(item, :villa), preload: :player) |> Repo.one
+    villa =
+      from(v in assoc(item, :villa),
+        preload: [:player, :unit_queue_items])
+      |> Repo.one
 
     changeset =
       villa
       |> Villa.changeset(%{key => Map.get(villa, key) + 1})
       |> Villa.recalc_points
+      |> Villa.process_virtually_until(item.completed_at)
 
     Repo.transaction fn ->
       Repo.update!(changeset)

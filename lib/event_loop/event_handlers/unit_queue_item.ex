@@ -2,6 +2,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.UnitQueueItem do
   require Logger
 
   import Ecto.Model
+  import Ecto.Query
 
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
@@ -17,9 +18,12 @@ defimpl LaFamiglia.Event, for: LaFamiglia.UnitQueueItem do
 
     unit  = Unit.get(item.unit_id)
     key   = unit.key
-    villa = assoc(item, :villa) |> Repo.one
+    villa = from(v in assoc(item, :villa), preload: :unit_queue_items) |> Repo.one
 
-    changeset = Villa.changeset(villa, %{key => Map.get(villa, key) + item.number})
+    changeset =
+      villa
+      |> Villa.changeset(%{key => Map.get(villa, key) + item.number})
+      |> Villa.process_virtually_until(item.completed_at)
 
     Repo.transaction fn ->
       Repo.update!(changeset)
