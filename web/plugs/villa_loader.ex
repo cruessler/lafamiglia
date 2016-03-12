@@ -8,6 +8,8 @@ defmodule LaFamiglia.Plugs.VillaLoader do
 
   import Plug.Conn
 
+  import Ecto
+
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
 
@@ -18,8 +20,8 @@ defmodule LaFamiglia.Plugs.VillaLoader do
     |> load_villa
   end
 
-  defp load_villa_from_query_params(%Plug.Conn{ path_info: ["villas"|_], params: %{"id" => id} } = _conn) do
-    Repo.get(Villa, id)
+  defp load_villa_from_query_params(%Plug.Conn{ path_info: ["villas"|_], params: %{"id" => id} } = conn) do
+    assoc(conn.assigns.current_player, :villas) |> Repo.get(id)
   end
   defp load_villa_from_query_params(_conn) do
     nil
@@ -28,14 +30,12 @@ defmodule LaFamiglia.Plugs.VillaLoader do
   defp load_villa_from_session(conn) do
     case get_session(conn, :current_villa_id) do
       nil -> nil
-      id  -> Repo.get(Villa, id)
+      id  -> assoc(conn.assigns.current_player, :villas) |> Repo.get(id)
     end
   end
 
   defp load_first_villa(conn) do
-    Repo.all(Villa, player_id: conn.assigns.current_player.id,
-                    limit: 1)
-      |> List.first
+    assoc(conn.assigns.current_player, :villas) |> Repo.all |> List.first
   end
 
   defp create_new_villa(conn) do
