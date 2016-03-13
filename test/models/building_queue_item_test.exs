@@ -5,11 +5,15 @@ defmodule LaFamiglia.BuildingQueueItemTest do
 
   alias LaFamiglia.BuildingQueueItem
 
-  test "should add building queue item" do
+  setup do
     villa     = Forge.saved_villa(Repo) |> Repo.preload(:building_queue_items)
     changeset = Ecto.Changeset.change(villa)
     building  = Building.get(1)
 
+    {:ok, %{villa: villa, changeset: changeset, building: building}}
+  end
+
+  test "should add building queue item", %{villa: villa, changeset: changeset, building: building} do
     assert Building.virtual_level(villa, building) == 1
 
     for i <- 1..3 do
@@ -25,11 +29,7 @@ defmodule LaFamiglia.BuildingQueueItemTest do
     assert Building.virtual_level(changeset, building) == 4
   end
 
-  test "should cancel building queue item" do
-    villa     = Forge.saved_villa(Repo)
-    changeset = Ecto.Changeset.change(villa)
-    building  = Building.get(1)
-
+  test "should cancel building queue item", %{villa: villa, changeset: changeset, building: building} do
     assert {:ok, _} = BuildingQueueItem.enqueue!(changeset, building)
 
     villa     = Repo.get(Villa, villa.id) |> Repo.preload(:building_queue_items)
@@ -38,15 +38,15 @@ defmodule LaFamiglia.BuildingQueueItemTest do
     assert {:ok, _} = BuildingQueueItem.dequeue!(changeset, List.last(villa.building_queue_items))
   end
 
-  test "should respect validations" do
-    villa     = Forge.saved_villa(Repo)
-    changeset = Villa.changeset(villa, %{resource_1: 0})
-    building  = Building.get(1)
+  test "should respect validations", %{changeset: changeset, building: building} do
+    assert {:error, _} =
+      changeset
+      |> Villa.changeset(%{resource_1: 0})
+      |> BuildingQueueItem.enqueue!(building)
 
-    assert {:error, _} = changeset |> BuildingQueueItem.enqueue!(building)
-
-    building = %{building | maxlevel: 1}
-
-    assert {:error, _} = changeset |> BuildingQueueItem.enqueue!(building)
+    assert {:error, _} =
+      changeset
+      |> Villa.changeset(%{building_1: building.maxlevel})
+      |> BuildingQueueItem.enqueue!(building)
   end
 end

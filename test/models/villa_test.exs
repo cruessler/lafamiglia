@@ -29,7 +29,7 @@ defmodule LaFamiglia.VillaTest do
   end
 
   test "should find an empty space for a new villa" do
-    assert Villa.empty_coordinates != nil
+    refute is_nil(Villa.empty_coordinates)
   end
 
   test "should create new villas" do
