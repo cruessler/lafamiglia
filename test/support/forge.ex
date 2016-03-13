@@ -39,7 +39,8 @@ defmodule Forge do
     points: 1,
     supply: 0,
     max_supply: 100,
-    processed_until: LaFamiglia.DateTime.now,
+    resources_gained_until: LaFamiglia.DateTime.now,
+    units_recruited_until: LaFamiglia.DateTime.now,
     player_id: Forge.saved_player(Repo).id
 
   register :conversation,

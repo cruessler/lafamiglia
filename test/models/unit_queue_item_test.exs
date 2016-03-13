@@ -66,7 +66,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
     assert resources != Villa.get_resources(villa)
   end
 
-  test "should update `processed_until` when event is handled", %{changeset: changeset, unit: unit} do
+  test "should update `units_recruited_until` when event is handled", %{changeset: changeset, unit: unit} do
     {:ok, villa} = UnitQueueItem.enqueue!(changeset, unit, 5)
     [first_item] = villa.unit_queue_items
 
@@ -75,7 +75,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
       |> Ecto.Changeset.change
       |> UnitQueueItem.enqueue!(unit, 5)
 
-    assert Ecto.Changeset.get_field(changeset, :processed_until) != first_item.completed_at
+    assert Ecto.Changeset.get_field(changeset, :units_recruited_until) != first_item.completed_at
 
     LaFamiglia.Event.handle(first_item)
 
@@ -85,7 +85,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
       |> Ecto.Changeset.change
       |> Villa.process_virtually_until(first_item.completed_at)
 
-    assert Ecto.Changeset.get_field(changeset, :processed_until) == first_item.completed_at
+    assert Ecto.Changeset.get_field(changeset, :units_recruited_until) == first_item.completed_at
     assert hd(Ecto.Changeset.get_field(changeset, :unit_queue_items)).number == 5
   end
 end

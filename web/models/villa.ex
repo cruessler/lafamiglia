@@ -38,7 +38,8 @@ defmodule LaFamiglia.Villa do
     field :supply, :integer
     field :max_supply, :integer
 
-    field :processed_until, Ecto.DateTime
+    field :resources_gained_until, Ecto.DateTime
+    field :units_recruited_until, Ecto.DateTime
 
     belongs_to :player, Player
     has_many :building_queue_items, BuildingQueueItem, on_replace: :delete
@@ -58,7 +59,8 @@ defmodule LaFamiglia.Villa do
                       building_1 building_2
                       unit_1 unit_2
                       supply max_supply
-                      processed_until player_id)
+                      resources_gained_until units_recruited_until
+                      player_id)
   @optional_fields ~w()
 
   @resources [:resource_1, :resource_2, :resource_3]
@@ -185,7 +187,8 @@ defmodule LaFamiglia.Villa do
              building_1: 1, building_2: 0,
              unit_1: 0, unit_2: 0,
              supply: 0, max_supply: 100,
-             processed_until: LaFamiglia.DateTime.now,
+             resources_gained_until: LaFamiglia.DateTime.now,
+             units_recruited_until: LaFamiglia.DateTime.now,
              player_id: player.id })
         |> Villa.recalc_points
         |> Repo.insert!
@@ -208,16 +211,16 @@ defmodule LaFamiglia.Villa do
 
   This function assumes constant resource gains. It is the responsibility of
   the caller, i. e. mostly the event handler, to guarantee that there is no
-  change in resource gains between `villa.processed_until` and `time`.
+  change in resource gains between `villa.resources_gained_until` and `time`.
   """
   def gain_resources_until(%Changeset{model: villa} = changeset, time) do
-    case LaFamiglia.DateTime.time_diff(villa.processed_until, time) do
+    case LaFamiglia.DateTime.time_diff(villa.resources_gained_until, time) do
       0 ->
         changeset
       time_diff ->
         changeset
         |> add_resources(resource_gains(time_diff))
-        |> put_change(:processed_until, time)
+        |> put_change(:resources_gained_until, time)
     end
   end
 
@@ -288,13 +291,14 @@ defmodule LaFamiglia.Villa do
         key  = unit.key
 
         number_recruited =
-          UnitQueueItem.units_recruited_between(first, villa.processed_until, time)
+          UnitQueueItem.units_recruited_between(first, villa.units_recruited_until, time)
 
         first = Map.update!(first, :number, fn(v) -> v - number_recruited end)
 
         changeset
         |> put_change(key, get_field(changeset, key) + number_recruited)
         |> put_assoc(:unit_queue_items, [first|rest])
+        |> put_change(:units_recruited_until, time)
       [] -> changeset
     end
   end

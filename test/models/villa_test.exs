@@ -14,7 +14,12 @@ defmodule LaFamiglia.VillaTest do
   @invalid_attrs %{ name: "Ne" }
 
   test "changeset with valid attributes" do
-    changeset = Villa.changeset(%Villa{}, Map.put(@valid_attrs, :processed_until, LaFamiglia.DateTime.now))
+    attrs =
+      @valid_attrs
+      |> Map.put(:resources_gained_until, LaFamiglia.DateTime.now)
+      |> Map.put(:units_recruited_until, LaFamiglia.DateTime.now)
+
+    changeset = Villa.changeset(%Villa{}, attrs)
     assert changeset.valid?
   end
 

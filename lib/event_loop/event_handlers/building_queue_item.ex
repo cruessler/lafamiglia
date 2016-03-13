@@ -4,6 +4,8 @@ defimpl LaFamiglia.Event, for: LaFamiglia.BuildingQueueItem do
   import Ecto.Model
   import Ecto.Query, only: [from: 2]
 
+  alias Ecto.Changeset
+
   alias LaFamiglia.Building
 
   alias LaFamiglia.Repo
@@ -27,9 +29,10 @@ defimpl LaFamiglia.Event, for: LaFamiglia.BuildingQueueItem do
 
     changeset =
       villa
-      |> Villa.changeset(%{key => Map.get(villa, key) + 1})
+      |> Changeset.change
+      |> Villa.gain_resources_until(item.completed_at)
+      |> Changeset.put_change(key, Map.get(villa, key) + 1)
       |> Villa.recalc_points
-      |> Villa.process_virtually_until(item.completed_at)
 
     Repo.transaction fn ->
       Repo.update!(changeset)
