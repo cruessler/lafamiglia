@@ -41,7 +41,7 @@ defmodule LaFamiglia.UnitQueueItem do
   end
 
   defp start_time(item) do
-    LaFamiglia.DateTime.add_seconds(completed_at([item]), -item.build_time)
+    LaFamiglia.DateTime.add_seconds(item.completed_at, -item.build_time)
   end
 
   @doc """
