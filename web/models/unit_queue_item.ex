@@ -48,6 +48,9 @@ defmodule LaFamiglia.UnitQueueItem do
   This function return the number of units recruited between time_begin and
   time_start.
 
+  It never returns a number greater than `item.number`. This makes sure a
+  correct result is returned if `time_begin < start_time(item)`.
+
   It returns incorrect results when the game speed is changed once an order has
   been saved to the database.
   """
@@ -58,7 +61,7 @@ defmodule LaFamiglia.UnitQueueItem do
     start_number = trunc(LaFamiglia.DateTime.time_diff(start_time, time_begin) / build_time)
     end_number = trunc(LaFamiglia.DateTime.time_diff(start_time, time_end) / build_time)
 
-    end_number - start_number
+    min(end_number - start_number, item.number)
   end
 
   def enqueue!(%Changeset{} = changeset, nil, _) do

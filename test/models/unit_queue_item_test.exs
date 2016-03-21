@@ -53,6 +53,20 @@ defmodule LaFamiglia.UnitQueueItemTest do
     end
   end
 
+  test "does not recruit more units than enqueued", %{villa: villa, changeset: changeset, unit: unit} do
+    {:ok, villa} =
+      changeset
+      |> UnitQueueItem.enqueue!(unit, 1)
+
+    changeset =
+      villa
+      |> Map.put(:units_recruited_until, LaFamiglia.DateTime.from_now(-86400))
+      |> Ecto.Changeset.change
+      |> Villa.process_units_virtually_until(LaFamiglia.DateTime.from_now(Unit.build_time(unit) * 0.9))
+
+    assert Unit.number(changeset, unit) == 1
+  end
+
   test "should refund costs", %{villa: villa, changeset: changeset, unit: unit} do
     resources = Villa.get_resources(villa)
 
