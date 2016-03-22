@@ -110,7 +110,7 @@ defmodule LaFamiglia.Villa do
   defp validate_maxlevel(%{data: villa} = changeset, item) do
     building = Building.get(item.building_id)
 
-    case Building.virtual_level(changeset, building) > building.maxlevel do
+    case Building.virtual_level(changeset, building) >= building.maxlevel do
       true -> add_error(changeset, building.id, "Building already at maxlevel.")
       _    -> changeset
     end
