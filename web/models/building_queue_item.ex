@@ -2,6 +2,7 @@ defmodule LaFamiglia.BuildingQueueItem do
   use LaFamiglia.Web, :model
 
   alias Ecto.Changeset
+  alias Ecto.Multi
 
   import LaFamiglia.Queue
 
@@ -64,12 +65,9 @@ defmodule LaFamiglia.BuildingQueueItem do
   @doc """
   This function adds an item to the building queue.
   """
-  def enqueue!(%Changeset{} = changeset, nil) do
-    {:error, add_error(changeset, :building, "This building does not exist.")}
-  end
-  def enqueue!(%Changeset{data: villa} = changeset, building) do
+  def enqueue(%Changeset{data: villa} = changeset, building) do
     # Since `villa.building_queue_items` is never changed in the webapp except
-    # via `enqueue!` and `dequeue!`, it is safe to assume that we can simply use
+    # via `enqueue` and `dequeue!`, it is safe to assume that we can simply use
     # `villa.building_queue_items` to access the current building queue.
     villa     = Repo.preload(villa, :building_queue_items)
     changeset = %Changeset{changeset | data: villa}
@@ -86,9 +84,10 @@ defmodule LaFamiglia.BuildingQueueItem do
                                 build_time: build_time / 1,
                                 completed_at: completed_at)
 
-    changeset
-    |> Villa.build_changeset(new_item, costs)
-    |> Repo.update
+    Multi.new
+    |> Multi.update(:villa, Villa.build_changeset(changeset, new_item, costs))
+    |> Multi.insert(:building_queue_item, new_item)
+    |> Multi.run(:send_to_queue, &LaFamiglia.EventCallbacks.send_to_queue/1)
   end
 
   def dequeue!(%Changeset{data: villa} = changeset, item) do

@@ -7,9 +7,10 @@ defmodule LaFamiglia.BuildingQueueItemController do
 
   def create(conn, %{"building_id" => building_id}) do
     building = Building.get(String.to_integer(building_id))
+    multi    = BuildingQueueItem.enqueue(conn.assigns.current_villa_changeset, building)
 
-    case BuildingQueueItem.enqueue!(conn.assigns.current_villa_changeset, building) do
-      {:error, changeset} ->
+    case Repo.transaction(multi) do
+      {:error, :villa, changeset, _} ->
         [{_, message}|_] = changeset.errors
 
         conn

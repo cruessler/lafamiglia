@@ -86,7 +86,6 @@ defmodule LaFamiglia.Villa do
   def build_changeset(%{data: villa} = changeset, new_item, costs) do
     changeset
     |> subtract_resources(costs)
-    |> Changeset.put_assoc(:building_queue_items, villa.building_queue_items ++ [new_item])
     |> validate_maxlevel(new_item)
     |> validate_resources
   end

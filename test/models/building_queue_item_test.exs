@@ -17,7 +17,10 @@ defmodule LaFamiglia.BuildingQueueItemTest do
     assert Building.virtual_level(villa, building) == 1
 
     for i <- 1..3 do
-      changeset |> BuildingQueueItem.enqueue!(building)
+      changeset
+      |> BuildingQueueItem.enqueue(building)
+      |> Repo.transaction
+
       items = Ecto.assoc(villa, :building_queue_items) |> Repo.all
 
       assert Enum.count(items) == i
@@ -30,7 +33,10 @@ defmodule LaFamiglia.BuildingQueueItemTest do
   end
 
   test "should cancel building queue item", %{villa: villa, changeset: changeset, building: building} do
-    assert {:ok, _} = BuildingQueueItem.enqueue!(changeset, building)
+    assert {:ok, _} =
+      changeset
+      |> BuildingQueueItem.enqueue(building)
+      |> Repo.transaction
 
     villa     = Repo.get(Villa, villa.id) |> Repo.preload(:building_queue_items)
     changeset = Ecto.Changeset.change(villa)
@@ -39,25 +45,30 @@ defmodule LaFamiglia.BuildingQueueItemTest do
   end
 
   test "should respect validations", %{changeset: changeset, building: building} do
-    assert {:error, _} =
+    assert {:error, :villa, _, _} =
       changeset
       |> Villa.changeset(%{resource_1: 0})
-      |> BuildingQueueItem.enqueue!(building)
+      |> BuildingQueueItem.enqueue(building)
+      |> Repo.transaction
 
-    assert {:error, _} =
+    assert {:error, :villa, _, _} =
       changeset
       |> Villa.changeset(%{building_1: building.maxlevel})
-      |> BuildingQueueItem.enqueue!(building)
+      |> BuildingQueueItem.enqueue(building)
+      |> Repo.transaction
   end
 
   test "should update `resources_gained_until` when event is handled", %{changeset: changeset, building: building} do
-    {:ok, villa} = BuildingQueueItem.enqueue!(changeset, building)
-    [first_item] = villa.building_queue_items
+    {:ok, %{villa: villa, building_queue_item: first_item}} =
+      changeset
+      |> BuildingQueueItem.enqueue(building)
+      |> Repo.transaction
 
-    {:ok, villa} =
+    {:ok, %{villa: villa}} =
       villa
       |> Ecto.Changeset.change
-      |> BuildingQueueItem.enqueue!(building)
+      |> BuildingQueueItem.enqueue(building)
+      |> Repo.transaction
 
     assert Ecto.Changeset.get_field(changeset, :resources_gained_until) != first_item.completed_at
 
