@@ -40,17 +40,12 @@ defmodule LaFamiglia.BuildingQueueItem do
     |> cast(params, @required_fields, @optional_fields)
   end
 
-  defp first_of_its_kind?([], _item) do
-    true
-  end
-  defp first_of_its_kind?([h|t], item) do
+  defp first_of_its_kind?([], _item), do: true
+  defp first_of_its_kind?([item|rest], item), do: true
+  defp first_of_its_kind?([first|rest], item) do
     cond do
-      h == item ->
-        true
-      h.building_id == item.building_id ->
-        false
-      true ->
-        first_of_its_kind?(t, item)
+      first.building_id == item.building_id -> false
+      true -> first_of_its_kind?(rest, item)
     end
   end
 
@@ -111,7 +106,6 @@ defmodule LaFamiglia.BuildingQueueItem do
       refunds   = refunds(villa, item, time_diff)
       new_building_queue_items =
         villa.building_queue_items
-        |> remove_item(item)
         |> shift_later_items(item, time_diff)
 
       changeset

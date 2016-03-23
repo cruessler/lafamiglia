@@ -103,7 +103,6 @@ defmodule LaFamiglia.UnitQueueItem do
 
     new_unit_queue_items =
       unit_queue_items
-      |> remove_item(item)
       |> shift_later_items(item, time_diff)
 
     changeset
