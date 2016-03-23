@@ -29,6 +29,9 @@ defmodule LaFamiglia.Villa do
 
     field :building_1, :integer
     field :building_2, :integer
+    field :building_3, :integer
+    field :building_4, :integer
+    field :building_5, :integer
 
     field :unit_1, :integer
     field :unit_2, :integer
@@ -56,7 +59,7 @@ defmodule LaFamiglia.Villa do
   end
 
   @required_fields ~w(name x y resource_1 resource_2 resource_3 storage_capacity
-                      building_1 building_2
+                      building_1 building_2 building_3 building_4 building_5
                       unit_1 unit_2
                       supply max_supply
                       resources_gained_until units_recruited_until
@@ -185,6 +188,7 @@ defmodule LaFamiglia.Villa do
              resource_1: 0, resource_2: 0, resource_3: 0,
              storage_capacity: 100,
              building_1: 1, building_2: 0,
+             building_3: 0, building_4: 0, building_5: 0,
              unit_1: 0, unit_2: 0,
              supply: 0, max_supply: 100,
              resources_gained_until: LaFamiglia.DateTime.now,
