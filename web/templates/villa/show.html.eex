@@ -28,8 +28,8 @@
       <td><%= k %></td>
       <td><%= Building.level(@current_villa, b) %> (<%= Building.virtual_level(@current_villa, b) %>)</td>
       <td><%= @current_villa |> Map.get(k) |> b.points.() |> round %></td>
-      <td><%= @current_villa |> Map.get(k) |> b.costs.() |> resources %></td>
-      <td><%= Building.build_time(b, Map.get(@current_villa, k)) |> round %></td>
+      <td><%= @current_villa |> Building.virtual_level(b) |> b.costs.() |> resources %></td>
+      <td><%= Building.build_time(b, Building.virtual_level(@current_villa, b)) |> round %></td>
       <td><%= link_to_build_start(@conn, @current_villa, b) %></td>
     </tr>
   <% end %>
