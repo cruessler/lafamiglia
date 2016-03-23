@@ -19,6 +19,7 @@ class Countdown extends React.Component {
     if(timeLeft > 0) {
       this.setState({ timeLeft: timeLeft })
     } else {
+      this.setState({ timeLeft: 0 })
       window.clearInterval(this.timerId)
     }
   }
@@ -47,7 +48,11 @@ class Countdown extends React.Component {
   }
 
   render () {
-    return <span>{this.formatTimeLeft()}</span>
+    if(this.state.timeLeft == 0) {
+      return <span>none <a href="javascript: location.reload()">reload</a></span>
+    } else {
+      return <span>{this.formatTimeLeft()}</span>
+    }
   }
 }
 
