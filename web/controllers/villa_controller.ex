@@ -1,6 +1,8 @@
 defmodule LaFamiglia.VillaController do
   use LaFamiglia.Web, :controller
 
+  alias LaFamiglia.Villa
+
   def index(conn, _params) do
     conn
     |> assign(:villas, assoc(conn.assigns.current_player, :villas) |> Repo.all)
@@ -15,6 +17,7 @@ defmodule LaFamiglia.VillaController do
     conn
     |> assign(:current_villa,
          conn.assigns.current_villa |> Repo.preload(:building_queue_items))
+    |> assign(:resource_gains, Villa.resource_gains(conn.assigns.current_villa, 3600))
     |> render("show.html")
   end
 end

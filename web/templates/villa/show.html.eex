@@ -1,5 +1,6 @@
 <ul class="info-box">
   <li><%= resources @current_villa %></li>
+  <li>Gains per hour: <%= resources @resource_gains %></li>
   <li><div class="supply">Supply: <%= @current_villa.supply %>/<%= @current_villa.max_supply %></div></li>
   <li>Points: <%= @current_villa.points %></li>
 </ul>
