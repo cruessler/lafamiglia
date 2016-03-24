@@ -9,6 +9,12 @@ config :la_famiglia,
     end
 
 config :la_famiglia,
+  storage_capacity:
+    fn villa ->
+      100 + 200 * villa.building_2 + :math.pow(villa.building_2, 2.1) |> round
+    end
+
+config :la_famiglia,
   buildings: [
     building_1: %{
       id: 1,

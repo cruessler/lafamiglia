@@ -31,6 +31,8 @@ defmodule Forge do
     resource_1: 50.0,
     resource_2: 50.0,
     resource_3: 50.0,
+    # `storage_capacity` needs to be set here for testing as
+    # `Villa.recalc_storage_capacity` is not called automatically.
     storage_capacity: 100,
     building_1: 1,
     building_2: 0,

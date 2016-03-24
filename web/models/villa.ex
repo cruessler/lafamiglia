@@ -58,7 +58,7 @@ defmodule LaFamiglia.Villa do
     timestamps
   end
 
-  @required_fields ~w(name x y resource_1 resource_2 resource_3 storage_capacity
+  @required_fields ~w(name x y resource_1 resource_2 resource_3
                       building_1 building_2 building_3 building_4 building_5
                       unit_1 unit_2
                       supply max_supply
@@ -186,7 +186,6 @@ defmodule LaFamiglia.Villa do
              x: x,
              y: y,
              resource_1: 0, resource_2: 0, resource_3: 0,
-             storage_capacity: 100,
              building_1: 1, building_2: 0,
              building_3: 0, building_4: 0, building_5: 0,
              unit_1: 0, unit_2: 0,
@@ -195,6 +194,7 @@ defmodule LaFamiglia.Villa do
              units_recruited_until: LaFamiglia.DateTime.now,
              player_id: player.id })
         |> Villa.recalc_points
+        |> Villa.recalc_storage_capacity
         |> Repo.insert!
       _ -> nil
     end
@@ -309,6 +309,12 @@ defmodule LaFamiglia.Villa do
     |> put_change(:points, Enum.reduce(Building.all, 0, fn({k, b}, points) ->
       points + round(b.points.(Building.level(changeset, b)))
     end))
+  end
+
+  def recalc_storage_capacity(%Changeset{} = changeset) do
+    new_storage_capacity =
+      Application.get_env(:la_famiglia, :storage_capacity).(Changeset.apply_changes(changeset))
+    put_change(changeset, :storage_capacity, new_storage_capacity)
   end
 end
 

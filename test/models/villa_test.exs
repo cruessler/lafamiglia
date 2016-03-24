@@ -10,8 +10,7 @@ defmodule LaFamiglia.VillaTest do
                   building_1: 1, building_2: 0,
                   building_3: 0, building_4: 0, building_5: 0,
                   unit_1: 0, unit_2: 0,
-                  supply: 0, max_supply: 100,
-                  storage_capacity: 100 }
+                  supply: 0, max_supply: 100 }
   @invalid_attrs %{ name: "Ne" }
 
   test "changeset with valid attributes" do
