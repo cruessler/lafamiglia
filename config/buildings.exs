@@ -1,6 +1,14 @@
 use Mix.Config
 
 config :la_famiglia,
+  resource_gains:
+    fn villa ->
+      %{resource_1: 30 + :math.pow(villa.building_3, 2.5),
+        resource_2: 30 + :math.pow(villa.building_4, 2.5),
+        resource_3: 30 + :math.pow(villa.building_5, 2.5)}
+    end
+
+config :la_famiglia,
   buildings: [
     building_1: %{
       id: 1,

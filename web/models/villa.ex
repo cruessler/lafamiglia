@@ -223,7 +223,7 @@ defmodule LaFamiglia.Villa do
         changeset
       time_diff ->
         changeset
-        |> add_resources(resource_gains(time_diff))
+        |> add_resources(resource_gains(villa, time_diff))
         |> put_change(:resources_gained_until, time)
     end
   end
@@ -266,12 +266,9 @@ defmodule LaFamiglia.Villa do
     put_change(changeset, :supply, get_field(changeset, :supply) - supply)
   end
 
-  def resource_gains(time_diff) do
-    %{
-      resource_1: time_diff * 0.01,
-      resource_2: time_diff * 0.01,
-      resource_3: time_diff * 0.01
-    }
+  def resource_gains(villa, time_diff) do
+    for {k, v} <- Application.get_env(:la_famiglia, :resource_gains).(villa),
+      into: %{}, do: {k, v * time_diff / 3600}
   end
 
   def add_units(%Changeset{} = changeset, units) do
