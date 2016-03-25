@@ -9,6 +9,7 @@ defmodule LaFamiglia.VillaTest do
                   resource_1: 0, resource_2: 0, resource_3: 0,
                   building_1: 1, building_2: 0,
                   building_3: 0, building_4: 0, building_5: 0,
+                  building_6: 0,
                   unit_1: 0, unit_2: 0,
                   supply: 0, max_supply: 100 }
   @invalid_attrs %{ name: "Ne" }

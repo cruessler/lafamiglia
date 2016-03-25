@@ -90,4 +90,19 @@ config :la_famiglia,
       maxlevel: 24,
       defense: fn level -> 0 end,
       points: fn level -> :math.pow(level, 2) end
+      },
+    building_6: %{
+      id: 6,
+      key: :building_6,
+      build_time: fn level -> 200 + :math.pow(level, 2.2) |> round end,
+      costs: fn level ->
+        %{
+        resource_1: 20 + :math.pow(level, 2.5) |> round,
+        resource_2: 20 + :math.pow(level, 2.5) |> round,
+        resource_3: 20 + :math.pow(level, 2.5) |> round
+        }
+      end,
+      maxlevel: 16,
+      defense: fn level -> 0 end,
+      points: fn level -> :math.pow(level, 2.5) |> round end
       }]

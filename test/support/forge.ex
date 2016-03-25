@@ -39,6 +39,7 @@ defmodule Forge do
     building_3: 0,
     building_4: 0,
     building_5: 0,
+    building_6: 0,
     unit_1: 0,
     unit_2: 0,
     points: 1,
