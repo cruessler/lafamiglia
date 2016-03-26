@@ -25,7 +25,7 @@ config :la_famiglia,
     building_1: %{
       id: 1,
       key: :building_1,
-      build_time: fn level -> level * 1 + 4 end,
+      build_time: fn level -> 200 + 500 * level + :math.pow(level, 1.8) |> round end,
       costs: fn level ->
         %{
         resource_1: level * 1 + 1,
@@ -33,14 +33,14 @@ config :la_famiglia,
         resource_3: level * 1 + 1
         }
       end,
-      maxlevel: 8,
+      maxlevel: 10,
       defense: fn level -> 10 end,
       points: fn level -> :math.pow(level, 1.5) end
       },
     building_2: %{
       id: 2,
       key: :building_2,
-      build_time: fn level -> level * 1 + 4 end,
+      build_time: fn level -> 200 + 1000 * level + :math.pow(level, 2.6) |> round end,
       costs: fn level ->
         %{
         resource_1: level * 1 + 1,
@@ -48,7 +48,7 @@ config :la_famiglia,
         resource_3: level * 1 + 1
         }
       end,
-      maxlevel: 8,
+      maxlevel: 16,
       defense: fn level -> 0 end,
       points: fn level -> :math.pow(level, 1.5) end
       },
@@ -100,7 +100,7 @@ config :la_famiglia,
     building_6: %{
       id: 6,
       key: :building_6,
-      build_time: fn level -> 200 + :math.pow(level, 2.2) |> round end,
+      build_time: fn level -> 200 + 400 * level + :math.pow(level, 2.2) |> round end,
       costs: fn level ->
         %{
         resource_1: 20 + :math.pow(level, 2.5) |> round,
