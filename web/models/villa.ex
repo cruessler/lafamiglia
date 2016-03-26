@@ -63,7 +63,7 @@ defmodule LaFamiglia.Villa do
                       building_1 building_2 building_3 building_4 building_5
                       building_6
                       unit_1 unit_2
-                      supply max_supply
+                      supply
                       resources_gained_until units_recruited_until
                       player_id)
   @optional_fields ~w()
@@ -198,6 +198,7 @@ defmodule LaFamiglia.Villa do
              player_id: player.id })
         |> Villa.recalc_points
         |> Villa.recalc_storage_capacity
+        |> Villa.recalc_max_supply
         |> Repo.insert!
       _ -> nil
     end
@@ -318,6 +319,12 @@ defmodule LaFamiglia.Villa do
     new_storage_capacity =
       Application.get_env(:la_famiglia, :storage_capacity).(Changeset.apply_changes(changeset))
     put_change(changeset, :storage_capacity, new_storage_capacity)
+  end
+
+  def recalc_max_supply(%Changeset{} = changeset) do
+    new_max_supply =
+      Application.get_env(:la_famiglia, :max_supply).(Changeset.apply_changes(changeset))
+    put_change(changeset, :max_supply, new_max_supply)
   end
 end
 

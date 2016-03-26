@@ -44,6 +44,8 @@ defmodule Forge do
     unit_2: 0,
     points: 1,
     supply: 0,
+    # `max_supply` needs to be set here for testing as
+    # `Villa.recalc_max_supply` is not called automatically.
     max_supply: 100,
     resources_gained_until: LaFamiglia.DateTime.now,
     units_recruited_until: LaFamiglia.DateTime.now,

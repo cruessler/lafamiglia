@@ -15,6 +15,12 @@ config :la_famiglia,
     end
 
 config :la_famiglia,
+  max_supply:
+    fn villa ->
+      100 + 100 * villa.building_2 + :math.pow(villa.building_2, 1.4) |> round
+    end
+
+config :la_famiglia,
   buildings: [
     building_1: %{
       id: 1,

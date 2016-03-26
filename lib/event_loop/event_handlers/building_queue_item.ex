@@ -34,6 +34,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.BuildingQueueItem do
       |> Changeset.put_change(key, Map.get(villa, key) + 1)
       |> Villa.recalc_points
       |> Villa.recalc_storage_capacity
+      |> Villa.recalc_max_supply
 
     Repo.transaction fn ->
       Repo.update!(changeset)
