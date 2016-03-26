@@ -1,0 +1,8 @@
+<%= for i <- @queue do %>
+  <%= if i.building_id == @building.id do %>
+    <div class="queue-item">
+      Waiting for upgrade
+      <%= link_to_build_cancel(@conn, i) %>
+    </div>
+  <% end %>
+<% end %>

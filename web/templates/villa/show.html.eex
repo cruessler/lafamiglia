@@ -16,26 +16,20 @@
   Buildings
 </h3>
 
-<table class="col-md-8 table table-striped">
-  <tr>
-    <th></th>
-    <th>Level</th>
-    <th>Points</th>
-    <th>Costs</th>
-    <th>Build time</th>
-    <th>Build</th>
-  </tr>
+<div class="col-md-8 buildings">
   <%= for {k, b} <- Building.all do %>
-    <tr>
-      <td><%= k %></td>
-      <td><%= Building.level(@current_villa, b) %> (<%= Building.virtual_level(@current_villa, b) %>)</td>
-      <td><%= @current_villa |> Map.get(k) |> b.points.() |> round %></td>
-      <td><%= @current_villa |> Building.virtual_level(b) |> b.costs.() |> resources %></td>
-      <td><%= Building.build_time(b, Building.virtual_level(@current_villa, b)) |> round %></td>
-      <td><%= link_to_build_start(@conn, @current_villa, b) %></td>
-    </tr>
+    <div class="building">
+      <div>Building: <%= k %></div>
+      <div>Level: <%= Building.level(@current_villa, b) %> (<%= Building.virtual_level(@current_villa, b) %>)</div>
+      <div>Points: <%= @current_villa |> Map.get(k) |> b.points.() |> round %></div>
+      <div>Costs: <%= @current_villa |> Building.virtual_level(b) |> b.costs.() |> resources %></div>
+      <div>Build time: <%= Building.build_time(b, Building.virtual_level(@current_villa, b)) |> round %></div>
+      <div><%= link_to_build_start(@conn, @current_villa, b) %></div>
+
+      <%= building_queue_items_for(@conn, @current_villa.building_queue_items, b) %>
+    </div>
   <% end %>
-</table>
+</div>
 
 <table class="col-md-8 table table-striped">
   <tr>
@@ -58,29 +52,6 @@
           <%= link_to_recruit_start(@conn, @current_villa, u, n) %>
         <% end %>
       </td>
-    </tr>
-  <% end %>
-</table>
-
-<h3>
-  Building queue
-</h3>
-
-<table class="col-md-8 table table-striped">
-  <tr>
-    <th>Building</th>
-    <th>Build time</th>
-    <th>Build time left</th>
-    <th></th>
-    <th>Cancel</th>
-  </tr>
-  <%= for i <- @current_villa.building_queue_items do %>
-    <tr>
-      <td><%= i.building_id %></td>
-      <td><%= i.build_time |> round %></td>
-      <td><%= react_component("Countdown", %{countdownTo: i.completed_at}) %></td>
-      <td></td>
-      <td><%= link_to_build_cancel(@conn, i) %></td>
     </tr>
   <% end %>
 </table>

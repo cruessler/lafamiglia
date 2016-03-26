@@ -1,6 +1,8 @@
 defmodule LaFamiglia.VillaView do
   use LaFamiglia.Web, :view
 
+  alias LaFamiglia.BuildingQueueItemView
+
   def link_to_build_start(conn, villa, building) do
     level = Building.virtual_level(villa, building)
 
@@ -18,11 +20,6 @@ defmodule LaFamiglia.VillaView do
     end
   end
 
-  def link_to_build_cancel(conn, item) do
-    link "Cancel", to: building_queue_item_path(conn, :delete, item.id),
-                       method: :delete, class: "btn btn-primary"
-  end
-
   def link_to_recruit_start(conn, villa, unit, number) do
     if Villa.has_supply?(villa, unit.supply * number) do
       link Integer.to_string(number),
@@ -36,5 +33,23 @@ defmodule LaFamiglia.VillaView do
   def link_to_recruit_cancel(conn, item) do
     link "Cancel", to: unit_queue_item_path(conn, :delete, item.id),
                        method: :delete, class: "btn btn-primary"
+  end
+
+  def building_queue_items_for(conn, [], _), do: ""
+  def building_queue_items_for(conn, [first|rest], building) do
+    if first.building_id == building.id do
+      [active_queue_item(conn, BuildingQueueItemView, first),
+       waiting_queue_items(conn, BuildingQueueItemView, rest, building: building)]
+    else
+      waiting_queue_items(conn, BuildingQueueItemView, rest, building: building)
+    end
+  end
+
+  defp active_queue_item(conn, module, item) do
+    render module, "_active.html", conn: conn, item: item
+  end
+
+  defp waiting_queue_items(conn, module, queue, args) do
+    render module, "_waiting.html", Keyword.merge(args, conn: conn, queue: queue)
   end
 end

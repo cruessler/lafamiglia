@@ -1,0 +1,4 @@
+<div class="queue-item">
+  <%= react_component("Countdown", %{countdownTo: @item.completed_at}, tag: :span) %>
+  <%= link_to_build_cancel(@conn, @item) %>
+</div>
