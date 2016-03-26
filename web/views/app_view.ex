@@ -19,10 +19,11 @@ defmodule LaFamiglia.AppView do
   end
 
   def react_component(class, props \\ %{}, attrs \\ []) do
+    {tag, attrs} = Keyword.pop(attrs, :tag, :div)
     data_attributes =
       [ "data-react-class": class,
         "data-react-props": html_escape(Poison.encode!(props)) ]
 
-    content_tag(:div, "", Dict.merge(attrs, data_attributes))
+    content_tag(tag, "", Dict.merge(attrs, data_attributes))
   end
 end
