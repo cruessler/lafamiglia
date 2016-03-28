@@ -63,4 +63,18 @@ defmodule LaFamiglia.VillaView do
   defp waiting_queue_items(conn, module, queue, args) do
     render module, "_waiting.html", Keyword.merge(args, conn: conn, queue: queue)
   end
+
+  def show_level(villa, building) do
+    case {Building.level(villa, building), Building.virtual_level(villa, building)} do
+      {level, level} -> level
+      {level, virtual_level} -> "#{level} (#{virtual_level})"
+    end
+  end
+
+  def show_number(villa, unit) do
+    case {Unit.number(villa, unit), Unit.virtual_number(villa, unit)} do
+      {number, number} -> number
+      {number, virtual_number} -> "#{number} (#{virtual_number})"
+    end
+  end
 end

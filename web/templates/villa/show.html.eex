@@ -20,7 +20,7 @@
   <%= for {k, b} <- Building.all do %>
     <div class="item">
       <div>Building: <%= k %></div>
-      <div>Level: <%= Building.level(@current_villa, b) %> (<%= Building.virtual_level(@current_villa, b) %>)</div>
+      <div>Level: <%= show_level(@current_villa, b) %></div>
       <div>Points: <%= @current_villa |> Map.get(k) |> b.points.() |> round %></div>
       <div>Costs: <%= @current_villa |> Building.virtual_level(b) |> b.costs.() |> resources %></div>
       <div>Build time: <%= Building.build_time(b, Building.virtual_level(@current_villa, b)) |> round %></div>
@@ -39,7 +39,7 @@
   <%= for {k, u} <- Unit.all do %>
     <div class="item">
       <div>Unit: <%= k %></div>
-      <div>Number: <%= Unit.number(@current_villa, u) %> (<%= Unit.virtual_number(@current_villa, u) %>)</div>
+      <div>Number: <%= show_number(@current_villa, u) %></div>
       <div>Costs: <%= resources(u.costs) %></div>
       <div>Supply: <%= u.supply %></div>
       <div>Build time: <%= Unit.build_time(u) |> round %></div>
