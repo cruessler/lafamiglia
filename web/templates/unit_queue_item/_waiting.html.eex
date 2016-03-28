@@ -1,0 +1,8 @@
+<%= for i <- @queue do %>
+  <%= if i.unit_id == @unit.id do %>
+    <div class="queue-item">
+      Waiting for recruitment
+      <%= link_to_recruit_cancel(@conn, i) %>
+    </div>
+  <% end %>
+<% end %>

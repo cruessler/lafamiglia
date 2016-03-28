@@ -2,6 +2,7 @@ defmodule LaFamiglia.VillaView do
   use LaFamiglia.Web, :view
 
   alias LaFamiglia.BuildingQueueItemView
+  alias LaFamiglia.UnitQueueItemView
 
   def link_to_build_start(conn, villa, building) do
     level = Building.virtual_level(villa, building)
@@ -42,6 +43,16 @@ defmodule LaFamiglia.VillaView do
        waiting_queue_items(conn, BuildingQueueItemView, rest, building: building)]
     else
       waiting_queue_items(conn, BuildingQueueItemView, rest, building: building)
+    end
+  end
+
+  def unit_queue_items_for(conn, [], _), do: ""
+  def unit_queue_items_for(conn, [first|rest], unit) do
+    if first.unit_id == unit.id do
+      [active_queue_item(conn, UnitQueueItemView, first),
+       waiting_queue_items(conn, UnitQueueItemView, rest, unit: unit)]
+    else
+      waiting_queue_items(conn, UnitQueueItemView, rest, unit: unit)
     end
   end
 

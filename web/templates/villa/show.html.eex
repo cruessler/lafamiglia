@@ -35,52 +35,21 @@
   Units
 </h3>
 
-<table class="col-md-8 table table-striped">
-  <tr>
-    <th>Unit</th>
-    <th>Number</th>
-    <th>Costs</th>
-    <th>Supply</th>
-    <th>Recruiting time</th>
-    <th class="recruit">Recruit</th>
-  </tr>
+<div class="col-md-8 listing">
   <%= for {k, u} <- Unit.all do %>
-    <tr>
-      <td><%= k %></td>
-      <td><%= Unit.number(@current_villa, u) %> (<%= Unit.virtual_number(@current_villa, u) %>)</td>
-      <td><%= resources(u.costs) %></td>
-      <td><%= u.supply %></td>
-      <td><%= Unit.build_time(u) |> round %></td>
-      <td>
+    <div class="item">
+      <div>Unit: <%= k %></div>
+      <div>Number: <%= Unit.number(@current_villa, u) %> (<%= Unit.virtual_number(@current_villa, u) %>)</div>
+      <div>Costs: <%= resources(u.costs) %></div>
+      <div>Supply: <%= u.supply %></div>
+      <div>Build time: <%= Unit.build_time(u) |> round %></div>
+      <div>
         <%= for n <- [ 1, 5, 20, 100 ] do %>
           <%= link_to_recruit_start(@conn, @current_villa, u, n) %>
         <% end %>
-      </td>
-    </tr>
-  <% end %>
-</table>
+      </div>
 
-<h3>
-  Unit queue
-</h3>
-
-<table class="col-md-8 table table-striped">
-  <tr>
-    <th>Unit</th>
-    <th>Number</th>
-    <th>Build time</th>
-    <th>Build time left</th>
-    <th></th>
-    <th>Cancel</th>
-  </tr>
-  <%= for i <- @current_villa.unit_queue_items do %>
-    <tr>
-      <td><%= i.unit_id %></td>
-      <td><%= i.number %></td>
-      <td><%= i.build_time |> round %></td>
-      <td><%= react_component("Countdown", %{countdownTo: i.completed_at}) %></td>
-      <td></td>
-      <td><%= link_to_recruit_cancel(@conn, i) %></td>
-    </tr>
+      <%= unit_queue_items_for(@conn, @current_villa.unit_queue_items, u) %>
+    </div>
   <% end %>
-</table>
+</div>
