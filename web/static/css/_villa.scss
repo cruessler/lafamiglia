@@ -15,13 +15,13 @@ form.link {
   display: inline;
 }
 
-div.buildings {
+div.listing {
   @include overlay-box;
 
-  div.building:not(:last-child) {
+  div.item:not(:last-child) {
     margin-bottom: 0.6em;
   }
-  div.building {
+  div.item {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;

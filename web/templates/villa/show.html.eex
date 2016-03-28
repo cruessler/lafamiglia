@@ -16,9 +16,9 @@
   Buildings
 </h3>
 
-<div class="col-md-8 buildings">
+<div class="col-md-8 listing">
   <%= for {k, b} <- Building.all do %>
-    <div class="building">
+    <div class="item">
       <div>Building: <%= k %></div>
       <div>Level: <%= Building.level(@current_villa, b) %> (<%= Building.virtual_level(@current_villa, b) %>)</div>
       <div>Points: <%= @current_villa |> Map.get(k) |> b.points.() |> round %></div>
