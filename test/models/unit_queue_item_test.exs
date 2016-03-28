@@ -64,7 +64,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
       |> Ecto.Changeset.change
       |> Villa.process_units_virtually_until(LaFamiglia.DateTime.from_now(Unit.build_time(unit) * 0.9))
 
-    assert Unit.number(changeset, unit) == 1
+    assert Unit.number(changeset, unit) == 0
   end
 
   test "should refund costs", %{villa: villa, changeset: changeset, unit: unit} do

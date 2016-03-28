@@ -56,12 +56,13 @@ defmodule LaFamiglia.UnitQueueItem do
   """
   def units_recruited_between(item, time_begin, time_end) do
     start_time = start_time(item)
+    time_begin = max(start_time, time_begin)
     build_time = Unit.get(item.unit_id) |> Unit.build_time()
 
     start_number = trunc(LaFamiglia.DateTime.time_diff(start_time, time_begin) / build_time)
     end_number = trunc(LaFamiglia.DateTime.time_diff(start_time, time_end) / build_time)
 
-    min(end_number - start_number, item.number)
+    end_number - start_number
   end
 
   def enqueue!(%Changeset{} = changeset, nil, _) do
