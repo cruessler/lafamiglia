@@ -60,6 +60,8 @@ defmodule LaFamiglia.Router do
 
       get "/map/:x/:y", MapController, :show
       get "/map", MapController, :show
+
+      get "/help", HelpController, :index
     end
 
     get "/", PageController, :index

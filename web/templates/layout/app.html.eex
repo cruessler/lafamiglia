@@ -34,6 +34,7 @@
                 <li><%= link "Messages", to: conversation_path(@conn, :index) %></li>
                 <li><%= link "Reports", to: report_path(@conn, :index) %></li>
                 <li><%= link "Ranking", to: player_path(@conn, :index) %></li>
+                <li><%= link "Help", to: help_path(@conn, :index) %></li>
               </ul>
             <% end %>
 

@@ -1,0 +1,39 @@
+<div class="row">
+  <div class="col-sm-6 col-sm-offset-3">
+    <h1>Help</h1>
+
+    <h3>Overview</h3>
+
+    <p class="help">
+      La Famiglia is a rather simple game. You start with your own villa where
+      you can construct buildings and recruit units. In order to do that, you
+      have to have a certain amount of resources that are gained as time
+      passes.  As soon as the first units have been recruited you can use the
+      map to find other players and start attacking their villas to plunder
+      them, destroy their units, and eventually conquer them.
+    </p>
+
+    <h3>Your villa</h3>
+
+    <p class="help">
+      There are 3 resources which can be spent on buildings and units. Each
+      villa has its own amount of resources, gaining them over time. Once you
+      have enough, you can construct or upgrade buildings or recruit units.
+      Each building can be upgraded until it has reached its maximum level;
+      units can be recruited until there is no supply left. All your buildings
+      have certain effects: some increase the rate resources are gained at
+      while others raise a villa’s storage capacity or maximum supply.
+    </p>
+
+    <h3>The other players</h3>
+
+    <p class="help">
+      The map helps you find your opponents. You can use your mouse to move
+      around (or your fingers if you are on mobile). Click on another player’s
+      villa (colored in orange) to attack it with your troops. The ranking
+      shows how many villas and points your competitors have. You can get more
+      points either by upgrading your buildings or by conquering other player’s
+      villas.
+    </p>
+  </div>
+</div>
