@@ -16,7 +16,7 @@
   Buildings
 </h3>
 
-<div class="col-md-8 listing">
+<div class="listing">
   <%= for {k, b} <- Building.all do %>
     <div class="item">
       <div>Building: <%= k %></div>
@@ -35,7 +35,7 @@
   Units
 </h3>
 
-<div class="col-md-8 listing">
+<div class="listing">
   <%= for {k, u} <- Unit.all do %>
     <div class="item">
       <div>Unit: <%= k %></div>
