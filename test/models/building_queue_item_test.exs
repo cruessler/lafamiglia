@@ -41,7 +41,10 @@ defmodule LaFamiglia.BuildingQueueItemTest do
     villa     = Repo.get(Villa, villa.id) |> Repo.preload(:building_queue_items)
     changeset = Ecto.Changeset.change(villa)
 
-    assert {:ok, _} = BuildingQueueItem.dequeue!(changeset, List.last(villa.building_queue_items))
+    assert {:ok, _} =
+      changeset
+      |> BuildingQueueItem.dequeue(List.last(villa.building_queue_items))
+      |> Repo.transaction
   end
 
   test "should respect validations", %{changeset: changeset, building: building} do

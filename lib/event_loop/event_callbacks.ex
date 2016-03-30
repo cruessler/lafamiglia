@@ -23,6 +23,12 @@ defmodule LaFamiglia.EventCallbacks do
     changeset
   end
 
+  def drop_from_queue(%{building_queue_item: event}) do
+    LaFamiglia.EventQueue.cast({:cancel_event, event})
+
+    {:ok, event}
+  end
+
   def after_delete(changeset) do
     # The flag `processed` indicates that the model has been deleted by the
     # event loop. In that case, it does not have to be removed from the event

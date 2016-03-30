@@ -23,10 +23,11 @@ defmodule LaFamiglia.BuildingQueueItemController do
   end
 
   def delete(conn, %{"id" => id}) do
-    item = Repo.get_by!(BuildingQueueItem, id: id, villa_id: conn.assigns.current_villa.id)
+    item  = Repo.get_by!(BuildingQueueItem, id: id, villa_id: conn.assigns.current_villa.id)
+    multi = BuildingQueueItem.dequeue(conn.assigns.current_villa_changeset, item)
 
-    case BuildingQueueItem.dequeue!(conn.assigns.current_villa_changeset, item) do
-      {:error, changeset} ->
+    case Repo.transaction(multi) do
+      {:error, :villa, changeset} ->
         [{_, message}|_] = changeset.errors
 
         conn

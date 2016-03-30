@@ -67,7 +67,7 @@ defmodule LaFamiglia.BuildingQueueItem do
   """
   def enqueue(%Changeset{data: villa} = changeset, building) do
     # Since `villa.building_queue_items` is never changed in the webapp except
-    # via `enqueue` and `dequeue!`, it is safe to assume that we can simply use
+    # via `enqueue` and `dequeue`, it is safe to assume that we can simply use
     # `villa.building_queue_items` to access the current building queue.
     villa     = Repo.preload(villa, :building_queue_items)
     changeset = %Changeset{changeset | data: villa}
@@ -90,23 +90,35 @@ defmodule LaFamiglia.BuildingQueueItem do
     |> Multi.run(:send_to_queue, &LaFamiglia.EventCallbacks.send_to_queue/1)
   end
 
-  def dequeue!(%Changeset{data: villa} = changeset, item) do
-    villa = Repo.preload(villa, :building_queue_items)
+  def dequeue(%Changeset{data: villa} = changeset, item) do
+    villa     = Repo.preload(villa, :building_queue_items)
     changeset = %Changeset{changeset | data: villa}
 
-    unless last_of_its_kind?(villa.building_queue_items, item) do
-      add_error(changeset, :building_queue_items, "You can only cancel the last building of its kind.")
-    else
+    if last_of_its_kind?(villa.building_queue_items, item) do
       time_diff = build_time_left(villa.building_queue_items, item)
       refunds   = refunds(villa, item, time_diff)
+
       new_building_queue_items =
         villa.building_queue_items
         |> shift_later_items(item, time_diff)
+        |> Enum.map &Changeset.change/1
 
-      changeset
-      |> Villa.add_resources(refunds)
-      |> put_assoc(:building_queue_items, new_building_queue_items)
-      |> Repo.update
+      changeset =
+        changeset
+        |> Villa.add_resources(refunds)
+        |> put_assoc(:building_queue_items, new_building_queue_items)
+
+      Multi.new
+      |> Multi.update(:villa, changeset)
+      |> Multi.delete(:building_queue_item, item)
+      |> Multi.run(:drop_from_queue, &LaFamiglia.EventCallbacks.drop_from_queue/1)
+    else
+      changeset =
+        changeset
+        |> Changeset.put_error(changeset, :building_queue_items, "You can only cancel the last building of its kind.")
+
+      Multi.new
+      |> Multi.update(:villa, changeset)
     end
   end
 end

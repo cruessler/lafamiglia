@@ -47,7 +47,7 @@ defmodule LaFamiglia.Villa do
     field :units_recruited_until, Ecto.DateTime
 
     belongs_to :player, Player
-    has_many :building_queue_items, BuildingQueueItem, on_replace: :delete
+    has_many :building_queue_items, BuildingQueueItem, on_replace: :nilify
     has_many :unit_queue_items, UnitQueueItem, on_replace: :delete
 
     has_many :attack_movements, AttackMovement, on_replace: :delete,
