@@ -49,6 +49,13 @@ defmodule LaFamiglia.DateTime do
     time_diff(to_seconds(time2), to_seconds(time1))
   end
 
+  def max(time1, time2) do
+    case Ecto.DateTime.compare(time1, time2) do
+      :gt -> time1
+      _   -> time2
+    end
+  end
+
   def from_now(seconds) do
     add_seconds(now, seconds)
   end
