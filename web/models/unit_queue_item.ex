@@ -2,6 +2,7 @@ defmodule LaFamiglia.UnitQueueItem do
   use LaFamiglia.Web, :model
 
   alias Ecto.Changeset
+  alias Ecto.Multi
 
   import LaFamiglia.Queue
 
@@ -61,10 +62,7 @@ defmodule LaFamiglia.UnitQueueItem do
     end_number - start_number
   end
 
-  def enqueue!(%Changeset{} = changeset, nil, _) do
-    {:error, add_error(changeset, :unit, "This unit does not exist.")}
-  end
-  def enqueue!(%Changeset{data: villa} = changeset, unit, number) do
+  def enqueue(%Changeset{data: villa} = changeset, unit, number) do
     unit_queue_items = get_field(changeset, :unit_queue_items)
 
     costs      = Map.new(unit.costs, fn({k, v}) -> {k, v * number} end)
@@ -80,9 +78,10 @@ defmodule LaFamiglia.UnitQueueItem do
                                 build_time: build_time / 1,
                                 completed_at: completed_at)
 
-    changeset
-    |> Villa.recruit_changeset(new_item, costs, supply)
-    |> Repo.update
+    Multi.new
+    |> Multi.update(:villa, Villa.recruit_changeset(changeset, new_item, costs, supply))
+    |> Multi.insert(:unit_queue_item, new_item)
+    |> Multi.run(:send_to_queue, &LaFamiglia.EventCallbacks.send_to_queue/1)
   end
 
   def dequeue!(%Changeset{data: villa} = changeset, item) do

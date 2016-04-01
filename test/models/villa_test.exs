@@ -62,9 +62,17 @@ defmodule LaFamiglia.VillaTest do
     unit   = Unit.get(1)
     number = Map.get(villa, unit.key)
 
-    {:ok, villa} = UnitQueueItem.enqueue!(changeset, unit, 10)
+    {:ok, %{villa: villa}} =
+      changeset
+      |> UnitQueueItem.enqueue(unit, 10)
+      |> Repo.transaction
 
-    changeset = Ecto.Changeset.change(villa)
+    changeset =
+      villa
+      # Since `villa.unit_queue_items` is not updated by `UnitQueueItem.enqueue`
+      # the association has to be forcefully reloaded.
+      |> Repo.preload(:unit_queue_items, force: true)
+      |> Ecto.Changeset.change
 
     changeset = Villa.process_units_virtually_until(changeset, LaFamiglia.DateTime.from_now(Unit.build_time(unit) + 1))
 

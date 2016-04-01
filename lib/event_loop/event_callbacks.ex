@@ -11,6 +11,12 @@ defmodule LaFamiglia.EventCallbacks do
     {:ok, event}
   end
 
+  def send_to_queue(%{unit_queue_item: event}) do
+    LaFamiglia.EventQueue.cast({:new_event, event})
+
+    {:ok, event}
+  end
+
   def after_insert(changeset) do
     LaFamiglia.EventQueue.cast({:new_event, changeset.data})
 

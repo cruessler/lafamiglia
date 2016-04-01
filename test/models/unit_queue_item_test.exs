@@ -16,7 +16,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
     assert Unit.number(villa, unit) == 0
 
     for i <- 1..3 do
-      changeset |> UnitQueueItem.enqueue!(unit, 10)
+      changeset |> UnitQueueItem.enqueue(unit, 10) |> Repo.transaction
       items = Ecto.assoc(villa, :unit_queue_items) |> Repo.all
 
       assert Enum.count(items) == i
@@ -28,7 +28,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
   end
 
   test "should cancel unit queue item", %{villa: villa, changeset: changeset, unit: unit} do
-    assert {:ok, _item} = UnitQueueItem.enqueue!(changeset, unit, 1)
+    assert {:ok, _} = UnitQueueItem.enqueue(changeset, unit, 1) |> Repo.transaction
 
     villa     = Repo.get(Villa, villa.id) |> Repo.preload(:unit_queue_items)
     changeset = Ecto.Changeset.change(villa)
@@ -41,9 +41,16 @@ defmodule LaFamiglia.UnitQueueItemTest do
     number_to_recruit = 10
     total_number      = start_number + number_to_recruit
 
-    {:ok, villa} = UnitQueueItem.enqueue!(changeset, unit, number_to_recruit)
+    {:ok, %{villa: villa}} =
+      UnitQueueItem.enqueue(changeset, unit, number_to_recruit)
+      |> Repo.transaction
 
-    changeset = Ecto.Changeset.change(villa)
+    changeset =
+      villa
+      # Since `villa.unit_queue_items` is not updated by `UnitQueueItem.enqueue`
+      # the association has to be forcefully reloaded.
+      |> Repo.preload(:unit_queue_items, force: true)
+      |> Ecto.Changeset.change
 
     for _ <- 1..number_to_recruit do
       changeset = Villa.process_units_virtually_until(changeset, LaFamiglia.DateTime.from_now(Unit.build_time(unit) * 0.9))
@@ -54,9 +61,10 @@ defmodule LaFamiglia.UnitQueueItemTest do
   end
 
   test "does not recruit more units than enqueued", %{villa: villa, changeset: changeset, unit: unit} do
-    {:ok, villa} =
+    {:ok, %{villa: villa}} =
       changeset
-      |> UnitQueueItem.enqueue!(unit, 1)
+      |> UnitQueueItem.enqueue(unit, 1)
+      |> Repo.transaction
 
     changeset =
       villa
@@ -70,10 +78,17 @@ defmodule LaFamiglia.UnitQueueItemTest do
   test "should refund costs", %{villa: villa, changeset: changeset, unit: unit} do
     resources = Villa.get_resources(villa)
 
-    {:ok, villa} = UnitQueueItem.enqueue!(changeset, unit, 1)
+    {:ok, %{villa: villa, unit_queue_item: item}} =
+      UnitQueueItem.enqueue(changeset, unit, 1)
+      |> Repo.transaction
 
-    changeset = Ecto.Changeset.change(villa)
-    {:ok, villa} = UnitQueueItem.dequeue!(changeset, List.last(villa.unit_queue_items))
+    changeset =
+      villa
+      # Since `villa.unit_queue_items` is not updated by `UnitQueueItem.enqueue`
+      # the association has to be forcefully reloaded.
+      |> Repo.preload(:unit_queue_items, force: true)
+      |> Ecto.Changeset.change
+    {:ok, villa} = UnitQueueItem.dequeue!(changeset, item)
 
     # It is assumed that the recruitment of the first unit has been started.
     # Thus, no refunds are to be expected.
@@ -81,13 +96,15 @@ defmodule LaFamiglia.UnitQueueItemTest do
   end
 
   test "should update `units_recruited_until` when event is handled", %{changeset: changeset, unit: unit} do
-    {:ok, villa} = UnitQueueItem.enqueue!(changeset, unit, 5)
-    [first_item] = villa.unit_queue_items
+    {:ok, %{villa: villa, unit_queue_item: first_item}} =
+      UnitQueueItem.enqueue(changeset, unit, 5)
+      |> Repo.transaction
 
-    {:ok, villa} =
+    {:ok, %{villa: villa}} =
       villa
       |> Ecto.Changeset.change
-      |> UnitQueueItem.enqueue!(unit, 5)
+      |> UnitQueueItem.enqueue(unit, 5)
+      |> Repo.transaction
 
     assert Ecto.Changeset.get_field(changeset, :units_recruited_until) != first_item.completed_at
 

@@ -7,9 +7,10 @@ defmodule LaFamiglia.UnitQueueItemController do
   def create(conn, %{"villa_id" => villa_id, "unit_id" => unit_id, "number" => number}) do
     unit   = Unit.get(String.to_integer(unit_id))
     number = String.to_integer(number)
+    multi  = UnitQueueItem.enqueue(conn.assigns.current_villa_changeset, unit, number)
 
-    case UnitQueueItem.enqueue!(conn.assigns.current_villa_changeset, unit, number) do
-      {:error, changeset} ->
+    case Repo.transaction(multi) do
+      {:error, :villa, changeset} ->
         [{_, message}|_] = changeset.errors
 
         conn
