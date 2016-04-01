@@ -23,10 +23,11 @@ defmodule LaFamiglia.UnitQueueItemController do
   end
 
   def delete(conn, %{"id" => id}) do
-    item = Repo.get_by!(UnitQueueItem, id: id, villa_id: conn.assigns.current_villa.id)
+    item  = Repo.get_by!(UnitQueueItem, id: id, villa_id: conn.assigns.current_villa.id)
+    multi = UnitQueueItem.dequeue(conn.assigns.current_villa_changeset, item)
 
-    case UnitQueueItem.dequeue!(conn.assigns.current_villa_changeset, item) do
-      {:error, changeset} ->
+    case Repo.transaction(multi) do
+      {:error, :villa, changeset} ->
         [{_, message}|_] = changeset.errors
 
         conn

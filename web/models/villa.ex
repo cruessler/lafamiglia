@@ -48,7 +48,7 @@ defmodule LaFamiglia.Villa do
 
     belongs_to :player, Player
     has_many :building_queue_items, BuildingQueueItem, on_replace: :nilify
-    has_many :unit_queue_items, UnitQueueItem, on_replace: :delete
+    has_many :unit_queue_items, UnitQueueItem, on_replace: :nilify
 
     has_many :attack_movements, AttackMovement, on_replace: :delete,
                                                 foreign_key: :origin_id

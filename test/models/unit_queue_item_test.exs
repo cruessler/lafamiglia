@@ -33,7 +33,10 @@ defmodule LaFamiglia.UnitQueueItemTest do
     villa     = Repo.get(Villa, villa.id) |> Repo.preload(:unit_queue_items)
     changeset = Ecto.Changeset.change(villa)
 
-    assert {:ok, _} = UnitQueueItem.dequeue!(changeset, List.last(villa.unit_queue_items))
+    assert {:ok, _} =
+      changeset
+      |> UnitQueueItem.dequeue(List.last(villa.unit_queue_items))
+      |> Repo.transaction
   end
 
   test "should recruit in discrete steps", %{villa: villa, changeset: changeset, unit: unit} do
@@ -82,13 +85,14 @@ defmodule LaFamiglia.UnitQueueItemTest do
       UnitQueueItem.enqueue(changeset, unit, 1)
       |> Repo.transaction
 
-    changeset =
+    {:ok, %{villa: villa, unit_queue_item: item}} =
       villa
       # Since `villa.unit_queue_items` is not updated by `UnitQueueItem.enqueue`
       # the association has to be forcefully reloaded.
       |> Repo.preload(:unit_queue_items, force: true)
       |> Ecto.Changeset.change
-    {:ok, villa} = UnitQueueItem.dequeue!(changeset, item)
+      |> UnitQueueItem.dequeue(item)
+      |> Repo.transaction
 
     # It is assumed that the recruitment of the first unit has been started.
     # Thus, no refunds are to be expected.

@@ -84,7 +84,7 @@ defmodule LaFamiglia.UnitQueueItem do
     |> Multi.run(:send_to_queue, &LaFamiglia.EventCallbacks.send_to_queue/1)
   end
 
-  def dequeue!(%Changeset{data: villa} = changeset, item) do
+  def dequeue(%Changeset{data: villa} = changeset, item) do
     unit_queue_items = get_field(changeset, :unit_queue_items)
 
     time_diff   = build_time_left(unit_queue_items, item)
@@ -100,11 +100,17 @@ defmodule LaFamiglia.UnitQueueItem do
     new_unit_queue_items =
       unit_queue_items
       |> shift_later_items(item, time_diff)
+      |> Enum.map &Changeset.change/1
 
-    changeset
-    |> Villa.add_resources(refunds)
-    |> put_change(:supply, villa.supply - unit.supply * number_left)
-    |> put_assoc(:unit_queue_items, new_unit_queue_items)
-    |> Repo.update
+    changeset =
+      changeset
+      |> Villa.add_resources(refunds)
+      |> put_change(:supply, villa.supply - unit.supply * number_left)
+      |> put_assoc(:unit_queue_items, new_unit_queue_items)
+
+    Multi.new
+    |> Multi.update(:villa, changeset)
+    |> Multi.delete(:unit_queue_item, item)
+    |> Multi.run(:drop_from_queue, &LaFamiglia.EventCallbacks.drop_from_queue/1)
   end
 end
