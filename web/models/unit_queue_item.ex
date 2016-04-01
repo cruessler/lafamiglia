@@ -80,8 +80,11 @@ defmodule LaFamiglia.UnitQueueItem do
 
     Multi.new
     |> Multi.update(:villa, Villa.recruit_changeset(changeset, new_item, costs, supply))
-    |> Multi.insert(:unit_queue_item, new_item)
-    |> Multi.run(:send_to_queue, &LaFamiglia.EventCallbacks.send_to_queue/1)
+    |> Multi.run(:send_to_queue, fn(%{villa: villa}) ->
+      villa.unit_queue_items
+      |> List.last
+      |> LaFamiglia.EventCallbacks.send_to_queue
+    end)
   end
 
   def dequeue(%Changeset{data: villa} = changeset, item) do
@@ -110,7 +113,8 @@ defmodule LaFamiglia.UnitQueueItem do
 
     Multi.new
     |> Multi.update(:villa, changeset)
-    |> Multi.delete(:unit_queue_item, item)
-    |> Multi.run(:drop_from_queue, &LaFamiglia.EventCallbacks.drop_from_queue/1)
+    |> Multi.run(:drop_from_queue, fn(_) ->
+      LaFamiglia.EventCallbacks.drop_from_queue(item)
+    end)
   end
 end

@@ -91,8 +91,12 @@ defmodule LaFamiglia.Villa do
   end
 
   def recruit_changeset(%{data: villa} = changeset, new_item, costs, supply) do
+    new_unit_queue_items = Enum.map(villa.unit_queue_items ++ [new_item], &Changeset.change/1)
+
     changeset
     |> subtract_resources(costs)
+    |> Changeset.put_change(:supply, Changeset.get_field(changeset, :supply) + supply)
+    |> Changeset.put_assoc(:unit_queue_items, new_unit_queue_items)
     |> validate_supply
     |> validate_resources
   end

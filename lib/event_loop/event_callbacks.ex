@@ -11,7 +11,7 @@ defmodule LaFamiglia.EventCallbacks do
     {:ok, event}
   end
 
-  def send_to_queue(%{unit_queue_item: event}) do
+  def send_to_queue(event) do
     LaFamiglia.EventQueue.cast({:new_event, event})
 
     {:ok, event}
@@ -35,7 +35,7 @@ defmodule LaFamiglia.EventCallbacks do
     {:ok, event}
   end
 
-  def drop_from_queue(%{unit_queue_item: event}) do
+  def drop_from_queue(event) do
     LaFamiglia.EventQueue.cast({:cancel_event, event})
 
     {:ok, event}

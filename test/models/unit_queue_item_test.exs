@@ -48,12 +48,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
       UnitQueueItem.enqueue(changeset, unit, number_to_recruit)
       |> Repo.transaction
 
-    changeset =
-      villa
-      # Since `villa.unit_queue_items` is not updated by `UnitQueueItem.enqueue`
-      # the association has to be forcefully reloaded.
-      |> Repo.preload(:unit_queue_items, force: true)
-      |> Ecto.Changeset.change
+    changeset = Ecto.Changeset.change(villa)
 
     for _ <- 1..number_to_recruit do
       changeset = Villa.process_units_virtually_until(changeset, LaFamiglia.DateTime.from_now(Unit.build_time(unit) * 0.9))
@@ -81,15 +76,14 @@ defmodule LaFamiglia.UnitQueueItemTest do
   test "should refund costs", %{villa: villa, changeset: changeset, unit: unit} do
     resources = Villa.get_resources(villa)
 
-    {:ok, %{villa: villa, unit_queue_item: item}} =
+    {:ok, %{villa: villa}} =
       UnitQueueItem.enqueue(changeset, unit, 1)
       |> Repo.transaction
 
-    {:ok, %{villa: villa, unit_queue_item: item}} =
+    [item] = villa.unit_queue_items
+
+    {:ok, %{villa: villa}} =
       villa
-      # Since `villa.unit_queue_items` is not updated by `UnitQueueItem.enqueue`
-      # the association has to be forcefully reloaded.
-      |> Repo.preload(:unit_queue_items, force: true)
       |> Ecto.Changeset.change
       |> UnitQueueItem.dequeue(item)
       |> Repo.transaction
@@ -100,7 +94,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
   end
 
   test "should update `units_recruited_until` when event is handled", %{changeset: changeset, unit: unit} do
-    {:ok, %{villa: villa, unit_queue_item: first_item}} =
+    {:ok, %{villa: villa}} =
       UnitQueueItem.enqueue(changeset, unit, 5)
       |> Repo.transaction
 
@@ -109,6 +103,8 @@ defmodule LaFamiglia.UnitQueueItemTest do
       |> Ecto.Changeset.change
       |> UnitQueueItem.enqueue(unit, 5)
       |> Repo.transaction
+
+    [first_item|_] = villa.unit_queue_items
 
     assert Ecto.Changeset.get_field(changeset, :units_recruited_until) != first_item.completed_at
 
