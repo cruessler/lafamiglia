@@ -62,7 +62,7 @@ defmodule LaFamiglia.BuildingQueueItemTest do
   end
 
   test "should update `resources_gained_until` when event is handled", %{changeset: changeset, building: building} do
-    {:ok, %{villa: villa, building_queue_item: first_item}} =
+    {:ok, %{villa: villa}} =
       changeset
       |> BuildingQueueItem.enqueue(building)
       |> Repo.transaction
@@ -72,6 +72,8 @@ defmodule LaFamiglia.BuildingQueueItemTest do
       |> Ecto.Changeset.change
       |> BuildingQueueItem.enqueue(building)
       |> Repo.transaction
+
+    [first_item|_] = villa.building_queue_items
 
     assert Ecto.Changeset.get_field(changeset, :resources_gained_until) != first_item.completed_at
 

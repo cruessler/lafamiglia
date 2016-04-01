@@ -5,12 +5,6 @@ defmodule LaFamiglia.EventCallbacks do
   to the event queue.
   """
 
-  def send_to_queue(%{building_queue_item: event}) do
-    LaFamiglia.EventQueue.cast({:new_event, event})
-
-    {:ok, event}
-  end
-
   def send_to_queue(event) do
     LaFamiglia.EventQueue.cast({:new_event, event})
 
@@ -27,12 +21,6 @@ defmodule LaFamiglia.EventCallbacks do
     LaFamiglia.EventQueue.cast({:update_event, changeset.data})
 
     changeset
-  end
-
-  def drop_from_queue(%{building_queue_item: event}) do
-    LaFamiglia.EventQueue.cast({:cancel_event, event})
-
-    {:ok, event}
   end
 
   def drop_from_queue(event) do

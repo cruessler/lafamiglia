@@ -84,9 +84,12 @@ defmodule LaFamiglia.Villa do
   end
 
   def build_changeset(%{data: villa} = changeset, new_item, costs) do
+    new_building_queue_items = Enum.map(villa.building_queue_items ++ [new_item], &Changeset.change/1)
+
     changeset
     |> subtract_resources(costs)
     |> validate_maxlevel(new_item)
+    |> Changeset.put_assoc(:building_queue_items, new_building_queue_items)
     |> validate_resources
   end
 

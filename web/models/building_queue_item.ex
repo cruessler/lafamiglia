@@ -86,8 +86,11 @@ defmodule LaFamiglia.BuildingQueueItem do
 
     Multi.new
     |> Multi.update(:villa, Villa.build_changeset(changeset, new_item, costs))
-    |> Multi.insert(:building_queue_item, new_item)
-    |> Multi.run(:send_to_queue, &LaFamiglia.EventCallbacks.send_to_queue/1)
+    |> Multi.run(:send_to_queue, fn(%{villa: villa}) ->
+      villa.building_queue_items
+      |> List.last
+      |> LaFamiglia.EventCallbacks.send_to_queue
+    end)
   end
 
   def dequeue(%Changeset{data: villa} = changeset, item) do
@@ -110,8 +113,9 @@ defmodule LaFamiglia.BuildingQueueItem do
 
       Multi.new
       |> Multi.update(:villa, changeset)
-      |> Multi.delete(:building_queue_item, item)
-      |> Multi.run(:drop_from_queue, &LaFamiglia.EventCallbacks.drop_from_queue/1)
+      |> Multi.run(:drop_from_queue, fn(_) ->
+        LaFamiglia.EventCallbacks.drop_from_queue(item)
+      end)
     else
       changeset =
         changeset
