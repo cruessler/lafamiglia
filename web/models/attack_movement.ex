@@ -4,9 +4,11 @@ defmodule LaFamiglia.AttackMovement do
   import LaFamiglia.Movement
 
   alias Ecto.Changeset
+  alias Ecto.Multi
 
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
+  alias LaFamiglia.AttackMovement
 
   alias LaFamiglia.Unit
   alias LaFamiglia.ComebackMovement
@@ -23,7 +25,7 @@ defmodule LaFamiglia.AttackMovement do
     timestamps
   end
 
-  @required_fields ~w(origin_id target_id unit_1 unit_2)
+  @required_fields ~w(unit_1 unit_2)
   @optional_fields ~w()
 
   @doc """
@@ -42,12 +44,30 @@ defmodule LaFamiglia.AttackMovement do
     |> calculate_arrives_at
   end
 
-  def attack(%{data: villa} = changeset, attack) do
-    villa     = Repo.preload(villa, :attack_movements)
-    changeset = %Changeset{changeset | data: villa}
+  def create(origin_changeset, target, params) do
+    movement =
+      %AttackMovement{}
+      |> cast(params, @required_fields, @optional_fields)
 
-    changeset
-    |> Villa.order_units_changeset(attack, Unit.filter(attack))
+    origin_changeset =
+      Villa.order_units_changeset(origin_changeset, Unit.filter(movement))
+
+    movement
+    |> put_assoc(:origin, origin_changeset)
+    |> put_assoc(:target, target)
+    |> validate_origin_and_target_belong_to_different_players
+    |> validate_at_least_one_unit
+    |> assoc_constraint(:origin)
+    |> assoc_constraint(:target)
+    |> calculate_arrives_at
+  end
+
+  def attack(changeset) do
+    Multi.new
+    |> Multi.insert(:attack_movement, changeset)
+    |> Multi.run(:send_to_queue, fn(%{attack_movement: movement}) ->
+      LaFamiglia.EventCallbacks.send_to_queue(movement)
+    end)
   end
 
   def cancel!(attack) do
@@ -71,8 +91,8 @@ defmodule LaFamiglia.AttackMovement do
   end
 
   defp validate_origin_and_target_belong_to_different_players(changeset) do
-    origin = Repo.get!(Villa, get_field(changeset, :origin_id))
-    target = Repo.get!(Villa, get_field(changeset, :target_id))
+    origin = get_field(changeset, :origin)
+    target = get_field(changeset, :target)
 
     cond do
       origin.player_id == target.player_id ->
@@ -109,8 +129,8 @@ defmodule LaFamiglia.AttackMovement do
   defp calculate_arrives_at(changeset) do
     %{changes: changes} = changeset
 
-    origin = Repo.get(Villa, changes.origin_id)
-    target = Repo.get(Villa, changes.target_id)
+    origin = get_field(changeset, :origin)
+    target = get_field(changeset, :target)
 
     duration = duration(origin, target, units(changes))
 

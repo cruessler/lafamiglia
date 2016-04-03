@@ -104,10 +104,9 @@ defmodule LaFamiglia.Villa do
     |> validate_resources
   end
 
-  def order_units_changeset(%{data: villa} = changeset, new_order, units) do
+  def order_units_changeset(%{data: villa} = changeset, units) do
     changeset
     |> subtract_units(units)
-    |> Changeset.put_assoc(:attack_movements, villa.attack_movements ++ [new_order])
     |> validate_units
   end
 
