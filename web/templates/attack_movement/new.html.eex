@@ -16,41 +16,31 @@
     </div>
   <% end %>
 
-  <%= inputs_for f, :attack_movements, fn fa -> %>
-    <!-- FIXME: This is a hack. It is used because nested changesets are only
-      supported one-way in the version of Ecto used currently (1.0). belongs_to
-      associations cannot be changed via changesets while has_many associations
-      can. Thus, this page depends on a Villa changeset where an AttackMovement
-      changeset would provide a much more elegant solution.
-      See https://github.com/elixir-lang/ecto/issues/1102 -->
-    <%= if is_nil fa.data.id do %>
-      <%= hidden_input(fa, :target_id) %>
+  <%= hidden_input(:attack_movement, :target_id, value: @target.id) %>
 
-      <div class="form-group">
-        <label class="control-label">
-          Target:
-        </label>
-        <%= fa.data.target %>
-      </div>
+  <div class="form-group">
+    <label class="control-label">
+      Target:
+    </label>
+    <%= @target %>
+  </div>
 
-      <div class="form-group">
-        <label class="control-label">
-          Units:
-        </label>
+  <div class="form-group">
+    <label class="control-label">
+      Units:
+    </label>
 
-        <table>
-          <tr>
-            <%= for {k, u} <- LaFamiglia.Unit.all do %>
-              <td>
-                <%= k %>: <%= text_input fa, k, class: :"form-control" %>
-                (out of <%= LaFamiglia.Unit.number(@current_villa, u) %>)
-              </td>
-            <% end %>
-          </tr>
-        </table>
-      </div>
-    <% end %>
-  <% end %>
+    <table>
+      <tr>
+        <%= for {k, u} <- LaFamiglia.Unit.all do %>
+          <td>
+            <%= k %>: <%= text_input f, k, class: :"form-control" %>
+            (out of <%= LaFamiglia.Unit.number(@current_villa, u) %>)
+          </td>
+        <% end %>
+      </tr>
+    </table>
+  </div>
 
   <button class="btn btn-primary" type="submit">Send</button>
 <% end %>

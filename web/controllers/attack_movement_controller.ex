@@ -5,46 +5,31 @@ defmodule LaFamiglia.AttackMovementController do
   alias LaFamiglia.AttackMovement
 
   def new(conn, %{"target_id" => target_id}) do
-    # To make `target_id` and `target` available in the template, both are set
-    # on the model.
     target    = Repo.get!(Villa, target_id)
-    movement  = %AttackMovement{target_id: target_id, target: target}
-    movement_params = Map.merge(%{"origin_id" => conn.assigns.current_villa.id,
-                                  "target_id" => target_id}, default_units)
-
-    attack_changeset = AttackMovement.changeset(movement, movement_params)
-    changeset        = AttackMovement.attack(conn.assigns.current_villa_changeset, attack_changeset)
+    changeset = AttackMovement.create(conn.assigns.current_villa_changeset, target, default_units)
 
     conn
     |> assign(:changeset, changeset)
+    |> assign(:target, target)
     |> render("new.html")
   end
 
-  # FIXME: As soon as ecto supports belongs_to associations in changesets,
-  # the hierarchy of changesets can be reversed for increased elegance.
-  # scrub_params can be reintroduced then.
-  # Also see the comment in the template.
-  def create(conn, %{"villa" => %{"attack_movements" => movements}}) do
-    {_, movement_params} = movements |> Map.to_list |> List.last
-
+  def create(conn, %{"attack_movement" => movement_params}) do
     movement_params =
-      movement_params
-      |> Map.put("origin_id", conn.assigns.current_villa.id)
-      |> Map.merge(default_units, fn
+      Map.merge(movement_params, default_units, fn
         (_, v1, v2) when is_nil(v1) -> v2
         (_, v1, _) -> v1
       end)
 
-    target   = Repo.get!(Villa, movement_params["target_id"])
-    movement = %AttackMovement{target: target}
+    target    = Repo.get!(Villa, movement_params["target_id"])
+    changeset = AttackMovement.create(conn.assigns.current_villa_changeset, target, movement_params)
+    multi     = AttackMovement.attack(changeset)
 
-    attack_changeset = AttackMovement.changeset(movement, movement_params)
-    changeset        = AttackMovement.attack(conn.assigns.current_villa_changeset, attack_changeset)
-
-    case Repo.update(changeset) do
-      {:error, changeset} ->
+    case Repo.transaction(multi) do
+      {:error, :attack_movement, changeset, _} ->
         conn
         |> assign(:changeset, changeset)
+        |> assign(:target, target)
         |> render("new.html")
       {:ok, _movement} ->
         conn
