@@ -5,6 +5,7 @@ defmodule LaFamiglia.ComebackMovement do
 
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
+  alias LaFamiglia.ComebackMovement
 
   alias LaFamiglia.Unit
 
@@ -24,8 +25,7 @@ defmodule LaFamiglia.ComebackMovement do
     timestamps
   end
 
-  @required_fields ~w(origin_id target_id arrives_at
-                      unit_1 unit_2)
+  @required_fields ~w(unit_1 unit_2)
   @optional_fields ~w(resource_1 resource_2 resource_3)
 
   @doc """
@@ -49,13 +49,11 @@ defmodule LaFamiglia.ComebackMovement do
     duration_of_return = duration(attack.origin, attack.target, units(result.attacker_after_combat))
     new_arrives_at = LaFamiglia.DateTime.from_now(duration_of_return)
 
-    params =
-      Map.from_struct(attack)
-      |> Map.merge(result.attacker_after_combat)
-      |> Map.put(:arrives_at, new_arrives_at)
-      |> Map.drop([:origin, :target])
-
-    changeset(%LaFamiglia.ComebackMovement{}, params)
+    %ComebackMovement{}
+    |> changeset(result.attacker_after_combat)
+    |> put_assoc(:origin, attack.origin)
+    |> put_assoc(:target, attack.target)
+    |> put_change(:arrives_at, new_arrives_at)
   end
 
   def arrive!(comeback) do

@@ -2,6 +2,7 @@ defmodule LaFamiglia.AttackMovementTest do
   use LaFamiglia.ModelCase
 
   alias LaFamiglia.AttackMovement
+  alias LaFamiglia.ComebackMovement
   alias LaFamiglia.Report
 
   setup do
@@ -39,6 +40,10 @@ defmodule LaFamiglia.AttackMovementTest do
 
     report = from(r in Report, order_by: [desc: :id], limit: 1) |> Repo.one
     assert %Ecto.DateTime{} = report.delivered_at
+
+    comeback = from(c in ComebackMovement, preload: :origin) |> Repo.one
+    assert comeback.origin.id == attack.origin.id
+    assert Ecto.DateTime.compare(comeback.arrives_at, attack.arrives_at) == :gt
   end
 
   test "arrives_at is in the future", context do

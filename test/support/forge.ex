@@ -70,6 +70,7 @@ defmodule Forge do
     __struct__: AttackMovement,
     origin_id: Forge.saved_villa(Repo).id,
     target_id: Forge.saved_villa(Repo).id,
+    arrives_at: LaFamiglia.DateTime.from_now(10),
     unit_1: 100,
     unit_2: 0
 end
