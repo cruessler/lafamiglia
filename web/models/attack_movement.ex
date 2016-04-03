@@ -70,24 +70,16 @@ defmodule LaFamiglia.AttackMovement do
     end)
   end
 
-  def cancel!(attack) do
-    attack = Repo.preload(attack, [:origin, :target])
+  def cancel(attack) do
+    changeset = ComebackMovement.from_attack(attack)
 
-    time_remaining = LaFamiglia.DateTime.time_diff(attack.arrives_at, LaFamiglia.DateTime.now)
-    duration_of_return = duration(attack.origin, attack.target, units(attack)) - time_remaining
-    new_arrives_at = LaFamiglia.DateTime.from_now(duration_of_return)
-
-    # The new ComebackMovement is identical to `attack` except for `arrives_at`.
-    params =
-      Map.from_struct(attack)
-      |> Map.put(:arrives_at, new_arrives_at)
-
-    changeset = ComebackMovement.changeset(%ComebackMovement{}, params)
-
-    Repo.transaction fn ->
-      Repo.delete(attack)
-      Repo.insert!(changeset)
-    end
+    Multi.new
+    |> Multi.delete(:attack, attack)
+    |> Multi.insert(:comeback, changeset)
+    |> Multi.run(:update_queue, fn(%{attack: attack, comeback: comeback}) ->
+      LaFamiglia.EventCallbacks.drop_from_queue(attack)
+      LaFamiglia.EventCallbacks.send_to_queue(comeback)
+    end)
   end
 
   defp validate_origin_and_target_belong_to_different_players(changeset) do

@@ -56,6 +56,26 @@ defmodule LaFamiglia.ComebackMovement do
     |> put_change(:arrives_at, new_arrives_at)
   end
 
+  @doc """
+  This function creates a ComebackMovement.
+
+  It is used when a user cancels an attack before it arrives at its target.
+  """
+  def from_attack(attack) do
+    attack = Repo.preload(attack, [:origin, :target])
+
+    time_remaining = LaFamiglia.DateTime.time_diff(attack.arrives_at, LaFamiglia.DateTime.now)
+    duration_of_return = duration(attack.origin, attack.target, units(attack)) - time_remaining
+    new_arrives_at = LaFamiglia.DateTime.from_now(duration_of_return)
+
+    # The new ComebackMovement is identical to `attack` except for `arrives_at`.
+    %ComebackMovement{}
+    |> changeset(Unit.filter(attack))
+    |> put_assoc(:origin, attack.origin)
+    |> put_assoc(:target, attack.target)
+    |> put_change(:arrives_at, new_arrives_at)
+  end
+
   def arrive!(comeback) do
     Repo.transaction fn ->
       comeback = Repo.preload(comeback, :origin)

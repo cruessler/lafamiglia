@@ -46,6 +46,14 @@ defmodule LaFamiglia.AttackMovementTest do
     assert Ecto.DateTime.compare(comeback.arrives_at, attack.arrives_at) == :gt
   end
 
+  test "can be canceled", %{attack: attack} do
+    {:ok, %{comeback: comeback}} = AttackMovement.cancel(attack) |> Repo.transaction
+
+    assert comeback.origin.id == attack.origin.id
+    assert comeback.unit_1 == attack.unit_1
+    assert Ecto.DateTime.compare(comeback.arrives_at, attack.arrives_at) == :gt
+  end
+
   test "arrives_at is in the future", context do
     {:ok, movement} =
       AttackMovement.create(context.origin_changeset,
