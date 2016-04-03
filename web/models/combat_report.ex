@@ -7,16 +7,10 @@ defmodule LaFamiglia.CombatReport do
   alias LaFamiglia.RelatedReportVilla
 
   def deliver!(origin, target, result) do
-    report_data = struct(ReportData, Map.from_struct(result))
-
     report_for_attacker =
-      change(%Report{}, title: title_for(origin, result),
-                        data: report_data,
-                        player_id: origin.player.id)
+      Report.changeset(%Report{}, data_for(origin, result))
     report_for_defender =
-      change(%Report{}, title: title_for(target, result),
-                        data: report_data,
-                        player_id: target.player.id)
+      Report.changeset(%Report{}, data_for(target, result))
 
     report_for_attacker = Repo.insert!(report_for_attacker)
     report_for_defender = Repo.insert!(report_for_defender)
@@ -37,6 +31,14 @@ defmodule LaFamiglia.CombatReport do
                                  %{related_report_id: report_for_defender.id,
                                  villa_id: target.id})
     |> Repo.insert!
+  end
+
+  defp data_for(villa, result) do
+    report_data = struct(ReportData, Map.from_struct(result))
+
+    %{title: title_for(villa, result),
+      data: report_data,
+      player_id: villa.player.id}
   end
 
   defp title_for(villa, result) do

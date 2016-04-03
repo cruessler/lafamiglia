@@ -36,6 +36,9 @@ defmodule LaFamiglia.AttackMovementTest do
 
     assert report_count == old_report_count + 2
     assert Repo.get(Villa, attack.origin.id).supply < old_supply
+
+    report = from(r in Report, order_by: [desc: :id], limit: 1) |> Repo.one
+    assert %Ecto.DateTime{} = report.delivered_at
   end
 
   test "arrives_at is in the future", context do
