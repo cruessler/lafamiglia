@@ -54,7 +54,7 @@ defmodule LaFamiglia.Villa do
                                                 foreign_key: :origin_id
 
     many_to_many :related_reports, Report, join_through: RelatedReportVilla,
-                                           join_keys: [related_report_id: :id, villa_id: :id]
+                                           join_keys: [villa_id: :id, related_report_id: :id]
 
     timestamps
   end
