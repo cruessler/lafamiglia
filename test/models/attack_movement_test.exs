@@ -39,7 +39,7 @@ defmodule LaFamiglia.AttackMovementTest do
     assert Repo.get(Villa, attack.origin.id).supply < old_supply
 
     report = from(r in Report, order_by: [desc: :id], limit: 1) |> Repo.one
-    assert %Ecto.DateTime{} = report.delivered_at
+    assert attack.arrives_at == report.delivered_at
 
     comeback = from(c in ComebackMovement, preload: :origin) |> Repo.one
     assert comeback.origin.id == attack.origin.id

@@ -17,7 +17,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
   def handle(attack) do
     Logger.info "processing attack event ##{attack.id}"
 
-    LaFamiglia.DateTime.clock!
+    LaFamiglia.DateTime.clock!(attack.arrives_at)
 
     attack = Repo.preload(attack, target: :player, origin: :player)
     result = Combat.calculate(attack, attack.target)
