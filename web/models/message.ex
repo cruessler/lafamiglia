@@ -9,6 +9,7 @@ defmodule LaFamiglia.Message do
   alias LaFamiglia.Player
   alias LaFamiglia.Conversation
   alias LaFamiglia.ConversationStatus
+  alias LaFamiglia.Message
 
   schema "messages" do
     belongs_to :sender, Player
@@ -22,14 +23,16 @@ defmodule LaFamiglia.Message do
   end
 
   def create(params) do
-    changeset =
-      changeset(%__MODULE__{}, params)
-      |> find_or_create_conversation
+    changeset = changeset(%Message{}, params)
 
     Multi.new
-    |> Multi.insert(:message, changeset)
-    |> Multi.run(:update_conversation, fn
-      %{message: message} -> {:ok, update_conversation(message)}
+    |> Multi.run(:message, fn(_) ->
+      message = find_or_create_conversation(changeset) |> Repo.insert!
+
+      {:ok, message}
+    end)
+    |> Multi.run(:update_conversation, fn(%{message: message}) ->
+       {:ok, update_conversation(message)}
     end)
   end
 
@@ -106,22 +109,23 @@ defmodule LaFamiglia.Message do
     # Return nil if no conversation was found.
   end
 
+  defp find_or_create_conversation(%Changeset{changes: %{conversation_id: _}} = changeset) do
+    changeset
+  end
   defp find_or_create_conversation(%Changeset{changes: changes} = changeset) do
-    unless Map.has_key?(changes, :conversation_id) do
-      conversation = case find_conversation(changeset) do
-        nil ->
-          {:ok, %{conversation: conversation}} =
-            Conversation.create(%{participants: [%{id: changes.sender_id}|changes.receivers]})
-            |> Repo.transaction
+    conversation = case find_conversation(changeset) do
+      nil ->
+        {:ok, %{conversation: conversation}} =
+          Conversation.create(%{participants: [%{id: changes.sender_id}|changes.receivers]})
+          |> Repo.transaction
 
-          conversation
-        conversation ->
-          conversation
-      end
-
-      changeset
-      |> put_change(:conversation_id, conversation.id)
+        conversation
+      conversation ->
+        conversation
     end
+
+    changeset
+    |> put_change(:conversation_id, conversation.id)
   end
 
   defp update_conversation(message) do
