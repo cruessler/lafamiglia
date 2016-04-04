@@ -36,8 +36,8 @@ defmodule LaFamiglia.Message do
     end)
   end
 
-  @required_fields ~w(sender_id receivers text)
-  @optional_fields ~w(conversation_id)
+  @required_fields ~w(sender_id text)
+  @optional_fields ~w(conversation_id receivers)
 
   @doc """
   Creates a changeset based on the `model` and `params`.
