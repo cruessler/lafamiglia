@@ -54,7 +54,9 @@ defmodule LaFamiglia.Router do
 
       resources "/movements", MovementController, only: [ :index ]
 
-      resources "/conversations", ConversationController, only: [ :index, :show ]
+      resources "/conversations", ConversationController, only: [ :index, :show ] do
+        resources "/messages", MessageController, only: [ :create ]
+      end
       resources "/messages", MessageController, only: [ :create ]
       resources "/reports", ReportController, only: [ :index, :show ]
 

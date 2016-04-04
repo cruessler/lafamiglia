@@ -5,7 +5,7 @@ defmodule LaFamiglia.MessageController do
   alias LaFamiglia.ConversationStatus
   alias LaFamiglia.Message
 
-  def create(conn, %{"message" => %{"text" => text, "conversation_id" => conversation_id}} = _params) do
+  def create(conn, %{"conversation_id" => conversation_id, "message" => %{"text" => text}} = _params) do
     conversation_status =
       from(s in ConversationStatus,
         where: s.conversation_id == ^conversation_id and

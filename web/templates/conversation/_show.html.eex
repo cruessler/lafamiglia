@@ -4,10 +4,9 @@
 <h3 class="write-message-header">Write a message</h3>
 
 <%= form_for @changeset,
-             message_path(@conn, :create),
+             conversation_message_path(@conn, :create, @changeset.changes.conversation_id),
              [class: "form-vertical"],
              fn f -> %>
-  <%= hidden_input f, :conversation_id, value: @changeset.changes.conversation_id %>
 
   <%= if f.errors != [] do %>
     <div class="alert alert-danger">
