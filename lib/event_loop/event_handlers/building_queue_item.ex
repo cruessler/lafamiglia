@@ -38,7 +38,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.BuildingQueueItem do
 
     Repo.transaction fn ->
       Repo.update!(changeset)
-      Repo.delete!(%BuildingQueueItem{item | processed: true})
+      Repo.delete!(item)
 
       Player.recalc_points!(villa.player)
     end

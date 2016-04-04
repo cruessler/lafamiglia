@@ -29,7 +29,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.UnitQueueItem do
 
     Repo.transaction fn ->
       Repo.update!(changeset)
-      Repo.delete!(%UnitQueueItem{item | processed: true})
+      Repo.delete!(item)
     end
   end
 end
