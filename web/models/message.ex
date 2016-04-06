@@ -22,20 +22,6 @@ defmodule LaFamiglia.Message do
     timestamps
   end
 
-  def create(params) do
-    changeset = changeset(%Message{}, params)
-
-    Multi.new
-    |> Multi.run(:message, fn(_) ->
-      message = find_or_create_conversation(changeset) |> Repo.insert!
-
-      {:ok, message}
-    end)
-    |> Multi.run(:update_conversation, fn(%{message: message}) ->
-       {:ok, update_conversation(message)}
-    end)
-  end
-
   @required_fields ~w(sender_id text)
   @optional_fields ~w(conversation_id receivers)
 
@@ -53,6 +39,36 @@ defmodule LaFamiglia.Message do
     |> validate_receivers
     |> assoc_constraint(:sender)
     |> assoc_constraint(:conversation)
+  end
+
+  def open_conversation(sender, receivers, text) do
+    changeset =
+      changeset(%Message{},
+        %{sender_id: sender.id,
+          receivers: receivers,
+          text: text})
+
+    Multi.new
+    |> Multi.run(:message, fn(_) ->
+      find_or_create_conversation(changeset) |> Repo.insert
+    end)
+    |> Multi.run(:update_conversation, fn(%{message: message}) ->
+       {:ok, update_conversation(message)}
+    end)
+  end
+
+  def continue_conversation(sender, conversation, text) do
+    changeset =
+      changeset(%Message{},
+        %{sender_id: sender.id,
+          conversation_id: conversation.id,
+          text: text})
+
+    Multi.new
+    |> Multi.insert(:message, changeset)
+    |> Multi.run(:update_conversation, fn(%{message: message}) ->
+       {:ok, update_conversation(message)}
+    end)
   end
 
   defp remove_sender_from_receivers(
@@ -109,9 +125,6 @@ defmodule LaFamiglia.Message do
     # Return nil if no conversation was found.
   end
 
-  defp find_or_create_conversation(%Changeset{changes: %{conversation_id: _}} = changeset) do
-    changeset
-  end
   defp find_or_create_conversation(%Changeset{changes: changes} = changeset) do
     conversation = case find_conversation(changeset) do
       nil ->

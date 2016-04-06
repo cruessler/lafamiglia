@@ -2,6 +2,7 @@ defmodule LaFamiglia.MessageTest do
   use LaFamiglia.ModelCase
 
   alias LaFamiglia.Conversation
+  alias LaFamiglia.ConversationStatus
   alias LaFamiglia.Message
 
   setup do
@@ -36,15 +37,25 @@ defmodule LaFamiglia.MessageTest do
                            |> Repo.insert
     end
 
-    message = Message.changeset(%Message{}, context.message_params)
+    multi = Message.open_conversation(%{id: sender_id}, receivers, "This is a text.")
 
-    assert {:ok, _} = Repo.insert(message)
+    assert {:ok, %{message: message}} = Repo.transaction(multi)
+
+    statuses =
+      from(s in ConversationStatus,
+        where: s.conversation_id == ^message.conversation_id)
+      |> Repo.all
+
+    assert length(statuses) == length(receivers) + 1
   end
 
   test "add message to existing conversation", context do
     old_conversation_count = conversation_count
 
-    multi = Message.create(context.message_params)
+    conversation = Forge.saved_conversation(Repo)
+    multi =
+      Message.continue_conversation(
+        %{id: context.sender_id}, conversation, "This is a text.")
 
     for _ <- 0..2 do
       assert {:ok, %{message: message}} = Repo.transaction(multi)

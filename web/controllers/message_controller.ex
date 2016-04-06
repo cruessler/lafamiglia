@@ -6,27 +6,18 @@ defmodule LaFamiglia.MessageController do
   alias LaFamiglia.Message
 
   def create(conn, %{"conversation_id" => conversation_id, "message" => %{"text" => text}} = _params) do
-    conversation_status =
+    conversation =
       from(s in ConversationStatus,
-        where: s.conversation_id == ^conversation_id and
-               s.player_id == ^conn.assigns.current_player.id)
-      |> Repo.one
-      |> Repo.preload(:conversation)
+        join: c in assoc(s, :conversation),
+        where: c.id == ^conversation_id and
+               s.player_id == ^conn.assigns.current_player.id,
+        select: c)
+      |> Repo.one!
 
-    message_params = %{conversation_id: conversation_status.conversation.id,
-                       sender_id: conn.assigns.current_player.id,
-                       text: text}
-    message = Message.changeset(%Message{}, message_params)
+    Message.continue_conversation(conn.assigns.current_player, conversation, text)
+    |> Repo.transaction
 
-    case Repo.insert(message) do
-      {:error, changeset} ->
-        conn
-        |> assign(:changeset, changeset)
-        |> render("new.html")
-      {:ok, _message} ->
-        conn
-        |> redirect(to: conversation_path(conn, :show, conversation_status.conversation.id))
-    end
+    redirect(conn, to: conversation_path(conn, :show, conversation.id))
   end
   def create(conn, %{"message" => %{"text" => text, "receivers" => receivers}} = _params) do
     receivers =
@@ -35,20 +26,16 @@ defmodule LaFamiglia.MessageController do
         where: p.id in ^receivers)
       |> Repo.all
 
-    message_params = %{sender_id: conn.assigns.current_player.id,
-                       receivers: receivers,
-                       text: text}
-    message = Message.changeset(%Message{}, message_params)
+    multi = Message.open_conversation(conn.assigns.current_player, receivers, text)
 
-    case Repo.insert(message) do
-      {:error, changeset} ->
+    case Repo.transaction(multi) do
+      {:error, :message, changeset, _} ->
         conn
         |> assign(:changeset, changeset)
         |> render("new.html")
-      {:ok, _message} ->
+      {:ok, %{message: message}} ->
         conn
-        |> put_flash(:info, "The message has been sent.")
-        |> redirect(to: conversation_path(conn, :index))
+        |> redirect(to: conversation_path(conn, :show, message.conversation_id))
     end
   end
   # When no receiver is selected, `receivers[]` is not part of `params` and the
