@@ -13,12 +13,13 @@ class Conversation extends React.Component {
 
   headerNodeForMessage(current, previous) {
     if(previous == undefined || current.sender.name != previous.sender.name) {
-      return <li className={this.classNameForMessageHeader(current)}>{current.sender.name}</li>
+      return <li className={this.classNameForMessageHeader(current)}
+                 key={`header-${current.id}`}>{current.sender.name}</li>
     }
   }
 
   messageNode(message) {
-    return <li key={message.key}
+    return <li key={message.id}
                className={this.classNameForMessage(message)}>{message.text}</li>
   }
 

@@ -46,8 +46,7 @@ class InteractiveMap extends React.Component {
                       x: e.clientX - this.state.startPosition.x,
                       y: e.clientY - this.state.startPosition.y })
     } else {
-      const viewportNode = this.innerViewport.getDOMNode()
-      const offset = $(viewportNode).offset()
+      const offset = $(this.innerViewport).offset()
 
       const viewportX = e.clientX - offset.left + window.scrollX
       const viewportY = e.clientY - offset.top + window.scrollY
@@ -162,14 +161,14 @@ class InteractiveMap extends React.Component {
   }
 
   saveCellDimensions() {
-    const mapCellNode   = $(this.firstCell.getDOMNode())
+    const mapCellNode   = $(this.firstCell)
     this.cellDimensions = { width:  mapCellNode.outerWidth(),
                             height: mapCellNode.outerHeight() }
 
   }
 
   saveMapDimensions() {
-    const mapNode      = $(this.map.getDOMNode())
+    const mapNode      = $(this.map)
     this.mapDimensions = { width:  mapNode.width(),
                             height: mapNode.height() }
 

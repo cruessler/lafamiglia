@@ -28,7 +28,7 @@ class App {
       const constructor = window[reactClass]
 
       if(constructor != undefined) {
-        React.render(React.createElement(constructor, props), node)
+        ReactDOM.render(React.createElement(constructor, props), node)
       }
     }
   }

@@ -34,7 +34,7 @@ class PlayerSelector extends React.Component {
   }
 
   componentDidMount() {
-    $(this.input.getDOMNode())
+    $(this.input)
       .typeahead({
         minLength: 1
       }, {
@@ -45,8 +45,8 @@ class PlayerSelector extends React.Component {
       .on("typeahead:selected", (event, selected) => {
         this.addPlayer(selected)
       })
-      .on("focusin", (event) => $(this.container.getDOMNode()).addClass("focus"))
-      .on("focusout", (event) => $(this.container.getDOMNode()).removeClass("focus"))
+      .on("focusin", (event) => $(this.container).addClass("focus"))
+      .on("focusout", (event) => $(this.container).removeClass("focus"))
   }
 
   render() {

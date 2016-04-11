@@ -11,14 +11,14 @@ class InfoBox extends React.Component {
     const villa = this.props.villa
 
     if(villa) {
-      let actionNodes = [<a href={villa.reports_url}
+      let actionNodes = [<a href={villa.reports_url} key="show-reports"
                             className="btn btn-primary">Show reports</a>]
 
       if(villa.player.id == this.props.playerId) {
-        actionNodes.push(<a href={villa.switch_to_url}
+        actionNodes.push(<a href={villa.switch_to_url} key="switch-to-villa"
                             className="btn btn-primary">Switch to villa</a>)
       } else {
-        actionNodes.push(<a href={villa.attack_url}
+        actionNodes.push(<a href={villa.attack_url} key="attack-villa"
                             className="btn btn-primary">Attack</a>)
       }
 
