@@ -47,7 +47,12 @@ class PlayerSelector extends React.Component {
         this.addPlayer(selected)
       })
       .on("focusin", (event) => $(this.container).addClass("focus"))
-      .on("focusout", (event) => $(this.container).removeClass("focus"))
+      .on("focusout", (event) => {
+        $(this.container).removeClass("focus")
+        // This prevents typeahead from resetting the value of the input to the
+        // last selected value.
+        $(this.input).typeahead("val", this.state.name)
+      })
   }
 
   onInputChange(event) {
