@@ -79,7 +79,14 @@ class PlayerSelector extends React.Component {
              <input type="text" ref={(i) => this.input = i}
                     value={this.state.name}
                     onChange={this.onInputChange.bind(this)} />
-             {hiddenNodes}
+             {/*
+               Without the container, React is, for reasons unknown, not able
+               to properly keep track of all child nodes and duplicates them
+               as soon as a player is selected and a key is pressed.
+             */}
+             <div>
+               {hiddenNodes}
+             </div>
            </div>
   }
 }
