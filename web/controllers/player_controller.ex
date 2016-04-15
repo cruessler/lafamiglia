@@ -39,12 +39,13 @@ defmodule LaFamiglia.PlayerController do
   end
 
   def search(conn, %{"query" => query}) do
-    query = "%" <> query <> "%"
+    query_start = query <> "%"
+    query_in    = "%" <> query <> "%"
 
     players =
       from(p in Player,
         select: %{id: p.id, name: p.name},
-        where: like(p.name, ^query),
+        where: ilike(p.name, ^query_start) or ilike(p.name, ^query_in),
         limit: @search_query_limit)
       |> Repo.all
 
