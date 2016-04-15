@@ -25,6 +25,7 @@ defmodule LaFamiglia.MessageController do
         select: %{id: p.id},
         where: p.id in ^receivers)
       |> Repo.all
+      |> Enum.uniq
 
     multi = Message.open_conversation(conn.assigns.current_player, receivers, text)
 
