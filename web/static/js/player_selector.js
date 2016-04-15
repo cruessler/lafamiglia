@@ -49,12 +49,11 @@ class PlayerSelector extends React.Component {
       .on("focusout", (event) => $(this.container).removeClass("focus"))
   }
 
-  render() {
-    const valueLink = {
-      value: this.state.name,
-      requestChange: (newName) => this.setState({ name: newName })
-    }
+  onInputChange(event) {
+    this.setState({ name: event.target.value })
+  }
 
+  render() {
     const playerSpans = this.state.players.map((p) => {
       return <span className="selected" key={p.id}>{p.name}
                <button type="button" className="close" aria-label="Close"
@@ -77,7 +76,8 @@ class PlayerSelector extends React.Component {
     return <div className="form-control container" ref={(c) => this.container = c}>
              {playerSpans}
              <input type="text" ref={(i) => this.input = i}
-                    valueLink={valueLink} />
+                    value={this.state.name}
+                    onChange={this.onInputChange.bind(this)} />
              {hiddenNodes}
            </div>
   }
