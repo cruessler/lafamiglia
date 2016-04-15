@@ -2,7 +2,7 @@ class PlayerSelector extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = { players: [] }
+    this.state = { name: "", players: [] }
 
     this.bloodhound = new Bloodhound({
       datumTokenizer: Bloodhound.tokenizers.obj.whitespace("name"),
@@ -30,7 +30,8 @@ class PlayerSelector extends React.Component {
   }
 
   removePlayer(player) {
-    this.setState({ players: this.state.players.filter((p) => p != player)})
+    this.setState({ name: "",
+                    players: this.state.players.filter((p) => p != player)})
   }
 
   componentDidMount() {
