@@ -319,10 +319,14 @@ defmodule LaFamiglia.Villa do
   end
 
   def recalc_points(%Changeset{} = changeset) do
-    changeset
-    |> put_change(:points, Enum.reduce(Building.all, 0, fn({k, b}, points) ->
-      points + round(b.points.(Building.level(changeset, b)))
-    end))
+    new_points = for {_, b} <- Building.all do
+      Building.level(changeset, b)
+      |> b.points.()
+      |> round
+    end
+    |> Enum.sum
+
+    put_change(changeset, :points, new_points)
   end
 
   def recalc_storage_capacity(%Changeset{} = changeset) do
