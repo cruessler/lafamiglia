@@ -1,7 +1,7 @@
 defimpl LaFamiglia.Event, for: LaFamiglia.BuildingQueueItem do
   require Logger
 
-  import Ecto.Model
+  import Ecto
   import Ecto.Query, only: [from: 2]
 
   alias Ecto.Changeset
