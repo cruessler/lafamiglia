@@ -6,11 +6,8 @@
     <div class="alert alert-danger">
       <p>Please check the errors below:</p>
       <ul>
-        <!-- FIXME: This does not display the errors of the nested changeset.
-          After upgrading to phoenix_ecto 2.0, this has to be updated.
-          See https://github.com/phoenixframework/phoenix_ecto/blob/90989c881a4276d6768d339343cf71eacfadae3b/CHANGELOG.md#v200. -->
-        <%= for {attr, message} <- f.errors do %>
-          <li><%= humanize(attr) %> <%= message %></li>
+        <%= for {_, message} <- f.errors do %>
+          <%= translate_error(message) %>
         <% end %>
       </ul>
     </div>
