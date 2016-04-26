@@ -5,6 +5,10 @@
 # is restricted to this project.
 use Mix.Config
 
+# General application configuration
+config :la_famiglia,
+  ecto_repos: [LaFamiglia.Repo]
+
 # Configures the endpoint
 config :la_famiglia, LaFamiglia.Endpoint,
   url: [host: "localhost"],
