@@ -9,7 +9,7 @@ defmodule LaFamiglia.AttackMovementControllerTest do
     origin =
       Villa.create_for(player)
       |> Ecto.Changeset.change
-      |> Villa.add_units(%{unit_1: 1, unit_2: 0})
+      |> Villa.add_units(%{unit_1: 1})
       |> Repo.update!
     conn   = conn |> with_login(player)
 

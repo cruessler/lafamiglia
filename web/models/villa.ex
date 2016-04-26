@@ -257,7 +257,7 @@ defmodule LaFamiglia.Villa do
 
     Enum.reduce @resources, changeset, fn(r, changeset) ->
       changeset
-      |> put_change(r, min(get_field(changeset, r) + Map.get(resources, r),
+      |> put_change(r, min(get_field(changeset, r) + Map.get(resources, r, 0),
                            storage_capacity / 1))
     end
   end
@@ -271,7 +271,7 @@ defmodule LaFamiglia.Villa do
   def subtract_resources(%Changeset{} = changeset, resources) do
     Enum.reduce @resources, changeset, fn(r, changeset) ->
       changeset
-      |> put_change(r, get_field(changeset, r) - Map.get(resources, r))
+      |> put_change(r, get_field(changeset, r) - Map.get(resources, r, 0))
     end
   end
 
@@ -287,14 +287,14 @@ defmodule LaFamiglia.Villa do
   def add_units(%Changeset{} = changeset, units) do
     Enum.reduce LaFamiglia.Unit.all, changeset, fn({k, _}, changeset) ->
       changeset
-      |> put_change(k, get_field(changeset, k) + Map.get(units, k))
+      |> put_change(k, get_field(changeset, k) + Map.get(units, k, 0))
     end
   end
 
   def subtract_units(%Changeset{} = changeset, units) do
     Enum.reduce LaFamiglia.Unit.all, changeset, fn({k, _}, changeset) ->
       changeset
-      |> put_change(k, get_field(changeset, k) - Map.get(units, k))
+      |> put_change(k, get_field(changeset, k) - Map.get(units, k, 0))
     end
   end
 
