@@ -13,14 +13,13 @@ defmodule LaFamiglia.PlayerController do
   def create(conn, %{"player" => player_params}) do
     changeset = Player.changeset(%Player{}, player_params)
 
-    if changeset.valid? do
-      Repo.insert(changeset)
-
-      conn
-      |> put_flash(:info, "Player created successfully.")
-      |> redirect(to: page_path(conn, :index))
-    else
-      render(conn, "new.html", changeset: changeset)
+    case Repo.insert(changeset) do
+      {:ok, _} ->
+        conn
+        |> put_flash(:info, "Player created successfully.")
+        |> redirect(to: page_path(conn, :index))
+      {:error, changeset} ->
+        render(conn, "new.html", changeset: changeset)
     end
   end
 
