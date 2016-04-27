@@ -15,9 +15,8 @@ defmodule LaFamiglia.ConversationController do
 
   def show(conn, %{"id" => id}) do
     conversation =
-      from(c in assoc(conn.assigns.current_player, :conversations),
-        where: c.id == ^id)
-      |> Repo.one
+      from(c in assoc(conn.assigns.current_player, :conversations))
+      |> Repo.get!(id)
       |> Repo.preload([messages: :sender])
 
     ConversationStatus.update_read_until!(conversation, conn.assigns.current_player)
