@@ -25,15 +25,16 @@ defmodule LaFamiglia.Conversation do
   end
 
   def create(params) do
+    statuses = for p <- params.participants do
+      Changeset.change(%ConversationStatus{}, %{player_id: p.id})
+    end
+
     changeset =
       change(%__MODULE__{})
-      |> put_change(:participants, params.participants)
+      |> put_assoc(:conversation_statuses, statuses)
 
     Multi.new
     |> Multi.insert(:conversation, changeset)
-    |> Multi.run(:create_statuses, fn
-      %{conversation: conversation} -> {:ok, create_conversation_statuses(conversation)}
-    end)
   end
 
   @doc """
@@ -81,20 +82,5 @@ defmodule LaFamiglia.Conversation do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
-  end
-
-  def create_conversation_statuses(conversation) do
-    # The association has to be preloaded as otherwise an exception is thrown.
-    conversation = conversation |> Repo.preload(:conversation_statuses)
-
-    statuses =
-      Enum.map conversation.participants, fn(p) ->
-        Ecto.build_assoc(conversation, :conversation_statuses, %{player_id: p.id})
-      end
-
-    conversation
-    |> change
-    |> put_assoc(:conversation_statuses, statuses)
-    |> Repo.update!
   end
 end
