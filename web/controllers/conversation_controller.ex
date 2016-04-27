@@ -45,7 +45,7 @@ defmodule LaFamiglia.ConversationController do
         order_by: [desc: c.last_message_sent_at])
       |> Repo.all
       |> Enum.map(fn {c, new_messages} -> %{c | new_messages: new_messages} end)
-      |> Repo.preload([:players])
+      |> Repo.preload([:participants])
 
     conn
     |> assign(:conversations, conversations)

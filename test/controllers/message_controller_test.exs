@@ -16,10 +16,10 @@ defmodule LaFamiglia.MessageControllerTest do
     conn = post context.conn, "/messages", [message: [text: "This is a text.", receivers: [receiver.id]]]
 
     conversation =
-      from(c in Conversation, preload: :players, order_by: [desc: :id], limit: 1)
+      from(c in Conversation, preload: :participants, order_by: [desc: :id], limit: 1)
       |> Repo.one!
 
-    assert Enum.any? conversation.players, fn(p) -> p.id == context.player.id end
+    assert Enum.any? conversation.participants, fn(p) -> p.id == context.player.id end
 
     conn = get conn, "/conversations/#{conversation.id}"
 

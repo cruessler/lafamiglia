@@ -17,9 +17,7 @@ defmodule LaFamiglia.Conversation do
     has_many :messages, Message
 
     has_many :conversation_statuses, ConversationStatus
-    has_many :players, through: [:conversation_statuses, :player]
-
-    field :participants, {:array, :map}, virtual: true
+    has_many :participants, through: [:conversation_statuses, :player]
 
     timestamps
   end
