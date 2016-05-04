@@ -87,5 +87,5 @@ defmodule LaFamiglia.Combat do
 
     %{result | resources_plundered: resources_plundered}
   end
-  defp calculate_plundered_resources(result), do: result
+  defp calculate_plundered_resources(result), do: %{result | resources_plundered: %{}}
 end

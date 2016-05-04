@@ -30,7 +30,7 @@ defmodule LaFamiglia.AttackMovementTest do
     |> Repo.one
   end
 
-  test "gets handled", %{attack: attack} = context do
+  test "gets handled when attacker wins", %{attack: attack} do
     old_report_count = report_count
     old_supply       = attack.origin.supply
 
@@ -50,6 +50,16 @@ defmodule LaFamiglia.AttackMovementTest do
     assert Ecto.DateTime.compare(comeback.arrives_at, attack.arrives_at) == :gt
     assert comeback.resource_1 > 0
     assert comeback.resource_1 == report.data.resources_plundered.resource_1
+  end
+
+  test "gets handled when attacker loses", %{attack: attack} do
+    attack = %{attack | unit_1: 1}
+
+    assert LaFamiglia.Event.handle(attack)
+
+    target = Repo.get(Villa, attack.target.id)
+    assert Resource.filter(target) == Resource.filter(attack.target)
+  end
   end
 
   test "can be canceled", %{attack: attack} do
