@@ -4,6 +4,7 @@ defmodule LaFamiglia.ReportData do
 
   defstruct [:attacker_before_combat, :attacker_losses,
              :defender_before_combat, :defender_losses,
+             :resources_plundered,
              :winner]
 
   defp atomify_keys(map) when is_map(map) do

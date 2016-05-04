@@ -49,8 +49,12 @@ defmodule LaFamiglia.ComebackMovement do
     duration_of_return = duration(attack.origin, attack.target, units(result.attacker_after_combat))
     new_arrives_at = LaFamiglia.DateTime.from_now(duration_of_return)
 
+    params =
+      result.attacker_after_combat
+      |> Map.merge(result.resources_plundered)
+
     %ComebackMovement{}
-    |> changeset(result.attacker_after_combat)
+    |> changeset(params)
     |> put_assoc(:origin, attack.origin)
     |> put_assoc(:target, attack.target)
     |> put_change(:arrives_at, new_arrives_at)

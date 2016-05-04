@@ -48,6 +48,8 @@ defmodule LaFamiglia.AttackMovementTest do
     comeback = from(c in ComebackMovement, preload: :origin) |> Repo.one
     assert comeback.origin.id == attack.origin.id
     assert Ecto.DateTime.compare(comeback.arrives_at, attack.arrives_at) == :gt
+    assert comeback.resource_1 > 0
+    assert comeback.resource_1 == report.data.resources_plundered.resource_1
   end
 
   test "can be canceled", %{attack: attack} do
