@@ -24,7 +24,7 @@ defmodule LaFamiglia.Combat.AfterCombat do
       plunder(resources_remaining, load_remaining)
       |> Map.merge(to_plunder, fn(_k, v1, v2) -> v1 + v2 end)
     else
-      %{}
+      %{resource_1: 0, resource_2: 0, resource_3: 0}
     end
   end
 end

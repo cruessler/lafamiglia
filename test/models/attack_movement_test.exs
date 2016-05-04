@@ -4,7 +4,7 @@ defmodule LaFamiglia.AttackMovementTest do
   alias LaFamiglia.AttackMovement
   alias LaFamiglia.ComebackMovement
   alias LaFamiglia.Report
-  alias LaFamiglia.Resource
+  alias LaFamiglia.{Resource, Unit}
 
   setup do
     LaFamiglia.DateTime.clock!
@@ -60,6 +60,21 @@ defmodule LaFamiglia.AttackMovementTest do
     target = Repo.get(Villa, attack.target.id)
     assert Resource.filter(target) == Resource.filter(attack.target)
   end
+
+  test "gets handled when attacker wins and target has no resources", context do
+    target_without_resources =
+      Forge.saved_villa(Repo, resource_1: 0.0, resource_2: 0.0, resource_3: 0.0)
+
+    attack =
+      AttackMovement.create(context.origin_changeset,
+                            target_without_resources,
+                            Unit.filter(context.origin))
+      |> Repo.insert!
+
+    assert LaFamiglia.Event.handle(attack)
+
+    comeback = from(c in ComebackMovement, preload: :origin) |> Repo.one
+    refute is_nil(comeback.resource_1)
   end
 
   test "can be canceled", %{attack: attack} do
