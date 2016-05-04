@@ -15,7 +15,8 @@ config :la_famiglia,
       supply: 5,
       speed: 2,
       attack: 2,
-      defense: 2
+      defense: 2,
+      load: 10
     },
     unit_2: %{
       id: 2,
@@ -29,5 +30,6 @@ config :la_famiglia,
       supply: 20,
       speed: 1,
       attack: 5,
-      defense: 4
+      defense: 4,
+      load: 0
     }]

@@ -1,7 +1,7 @@
 defmodule LaFamiglia.Combat do
-  alias LaFamiglia.Building
-  alias LaFamiglia.Unit
+  alias LaFamiglia.{Building, Resource, Unit}
   alias LaFamiglia.CombatResult
+  alias LaFamiglia.Combat.AfterCombat
 
   def calculate(attacker, defender) do
     %CombatResult{
@@ -14,6 +14,7 @@ defmodule LaFamiglia.Combat do
       |> calculate_winner
       |> calculate_percent_loss
       |> calculate_losses
+      |> calculate_plundered_resources
   end
 
   defp calculate_combat_values(result) do
@@ -74,4 +75,17 @@ defmodule LaFamiglia.Combat do
       defender_after_combat: defender_after_combat,
       attacker_survived?: attacker_survived}
   end
+
+  defp calculate_plundered_resources(%CombatResult{attacker_survived?: true} = result) do
+    load =
+      for({k, n} <- result.attacker_after_combat, do: Unit.get(k).load * n)
+      |> Enum.sum
+
+    resources_plundered =
+      Resource.filter(result.defender)
+      |> AfterCombat.plunder(load)
+
+    %{result | resources_plundered: resources_plundered}
+  end
+  defp calculate_plundered_resources(result), do: result
 end

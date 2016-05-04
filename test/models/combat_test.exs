@@ -4,7 +4,7 @@ defmodule LaFamiglia.CombatTest do
   alias LaFamiglia.Repo
 
   alias LaFamiglia.Combat
-  alias LaFamiglia.Unit
+  alias LaFamiglia.{Resource, Unit}
 
   setup do
     LaFamiglia.DateTime.clock!
@@ -33,6 +33,7 @@ defmodule LaFamiglia.CombatTest do
     assert Unit.supply(result.defender_after_combat) == 0
 
     assert result.attacker_survived?
+    assert Resource.filter(result.defender) == result.resources_plundered
   end
 
   test "has supply loss", %{result: result} do
