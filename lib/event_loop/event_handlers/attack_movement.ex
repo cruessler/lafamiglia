@@ -29,6 +29,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
       Changeset.change(attack.target)
       |> Villa.subtract_units(result.defender_losses)
       |> Villa.subtract_supply(result.defender_supply_loss)
+      |> Villa.subtract_resources(result.resources_plundered)
 
     Repo.transaction fn ->
       CombatReport.deliver!(attack.origin, attack.target, result)

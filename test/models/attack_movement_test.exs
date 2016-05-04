@@ -4,6 +4,7 @@ defmodule LaFamiglia.AttackMovementTest do
   alias LaFamiglia.AttackMovement
   alias LaFamiglia.ComebackMovement
   alias LaFamiglia.Report
+  alias LaFamiglia.Resource
 
   setup do
     LaFamiglia.DateTime.clock!
@@ -29,7 +30,7 @@ defmodule LaFamiglia.AttackMovementTest do
     |> Repo.one
   end
 
-  test "gets handled", %{attack: attack} do
+  test "gets handled", %{attack: attack} = context do
     old_report_count = report_count
     old_supply       = attack.origin.supply
 
@@ -37,6 +38,9 @@ defmodule LaFamiglia.AttackMovementTest do
 
     assert report_count == old_report_count + 2
     assert Repo.get(Villa, attack.origin.id).supply < old_supply
+
+    target = Repo.get(Villa, attack.target.id)
+    assert Resource.filter(target) != Resource.filter(attack.target)
 
     report = from(r in Report, order_by: [desc: :id], limit: 1) |> Repo.one
     assert attack.arrives_at == report.delivered_at
