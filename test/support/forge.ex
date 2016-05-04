@@ -7,7 +7,7 @@ defmodule Forge do
   alias LaFamiglia.Conversation
   alias LaFamiglia.Message
   alias LaFamiglia.Report
-  alias LaFamiglia.AttackMovement
+  alias LaFamiglia.{AttackMovement, ComebackMovement}
 
   @save_one_function &Blacksmith.Config.save/2
   @save_all_function &Blacksmith.Config.save_all/2
@@ -73,4 +73,15 @@ defmodule Forge do
     arrives_at: LaFamiglia.DateTime.from_now(10),
     unit_1: 100,
     unit_2: 0
+
+  register :comeback_movement,
+    __struct__: ComebackMovement,
+    origin_id: Forge.saved_villa(Repo).id,
+    target_id: Forge.saved_villa(Repo).id,
+    arrives_at: LaFamiglia.DateTime.from_now(10),
+    unit_1: 100,
+    unit_2: 0,
+    resource_1: 50,
+    resource_2: 60,
+    resource_3: 70
 end

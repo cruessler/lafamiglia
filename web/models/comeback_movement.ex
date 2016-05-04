@@ -85,7 +85,8 @@ defmodule LaFamiglia.ComebackMovement do
       comeback = Repo.preload(comeback, :origin)
 
       change(comeback.origin)
-      |> Villa.add_units(Unit.filter(comeback))
+      |> Villa.add_units(comeback)
+      |> Villa.add_resources(comeback)
       |> Repo.update!
 
       Repo.delete(comeback)
