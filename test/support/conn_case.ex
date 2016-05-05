@@ -22,10 +22,11 @@ defmodule LaFamiglia.ConnCase do
 
       # Alias the data repository and import query/model functions
       alias LaFamiglia.Repo
-      import Ecto.Model
-      import Ecto.Query, only: [from: 2]
 
-      # Import URL helpers from the router
+      import Ecto
+      import Ecto.Changeset
+      import Ecto.Query
+
       import LaFamiglia.Router.Helpers
 
       # The default endpoint for testing
@@ -35,9 +36,15 @@ defmodule LaFamiglia.ConnCase do
     end
   end
 
-  setup do
+  setup tags do
     LaFamiglia.DateTime.clock!
 
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(LaFamiglia.Repo, [])
+
+    unless tags[:async] do
+      Ecto.Adapters.SQL.Sandbox.mode(LaFamiglia.Repo, {:shared, self()})
+    end
+
+    {:ok, conn: Phoenix.ConnTest.conn()}
   end
 end

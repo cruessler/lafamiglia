@@ -22,16 +22,23 @@ defmodule LaFamiglia.ChannelCase do
 
       # Alias the data repository and import query/model functions
       alias LaFamiglia.Repo
-      import Ecto.Model
-      import Ecto.Query, only: [from: 2]
 
+      import Ecto
+      import Ecto.Changeset
+      import Ecto.Query
 
       # The default endpoint for testing
       @endpoint LaFamiglia.Endpoint
     end
   end
 
-  setup do
+  setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(LaFamiglia.Repo, [])
+
+    unless tags[:async] do
+      Ecto.Adapters.SQL.Sandbox.mode(LaFamiglia.Repo, {:shared, self()})
+    end
+
+    :ok
   end
 end
