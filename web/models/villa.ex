@@ -248,10 +248,6 @@ defmodule LaFamiglia.Villa do
     end
   end
 
-  def get_resources(%Villa{resource_1: resource_1, resource_2: resource_2, resource_3: resource_3}) do
-    %{resource_1: resource_1, resource_2: resource_2, resource_3: resource_3}
-  end
-
   def add_resources(%Changeset{} = changeset, resources) do
     storage_capacity = get_field(changeset, :storage_capacity)
 

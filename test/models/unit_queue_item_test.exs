@@ -1,7 +1,7 @@
 defmodule LaFamiglia.UnitQueueItemTest do
   use LaFamiglia.ModelCase
 
-  alias LaFamiglia.Unit
+  alias LaFamiglia.{Resource, Unit}
   alias LaFamiglia.UnitQueueItem
 
   setup do
@@ -74,7 +74,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
   end
 
   test "should refund costs", %{villa: villa, changeset: changeset, unit: unit} do
-    resources = Villa.get_resources(villa)
+    resources = Resource.filter(villa)
 
     {:ok, %{villa: villa}} =
       UnitQueueItem.enqueue(changeset, unit, 1)
@@ -90,7 +90,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
 
     # It is assumed that the recruitment of the first unit has been started.
     # Thus, no refunds are to be expected.
-    assert resources != Villa.get_resources(villa)
+    assert resources != Resource.filter(villa)
   end
 
   test "should update `units_recruited_until` when event is handled", %{changeset: changeset, unit: unit} do
