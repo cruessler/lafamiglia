@@ -18,11 +18,11 @@ defmodule LaFamiglia.Combat do
   end
 
   defp calculate_combat_values(result) do
-    attack_value = Enum.reduce Unit.all, 0, fn({k, u}, acc) ->
-      acc + Map.get(result.attacker_before_combat, k) * u.attack
+    attack_value = Enum.reduce Unit.all, 0, fn(u, acc) ->
+      acc + Map.get(result.attacker_before_combat, u.key) * u.attack
     end
-    defense_value = Enum.reduce Unit.all, 0, fn({k, u}, acc) ->
-      acc + Map.get(result.defender_before_combat, k) * u.defense
+    defense_value = Enum.reduce Unit.all, 0, fn(u, acc) ->
+      acc + Map.get(result.defender_before_combat, u.key) * u.defense
     end
     defense_value = Enum.reduce Building.all, defense_value, fn({k, b}, acc) ->
       acc + b.defense.(Map.get(result.defender, k))

@@ -1,6 +1,6 @@
 defmodule LaFamiglia.Movement do
   def units(map) do
-    Enum.filter LaFamiglia.Unit.all, fn({_k, u}) ->
+    Enum.filter LaFamiglia.Unit.all, fn(u) ->
       Map.get(map, u.key) > 0
     end
   end
@@ -15,7 +15,7 @@ defmodule LaFamiglia.Movement do
   defp speed(units) do
     speed =
       units
-      |> Enum.map(fn({_k, u}) -> u.speed end)
+      |> Enum.map(fn(u) -> u.speed end)
       |> Enum.min
 
     speed / 3600 * Application.get_env(:la_famiglia, :unit_speed)

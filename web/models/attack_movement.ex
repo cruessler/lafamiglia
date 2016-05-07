@@ -99,7 +99,7 @@ defmodule LaFamiglia.AttackMovement do
       unit_number_given?(changeset) ->
         total_unit_number =
           LaFamiglia.Unit.all
-          |> Enum.reduce(0, fn({k, _u}, acc) -> acc + (changes[k] || 0) end)
+          |> Enum.reduce(0, fn(u, acc) -> acc + (changes[u.key] || 0) end)
 
         case total_unit_number == 0 do
           true -> add_error(changeset, :unit_count, "You have to select at least 1 unit.")
@@ -110,8 +110,8 @@ defmodule LaFamiglia.AttackMovement do
   end
 
   defp unit_number_given?(%Changeset{changes: changes}) do
-    Enum.any? changes, fn({k, _v}) ->
-      Dict.has_key?(LaFamiglia.Unit.all, k)
+    Enum.any? LaFamiglia.Unit.all, fn(u) ->
+      Map.has_key?(changes, u.key)
     end
   end
 

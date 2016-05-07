@@ -3,7 +3,7 @@ use Mix.Config
 config :la_famiglia,
   unit_speed: 10,
   units: [
-    unit_1: %{
+    %{
       id: 1,
       key: :unit_1,
       build_time: 10,
@@ -18,7 +18,7 @@ config :la_famiglia,
       defense: 2,
       load: 10
     },
-    unit_2: %{
+    %{
       id: 2,
       key: :unit_2,
       build_time: 43400,

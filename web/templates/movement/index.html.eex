@@ -7,8 +7,8 @@
     <tr>
       <td><%= m.id %></td>
       <td><%= m.origin %> → <%= m.target %></td>
-      <%= for {k, u} <- LaFamiglia.Unit.all do %>
-        <td><%= "#{k}: #{Unit.number(m, u)}" %></td>
+      <%= for u <- LaFamiglia.Unit.all do %>
+        <td><%= "#{u.key}: #{Unit.number(m, u)}" %></td>
       <% end %>
       <td><%= m.arrives_at %></td>
     </tr>
@@ -22,8 +22,8 @@
     <tr>
       <td><%= m.id %></td>
       <td><%= m.origin %> ← <%= m.target %></td>
-      <%= for {k, u} <- LaFamiglia.Unit.all do %>
-        <td><%= "#{k}: #{Unit.number(m, u)}" %></td>
+      <%= for u <- LaFamiglia.Unit.all do %>
+        <td><%= "#{u.key}: #{Unit.number(m, u)}" %></td>
       <% end %>
       <td><%= m.arrives_at %></td>
     </tr>

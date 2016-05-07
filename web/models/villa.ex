@@ -137,9 +137,9 @@ defmodule LaFamiglia.Villa do
   end
 
   defp validate_units(changeset) do
-    Enum.reduce LaFamiglia.Unit.all, changeset, fn({k, _}, changeset) ->
+    Enum.reduce LaFamiglia.Unit.all, changeset, fn(u, changeset) ->
       changeset
-      |> validate_number(k, greater_than_or_equal_to: 0, message: "Not enough units.")
+      |> validate_number(u.key, greater_than_or_equal_to: 0, message: "Not enough units.")
     end
   end
 
@@ -281,16 +281,16 @@ defmodule LaFamiglia.Villa do
   end
 
   def add_units(%Changeset{} = changeset, units) do
-    Enum.reduce LaFamiglia.Unit.all, changeset, fn({k, _}, changeset) ->
+    Enum.reduce LaFamiglia.Unit.all, changeset, fn(u, changeset) ->
       changeset
-      |> put_change(k, get_field(changeset, k) + Map.get(units, k, 0))
+      |> put_change(u.key, get_field(changeset, u.key) + Map.get(units, u.key, 0))
     end
   end
 
   def subtract_units(%Changeset{} = changeset, units) do
-    Enum.reduce LaFamiglia.Unit.all, changeset, fn({k, _}, changeset) ->
+    Enum.reduce LaFamiglia.Unit.all, changeset, fn(u, changeset) ->
       changeset
-      |> put_change(k, get_field(changeset, k) - Map.get(units, k, 0))
+      |> put_change(u.key, get_field(changeset, u.key) - Map.get(units, u.key, 0))
     end
   end
 

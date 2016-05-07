@@ -39,6 +39,6 @@ defmodule LaFamiglia.AttackMovementController do
 
   defp default_units do
     LaFamiglia.Unit.all
-    |> Map.new(fn({k, _u}) -> {Atom.to_string(k), 0} end)
+    |> Map.new(fn(u) -> {Atom.to_string(u.key), 0} end)
   end
 end

@@ -29,9 +29,9 @@
 
     <table>
       <tr>
-        <%= for {k, u} <- LaFamiglia.Unit.all do %>
+        <%= for u <- LaFamiglia.Unit.all do %>
           <td>
-            <%= k %>: <%= text_input f, k, class: :"form-control" %>
+            <%= u.key %>: <%= text_input f, u.key, class: :"form-control" %>
             (out of <%= LaFamiglia.Unit.number(@current_villa, u) %>)
           </td>
         <% end %>

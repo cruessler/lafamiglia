@@ -8,18 +8,11 @@ defmodule LaFamiglia.Unit do
     Application.get_env(:la_famiglia, :units)
   end
 
-  def get(fun) when is_function(fun) do
-    case all |> Enum.find(fun)
-    do
-      {_k, u} -> u
-      _       -> nil
-    end
-  end
   def get(id) when is_integer(id) do
-    get fn({_k, u}) -> u.id == id end
+    Enum.find(all, fn(u) -> u.id == id end)
   end
   def get(key) when is_atom(key) do
-    get fn({_k, u}) -> u.key == key end
+    Enum.find(all, fn(u) -> u.key == key end)
   end
 
   def number(%Changeset{} = changeset, unit) do
@@ -51,18 +44,18 @@ defmodule LaFamiglia.Unit do
   end
 
   def filter(%Changeset{} = changeset) do
-    Enum.reduce all, %{}, fn({k, _}, map) ->
-      Map.put(map, k, get_field(changeset, k))
+    Enum.reduce all, %{}, fn(u, map) ->
+      Map.put(map, u.key, get_field(changeset, u.key))
     end
   end
   def filter(map) do
     all
-    |> Map.new(fn({k, _u}) -> {k, Map.get(map, k)} end)
+    |> Map.new(fn(u) -> {u.key, Map.get(map, u.key)} end)
   end
 
   def supply(map) do
-    Enum.reduce all, 0, fn({k, u}, acc) ->
-      acc + Map.get(map, k) * u.supply
+    Enum.reduce all, 0, fn(u, acc) ->
+      acc + Map.get(map, u.key) * u.supply
     end
   end
 

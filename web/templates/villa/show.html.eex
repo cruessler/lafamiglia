@@ -36,9 +36,9 @@
 </h3>
 
 <div class="listing">
-  <%= for {k, u} <- Unit.all do %>
+  <%= for u <- Unit.all do %>
     <div class="item">
-      <div>Unit: <%= k %></div>
+      <div>Unit: <%= u.key %></div>
       <div>Number: <%= show_number(@current_villa, u) %></div>
       <div>Costs: <%= resources(u.costs) %></div>
       <div>Supply: <%= u.supply %></div>
