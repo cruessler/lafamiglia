@@ -29,6 +29,13 @@ defmodule LaFamiglia.DateTimeTest do
     assert DateTime.add_seconds(time1, 1.2).usec == 260_000
   end
 
+  test "add_seconds with negative value" do
+    time = Ecto.DateTime.cast!("2016-01-29T21:08:00.66Z")
+
+    assert time |> DateTime.add_seconds(5.0) |> DateTime.add_seconds(-5.0) == time
+    assert time |> DateTime.add_seconds(5.8) |> DateTime.add_seconds(-5.8) == time
+  end
+
   test "time_diff" do
     time1 = Ecto.DateTime.cast!("2016-01-29T21:08:00.06Z")
     time2 = Ecto.DateTime.cast!("2016-01-29T21:08:00.26Z")
