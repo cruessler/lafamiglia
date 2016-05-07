@@ -55,10 +55,9 @@ defmodule LaFamiglia.AttackMovementTest do
   test "gets handled when attacker loses", %{attack: attack} do
     attack = %{attack | unit_1: 1}
 
-    assert LaFamiglia.Event.handle(attack)
+    assert {:ok, _} = LaFamiglia.Event.handle(attack)
 
-    target = Repo.get(Villa, attack.target.id)
-    assert Resource.filter(target) == Resource.filter(attack.target)
+    assert from(c in ComebackMovement) |> Repo.all |> Enum.count == 0
   end
 
   test "gets handled when attacker wins and target has no resources", context do

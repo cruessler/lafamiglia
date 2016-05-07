@@ -19,14 +19,18 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
 
     LaFamiglia.DateTime.clock!(attack.arrives_at)
 
-    attack = Repo.preload(attack, target: :player, origin: :player)
-    result = Combat.calculate(attack, attack.target)
+    attack = Repo.preload(attack, target: [:player, :unit_queue_items], origin: :player)
+    target_changeset =
+      Changeset.change(attack.target)
+      |> Villa.process_virtually_until(attack.arrives_at)
+
+    result = Combat.calculate(attack, Changeset.apply_changes(target_changeset))
 
     origin_changeset =
       Changeset.change(attack.origin)
       |> Villa.subtract_supply(result.attacker_supply_loss)
     target_changeset =
-      Changeset.change(attack.target)
+      target_changeset
       |> Villa.subtract_units(result.defender_losses)
       |> Villa.subtract_supply(result.defender_supply_loss)
       |> Villa.subtract_resources(result.resources_plundered)
