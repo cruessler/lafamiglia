@@ -34,7 +34,7 @@ defmodule LaFamiglia.AttackMovementTest do
     old_report_count = report_count
     old_supply       = attack.origin.supply
 
-    assert LaFamiglia.Event.handle(attack)
+    assert {:ok, _} = LaFamiglia.Event.handle(attack)
 
     assert report_count == old_report_count + 2
     assert Repo.get(Villa, attack.origin.id).supply < old_supply
@@ -70,7 +70,7 @@ defmodule LaFamiglia.AttackMovementTest do
                             Unit.filter(context.origin))
       |> Repo.insert!
 
-    assert LaFamiglia.Event.handle(attack)
+    assert {:ok, _} = LaFamiglia.Event.handle(attack)
 
     comeback = from(c in ComebackMovement, preload: :origin) |> Repo.one
     refute is_nil(comeback.resource_1)
