@@ -315,7 +315,7 @@ defmodule LaFamiglia.Villa do
   end
 
   def recalc_points(%Changeset{} = changeset) do
-    new_points = for {_, b} <- Building.all do
+    new_points = for b <- Building.all do
       Building.level(changeset, b)
       |> b.points.()
       |> round

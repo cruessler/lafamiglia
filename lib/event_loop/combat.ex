@@ -24,8 +24,8 @@ defmodule LaFamiglia.Combat do
     defense_value = Enum.reduce Unit.all, 0, fn(u, acc) ->
       acc + Map.get(result.defender_before_combat, u.key) * u.defense
     end
-    defense_value = Enum.reduce Building.all, defense_value, fn({k, b}, acc) ->
-      acc + b.defense.(Map.get(result.defender, k))
+    defense_value = Enum.reduce Building.all, defense_value, fn(b, acc) ->
+      acc + b.defense.(Map.get(result.defender, b.key))
     end
 
     %{result |

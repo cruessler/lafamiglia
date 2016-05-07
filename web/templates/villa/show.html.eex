@@ -17,11 +17,11 @@
 </h3>
 
 <div class="listing">
-  <%= for {k, b} <- Building.all do %>
+  <%= for b <- Building.all do %>
     <div class="item">
-      <div>Building: <%= k %></div>
+      <div>Building: <%= b.key %></div>
       <div>Level: <%= show_level(@current_villa, b) %></div>
-      <div>Points: <%= @current_villa |> Map.get(k) |> b.points.() |> round %></div>
+      <div>Points: <%= @current_villa |> Map.get(b.key) |> b.points.() |> round %></div>
       <div>Costs: <%= @current_villa |> Building.virtual_level(b) |> b.costs.() |> resources %></div>
       <div>Build time: <%= Building.build_time(b, Building.virtual_level(@current_villa, b)) |> round %></div>
       <div><%= link_to_build_start(@conn, @current_villa, b) %></div>
