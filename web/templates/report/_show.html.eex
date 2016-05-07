@@ -11,3 +11,18 @@
 
 <%= render "_units.html", units: @report.data.defender_before_combat,
                           losses: @report.data.defender_losses %>
+
+<h3>Plundered resources</h3>
+
+<table class="table table-striped units">
+  <tr>
+    <%= for k <- LaFamiglia.Resource.all do %>
+      <th><%= k %></th>
+    <% end %>
+  </tr>
+  <tr>
+    <%= for k <- LaFamiglia.Resource.all do %>
+      <td><%= @report.data.resources_plundered[k] || "0" %></td>
+    <% end %>
+  </tr>
+</table>
