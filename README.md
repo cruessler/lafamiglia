@@ -26,10 +26,11 @@ others are still more proof of concept.
 
 Among the things not yet implemented are:
 
-- plundering resources,
-- occupying villas,
+- occupying and conquering other players’ villas,
 - i18n,
-- time zones (currently all dates are saved and displayed as UTC).
+- time zones (currently all dates are saved and displayed as UTC; work on this
+  is postponed until the release of Elixir 1.3 which will provide date and time
+  types).
 
 ## Installation
 
