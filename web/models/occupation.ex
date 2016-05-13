@@ -1,6 +1,13 @@
 defmodule LaFamiglia.Occupation do
   use LaFamiglia.Web, :model
 
+  alias LaFamiglia.Repo
+  alias LaFamiglia.Villa
+
+  alias Ecto.Multi
+
+  alias __MODULE__
+
   schema "occupations" do
     field :succeeds_at, Ecto.DateTime
 
@@ -19,5 +26,19 @@ defmodule LaFamiglia.Occupation do
   def changeset(model, params \\ :invalid) do
     model
     |> cast(params, @required_fields, @optional_fields)
+  end
+
+  def create(params) do
+    changeset =
+      %Occupation{}
+      |> changeset(params)
+
+    Multi.new
+    |> Multi.insert(:occupation, changeset)
+    |> Multi.run(:update_target, fn(%{occupation: occupation}) ->
+      assoc(occupation, :target) |> Repo.update_all(set: [is_occupied: true])
+
+      {:ok, nil}
+    end)
   end
 end

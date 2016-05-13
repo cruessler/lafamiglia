@@ -22,6 +22,8 @@ defmodule LaFamiglia.Villa do
     field :x, :integer
     field :y, :integer
 
+    field :is_occupied, :boolean
+
     field :resource_1, :float
     field :resource_2, :float
     field :resource_3, :float

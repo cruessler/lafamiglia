@@ -28,6 +28,7 @@ defmodule Forge do
     name: "New Villa",
     x: Sequence.next(:x),
     y: Sequence.next(:y),
+    is_occupied: false,
     resource_1: 50.0,
     resource_2: 50.0,
     resource_3: 50.0,
