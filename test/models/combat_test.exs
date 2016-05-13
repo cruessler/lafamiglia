@@ -34,6 +34,17 @@ defmodule LaFamiglia.CombatTest do
 
     assert result.attacker_survived?
     assert Resource.filter(result.defender) == result.resources_plundered
+    refute result.results_in_occupation?
+  end
+
+  test "results in occupation" do
+    attack =
+      Forge.saved_attack_movement(Repo, %{unit_1: 1000, unit_2: 2})
+      |> Repo.preload(:target)
+
+    result = Combat.calculate(attack, attack.target)
+
+    assert result.results_in_occupation?
   end
 
   test "has supply loss", %{result: result} do

@@ -1,5 +1,7 @@
 use Mix.Config
 
+config :la_famiglia, unit_for_occupation: :unit_2
+
 config :la_famiglia,
   unit_speed: 10,
   units: [

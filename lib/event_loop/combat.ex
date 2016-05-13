@@ -3,6 +3,8 @@ defmodule LaFamiglia.Combat do
   alias LaFamiglia.CombatResult
   alias LaFamiglia.Combat.AfterCombat
 
+  @unit_for_occupation Application.get_env(:la_famiglia, :unit_for_occupation)
+
   def calculate(attacker, defender) do
     %CombatResult{
       attacker: attacker,
@@ -14,6 +16,7 @@ defmodule LaFamiglia.Combat do
       |> calculate_winner
       |> calculate_percent_loss
       |> calculate_losses
+      |> calculate_results_in_occupation
       |> calculate_plundered_resources
   end
 
@@ -74,6 +77,13 @@ defmodule LaFamiglia.Combat do
       attacker_after_combat: attacker_after_combat,
       defender_after_combat: defender_after_combat,
       attacker_survived?: attacker_survived}
+  end
+
+  defp calculate_results_in_occupation(result) do
+    results_in_occupation =
+      result.attacker_after_combat[@unit_for_occupation] > 0
+
+    %{result | results_in_occupation?: results_in_occupation}
   end
 
   defp calculate_plundered_resources(%CombatResult{attacker_survived?: true} = result) do

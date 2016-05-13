@@ -9,6 +9,6 @@ defmodule LaFamiglia.CombatResult do
     :defender_percent_loss, :defender_losses,
     :defender_after_combat, :defender_supply_loss,
     :resources_plundered,
-    :winner, :attacker_survived?
+    :winner, :attacker_survived?, :results_in_occupation?
   ]
 end
