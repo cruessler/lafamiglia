@@ -9,7 +9,7 @@ defmodule LaFamiglia.Villa do
   alias LaFamiglia.Villa
   alias LaFamiglia.BuildingQueueItem
   alias LaFamiglia.UnitQueueItem
-  alias LaFamiglia.AttackMovement
+  alias LaFamiglia.{AttackMovement, Occupation}
   alias LaFamiglia.Report
   alias LaFamiglia.RelatedReportVilla
 
@@ -55,6 +55,9 @@ defmodule LaFamiglia.Villa do
 
     many_to_many :related_reports, Report, join_through: RelatedReportVilla,
                                            join_keys: [villa_id: :id, related_report_id: :id]
+
+    has_one :occupation, Occupation, foreign_key: :target_id
+    has_many :occupations, Occupation, foreign_key: :origin_id
 
     timestamps
   end
