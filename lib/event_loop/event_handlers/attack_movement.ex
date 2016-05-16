@@ -20,11 +20,10 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
     LaFamiglia.DateTime.clock!(attack.arrives_at)
 
     attack = Repo.preload(attack, target: [:player, :unit_queue_items], origin: :player)
-    target_changeset =
-      Changeset.change(attack.target)
-      |> Villa.process_virtually_until(attack.arrives_at)
 
-    result = Combat.calculate(attack, Changeset.apply_changes(target_changeset))
+    %{target_changeset: target_changeset, result: result} =
+      Combat.new(attack)
+      |> Combat.calculate
 
     origin_changeset =
       Changeset.change(attack.origin)

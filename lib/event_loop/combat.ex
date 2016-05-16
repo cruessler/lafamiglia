@@ -2,6 +2,7 @@ defmodule LaFamiglia.Combat do
   alias Ecto.Changeset
 
   alias LaFamiglia.{Building, Resource, Unit}
+  alias LaFamiglia.Villa
   alias LaFamiglia.AttackMovement
   alias LaFamiglia.CombatResult
   alias LaFamiglia.Combat.AfterCombat
@@ -16,6 +17,20 @@ defmodule LaFamiglia.Combat do
   }
 
   @unit_for_occupation Application.get_env(:la_famiglia, :unit_for_occupation)
+
+  def new(attack) do
+    %Combat{attack: attack}
+  end
+
+  def calculate(%Combat{attack: attack} = combat) do
+    target_changeset =
+      Changeset.change(attack.target)
+      |> Villa.process_virtually_until(attack.arrives_at)
+
+    result = Combat.calculate(attack, Changeset.apply_changes(target_changeset))
+
+    %{combat | target_changeset: target_changeset, result: result}
+  end
 
   def calculate(attacker, defender) do
     %CombatResult{
