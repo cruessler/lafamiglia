@@ -2,6 +2,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
   require Logger
 
   alias Ecto.Changeset
+  alias Ecto.Multi
 
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
@@ -34,18 +35,32 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
       |> Villa.subtract_supply(result.defender_supply_loss)
       |> Villa.subtract_resources(result.resources_plundered)
 
-    Repo.transaction fn ->
-      CombatReport.deliver!(attack.origin, attack.target, result)
-      Repo.delete(attack)
-      Repo.update!(origin_changeset)
-      Repo.update!(target_changeset)
+    multi =
+      Multi.new
+      |> Multi.run(:deliver_report, fn(_) ->
+        CombatReport.deliver!(attack.origin, attack.target, result)
 
+        {:ok, nil}
+      end)
+      |> Multi.delete(:attack, attack)
+      |> Multi.update(:origin, origin_changeset)
+      |> Multi.update(:target, target_changeset)
+
+    multi =
       if result.attacker_survived? do
         changeset = ComebackMovement.from_combat(attack, result)
 
-        {:ok, comeback} = Repo.insert(changeset)
-        LaFamiglia.EventQueue.cast({:new_event, comeback})
+        multi
+        |> Multi.insert(:comeback, changeset)
+        |> Multi.run(:send_to_queue, fn(%{comeback: comeback}) ->
+          LaFamiglia.EventQueue.cast({:new_event, comeback})
+
+          {:ok, nil}
+        end)
+      else
+        multi
       end
-    end
+
+    Repo.transaction(multi)
   end
 end
