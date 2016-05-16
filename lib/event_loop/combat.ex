@@ -1,7 +1,19 @@
 defmodule LaFamiglia.Combat do
+  alias Ecto.Changeset
+
   alias LaFamiglia.{Building, Resource, Unit}
+  alias LaFamiglia.AttackMovement
   alias LaFamiglia.CombatResult
   alias LaFamiglia.Combat.AfterCombat
+
+  alias __MODULE__
+
+  defstruct [:attack, :target_changeset, :result]
+  @type t :: %Combat{
+    attack: AttackMovement.t,
+    target_changeset: Changeset.t,
+    result: CombatResult.t
+  }
 
   @unit_for_occupation Application.get_env(:la_famiglia, :unit_for_occupation)
 
