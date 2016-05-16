@@ -56,22 +56,21 @@ defmodule LaFamiglia.Combat do
       |> Multi.delete(:attack, attack)
       |> Multi.update(:origin, origin_changeset)
       |> Multi.update(:target, target_changeset)
-
-    multi =
-      if result.attacker_survived? do
-        changeset = ComebackMovement.from_combat(attack, result)
-
-        multi
-        |> Multi.insert(:comeback, changeset)
-        |> Multi.run(:send_to_queue, fn(%{comeback: comeback}) ->
-          LaFamiglia.EventQueue.cast({:new_event, comeback})
-
-          {:ok, nil}
-        end)
-      else
-        multi
-      end
+      |> append_comeback(combat)
   end
+
+  defp append_comeback(multi, %Combat{result: %{attacker_survived?: true}} = combat) do
+    changeset = ComebackMovement.from_combat(combat.attack, combat.result)
+
+    multi
+    |> Multi.insert(:comeback, changeset)
+    |> Multi.run(:send_to_queue, fn(%{comeback: comeback}) ->
+      LaFamiglia.EventQueue.cast({:new_event, comeback})
+
+      {:ok, nil}
+    end)
+  end
+  defp append_comeback(multi, _), do: multi
 
   def calculate(attacker, defender) do
     %CombatResult{
