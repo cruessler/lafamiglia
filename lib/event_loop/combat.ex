@@ -1,11 +1,13 @@
 defmodule LaFamiglia.Combat do
   alias Ecto.Changeset
+  alias Ecto.Multi
 
   alias LaFamiglia.{Building, Resource, Unit}
   alias LaFamiglia.Villa
-  alias LaFamiglia.AttackMovement
+  alias LaFamiglia.{AttackMovement, ComebackMovement}
   alias LaFamiglia.CombatResult
   alias LaFamiglia.Combat.AfterCombat
+  alias LaFamiglia.CombatReport
 
   alias __MODULE__
 
@@ -30,6 +32,45 @@ defmodule LaFamiglia.Combat do
     result = Combat.calculate(attack, Changeset.apply_changes(target_changeset))
 
     %{combat | target_changeset: target_changeset, result: result}
+  end
+
+  def to_multi(%Combat{} = combat) do
+    %{attack: attack, target_changeset: target_changeset, result: result} = combat
+
+    origin_changeset =
+      Changeset.change(attack.origin)
+      |> Villa.subtract_supply(result.attacker_supply_loss)
+    target_changeset =
+      target_changeset
+      |> Villa.subtract_units(result.defender_losses)
+      |> Villa.subtract_supply(result.defender_supply_loss)
+      |> Villa.subtract_resources(result.resources_plundered)
+
+    multi =
+      Multi.new
+      |> Multi.run(:deliver_report, fn(_) ->
+        CombatReport.deliver!(attack.origin, attack.target, result)
+
+        {:ok, nil}
+      end)
+      |> Multi.delete(:attack, attack)
+      |> Multi.update(:origin, origin_changeset)
+      |> Multi.update(:target, target_changeset)
+
+    multi =
+      if result.attacker_survived? do
+        changeset = ComebackMovement.from_combat(attack, result)
+
+        multi
+        |> Multi.insert(:comeback, changeset)
+        |> Multi.run(:send_to_queue, fn(%{comeback: comeback}) ->
+          LaFamiglia.EventQueue.cast({:new_event, comeback})
+
+          {:ok, nil}
+        end)
+      else
+        multi
+      end
   end
 
   def calculate(attacker, defender) do
