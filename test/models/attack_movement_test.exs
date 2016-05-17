@@ -3,6 +3,7 @@ defmodule LaFamiglia.AttackMovementTest do
 
   alias LaFamiglia.AttackMovement
   alias LaFamiglia.ComebackMovement
+  alias LaFamiglia.Occupation
   alias LaFamiglia.Report
   alias LaFamiglia.{Resource, Unit}
 
@@ -74,6 +75,17 @@ defmodule LaFamiglia.AttackMovementTest do
 
     comeback = from(c in ComebackMovement, preload: :origin) |> Repo.one
     refute is_nil(comeback.resource_1)
+  end
+
+  test "gets handled when attacker begins an occupation", context do
+    attack = %{context.attack | unit_2: 1}
+
+    assert {:ok, _} = LaFamiglia.Event.handle(attack)
+
+    target = Repo.get(Villa, attack.target.id) |> Repo.preload(:occupation)
+
+    assert target.is_occupied
+    assert %Occupation{} = target.occupation
   end
 
   test "can be canceled", %{attack: attack} do

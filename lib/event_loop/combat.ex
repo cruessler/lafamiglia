@@ -7,6 +7,7 @@ defmodule LaFamiglia.Combat do
   alias LaFamiglia.{AttackMovement, ComebackMovement}
   alias LaFamiglia.CombatResult
   alias LaFamiglia.Combat.AfterCombat
+  alias LaFamiglia.Occupation
   alias LaFamiglia.CombatReport
 
   alias __MODULE__
@@ -34,6 +35,31 @@ defmodule LaFamiglia.Combat do
     %{combat | target_changeset: target_changeset, result: result}
   end
 
+  def to_multi(%Combat{result: %{results_in_occupation?: true}} = combat) do
+    %{attack: attack, target_changeset: target_changeset, result: result} = combat
+
+    occupation_multi = Occupation.from_combat(combat)
+
+    origin_changeset =
+      Changeset.change(attack.origin)
+      |> Villa.subtract_supply(result.attacker_supply_loss)
+    target_changeset =
+      target_changeset
+      |> Villa.subtract_units(result.defender_losses)
+      |> Villa.subtract_supply(result.defender_supply_loss)
+
+    multi =
+      Multi.new
+      |> Multi.run(:deliver_report, fn(_) ->
+        CombatReport.deliver!(combat)
+
+        {:ok, nil}
+      end)
+      |> Multi.delete(:attack, attack)
+      |> Multi.update(:origin, origin_changeset)
+      |> Multi.update(:target, target_changeset)
+      |> Multi.append(occupation_multi)
+  end
   def to_multi(%Combat{} = combat) do
     %{attack: attack, target_changeset: target_changeset, result: result} = combat
 
