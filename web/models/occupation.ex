@@ -20,18 +20,19 @@ defmodule LaFamiglia.Occupation do
     timestamps
   end
 
-  @required_fields ~w(unit_1 unit_2 succeeds_at origin_id target_id)
-  @optional_fields ~w()
+  @duration_of_occupation 86_400 / Application.get_env(:la_famiglia, :game_speed)
 
-  def changeset(model, params \\ :invalid) do
-    model
-    |> cast(params, @required_fields, @optional_fields)
-  end
+  def from_combat(combat) do
+    %{attack: attack, result: result} = combat
 
-  def create(params) do
+    succeeds_at = LaFamiglia.DateTime.from_now(@duration_of_occupation)
+
     changeset =
       %Occupation{}
-      |> changeset(params)
+      |> change(result.attacker_after_combat)
+      |> put_assoc(:origin, attack.origin)
+      |> put_assoc(:target, attack.target)
+      |> put_change(:succeeds_at, succeeds_at)
 
     Multi.new
     |> Multi.insert(:occupation, changeset)
