@@ -75,7 +75,7 @@ defmodule LaFamiglia.Combat do
     multi =
       Multi.new
       |> Multi.run(:deliver_report, fn(_) ->
-        CombatReport.deliver!(attack.origin, attack.target, result)
+        CombatReport.deliver!(combat)
 
         {:ok, nil}
       end)

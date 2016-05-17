@@ -25,9 +25,10 @@ defmodule LaFamiglia.ReportTest do
 
     attack =
       Forge.saved_attack_movement(Repo)
-      |> Repo.preload([origin: [:player], target: [:player]])
+      |> Repo.preload([origin: [:player], target: [:player, :unit_queue_items]])
 
     {:ok, %{
+        attack: attack,
         origin: attack.origin,
         target: attack.target,
         result: Combat.calculate(attack, attack.target)}}
@@ -40,13 +41,17 @@ defmodule LaFamiglia.ReportTest do
   test "gets gelivered", context do
     old_reports_count = reports_count(context.origin.player)
 
-    CombatReport.deliver!(context.origin, context.target, context.result)
+    Combat.new(context.attack)
+    |> Combat.calculate
+    |> CombatReport.deliver!
 
     assert reports_count(context.origin.player) == old_reports_count + 1
   end
 
   test "has associations", context do
-    CombatReport.deliver!(context.origin, context.target, context.result)
+    Combat.new(context.attack)
+    |> Combat.calculate
+    |> CombatReport.deliver!
 
     [first, second] =
       from(r in Report, order_by: [desc: r.id], limit: 2, preload: :player)
@@ -57,7 +62,9 @@ defmodule LaFamiglia.ReportTest do
   end
 
   test "has related villas", context do
-    CombatReport.deliver!(context.origin, context.target, context.result)
+    Combat.new(context.attack)
+    |> Combat.calculate
+    |> CombatReport.deliver!
 
     report =
       from(r in Report, order_by: [desc: r.id], limit: 1, preload: :related_villas)
@@ -70,7 +77,9 @@ defmodule LaFamiglia.ReportTest do
   end
 
   test "has title", context do
-    CombatReport.deliver!(context.origin, context.target, context.result)
+    Combat.new(context.attack)
+    |> Combat.calculate
+    |> CombatReport.deliver!
 
     [first, second] =
       from(r in Report, order_by: [desc: r.id], limit: 2)
