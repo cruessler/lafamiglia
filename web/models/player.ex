@@ -20,6 +20,8 @@ defmodule LaFamiglia.Player do
     field :name, :string
     field :points, :integer
 
+    field :unread_conversations, :integer, default: 0
+
     has_many :villas, Villa
 
     has_many :conversation_statuses, ConversationStatus
