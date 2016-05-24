@@ -8,6 +8,7 @@ defmodule LaFamiglia.Player do
   alias LaFamiglia.Repo
   alias LaFamiglia.Player
   alias LaFamiglia.Villa
+  alias LaFamiglia.Conversation
   alias LaFamiglia.ConversationStatus
   alias LaFamiglia.Report
 
@@ -25,7 +26,7 @@ defmodule LaFamiglia.Player do
     has_many :villas, Villa
 
     has_many :conversation_statuses, ConversationStatus
-    has_many :conversations, through: [:conversation_statuses, :conversation]
+    many_to_many :conversations, Conversation, join_through: ConversationStatus
 
     has_many :reports, Report
 

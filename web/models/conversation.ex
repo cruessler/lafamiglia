@@ -6,6 +6,7 @@ defmodule LaFamiglia.Conversation do
 
   alias LaFamiglia.Repo
 
+  alias LaFamiglia.Player
   alias LaFamiglia.Conversation
   alias LaFamiglia.Message
   alias LaFamiglia.ConversationStatus
@@ -17,7 +18,7 @@ defmodule LaFamiglia.Conversation do
     has_many :messages, Message
 
     has_many :conversation_statuses, ConversationStatus
-    has_many :participants, through: [:conversation_statuses, :player]
+    many_to_many :participants, Player, join_through: ConversationStatus
 
     timestamps
   end
