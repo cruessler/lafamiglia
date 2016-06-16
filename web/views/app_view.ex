@@ -13,6 +13,13 @@ defmodule LaFamiglia.AppView do
   end
   def resources(_), do: ""
 
+  def unread_conversations_badge(%{unread_conversations: unread_conversations})
+    when unread_conversations > 0
+  do
+    content_tag :span, class: "badge" do "#{unread_conversations}" end
+  end
+  def unread_conversations_badge(_), do: ""
+
   def player_select(%{name: name}, field) do
     react_component "PlayerSelector", %{name: "#{name}[#{field}]"},
                                       [class: "player-select"]

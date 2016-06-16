@@ -31,7 +31,12 @@
                 <li><%= link "Villas", to: villa_path(@conn, :index) %></li>
                 <li><%= link "Troops", to: movement_path(@conn, :index) %></li>
                 <li><%= link "Map", to: map_path(@conn, :show, @current_villa.x, @current_villa.y) %></li>
-                <li><%= link "Messages", to: conversation_path(@conn, :index) %></li>
+                <li>
+                  <%= link to: conversation_path(@conn, :index) do %>
+                    Messages
+                    <%= unread_conversations_badge(@current_player) %>
+                  <% end %>
+                </li>
                 <li><%= link "Reports", to: report_path(@conn, :index) %></li>
                 <li><%= link "Ranking", to: player_path(@conn, :index) %></li>
                 <li><%= link "Help", to: help_path(@conn, :index) %></li>
