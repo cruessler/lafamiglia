@@ -8,6 +8,7 @@ defmodule Forge do
   alias LaFamiglia.Message
   alias LaFamiglia.Report
   alias LaFamiglia.{AttackMovement, ComebackMovement}
+  alias LaFamiglia.Occupation
 
   @save_one_function &Blacksmith.Config.save/2
   @save_all_function &Blacksmith.Config.save_all/2
@@ -85,4 +86,10 @@ defmodule Forge do
     resource_1: 50,
     resource_2: 60,
     resource_3: 70
+
+  register :occupation,
+    __struct__: Occupation,
+    unit_1: 100,
+    unit_2: 2,
+    succeeds_at: LaFamiglia.DateTime.from_now(10)
 end

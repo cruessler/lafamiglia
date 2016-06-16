@@ -1,14 +1,11 @@
 defmodule LaFamiglia.Combat do
   alias Ecto.Changeset
-  alias Ecto.Multi
 
   alias LaFamiglia.{Building, Resource, Unit}
   alias LaFamiglia.Villa
-  alias LaFamiglia.{AttackMovement, ComebackMovement}
+  alias LaFamiglia.AttackMovement
   alias LaFamiglia.CombatResult
   alias LaFamiglia.Combat.AfterCombat
-  alias LaFamiglia.Occupation
-  alias LaFamiglia.CombatReport
 
   alias __MODULE__
 
@@ -30,73 +27,17 @@ defmodule LaFamiglia.Combat do
       Changeset.change(attack.target)
       |> Villa.process_virtually_until(attack.arrives_at)
 
-    result = Combat.calculate(attack, Changeset.apply_changes(target_changeset))
+    defender =
+      if attack.target.is_occupied do
+        attack.target.occupation
+      else
+        Changeset.apply_changes(target_changeset)
+      end
+
+    result = Combat.calculate(attack, defender)
 
     %{combat | target_changeset: target_changeset, result: result}
   end
-
-  def to_multi(%Combat{result: %{results_in_occupation?: true}} = combat) do
-    %{attack: attack, target_changeset: target_changeset, result: result} = combat
-
-    occupation_multi = Occupation.from_combat(combat)
-
-    origin_changeset =
-      Changeset.change(attack.origin)
-      |> Villa.subtract_supply(result.attacker_supply_loss)
-    target_changeset =
-      target_changeset
-      |> Villa.subtract_units(result.defender_losses)
-      |> Villa.subtract_supply(result.defender_supply_loss)
-
-    multi =
-      Multi.new
-      |> Multi.run(:deliver_report, fn(_) ->
-        CombatReport.deliver!(combat)
-
-        {:ok, nil}
-      end)
-      |> Multi.delete(:attack, attack)
-      |> Multi.update(:origin, origin_changeset)
-      |> Multi.update(:target, target_changeset)
-      |> Multi.append(occupation_multi)
-  end
-  def to_multi(%Combat{} = combat) do
-    %{attack: attack, target_changeset: target_changeset, result: result} = combat
-
-    origin_changeset =
-      Changeset.change(attack.origin)
-      |> Villa.subtract_supply(result.attacker_supply_loss)
-    target_changeset =
-      target_changeset
-      |> Villa.subtract_units(result.defender_losses)
-      |> Villa.subtract_supply(result.defender_supply_loss)
-      |> Villa.subtract_resources(result.resources_plundered)
-
-    multi =
-      Multi.new
-      |> Multi.run(:deliver_report, fn(_) ->
-        CombatReport.deliver!(combat)
-
-        {:ok, nil}
-      end)
-      |> Multi.delete(:attack, attack)
-      |> Multi.update(:origin, origin_changeset)
-      |> Multi.update(:target, target_changeset)
-      |> append_comeback(combat)
-  end
-
-  defp append_comeback(multi, %Combat{result: %{attacker_survived?: true}} = combat) do
-    changeset = ComebackMovement.from_combat(combat.attack, combat.result)
-
-    multi
-    |> Multi.insert(:comeback, changeset)
-    |> Multi.run(:send_to_queue, fn(%{comeback: comeback}) ->
-      LaFamiglia.EventQueue.cast({:new_event, comeback})
-
-      {:ok, nil}
-    end)
-  end
-  defp append_comeback(multi, _), do: multi
 
   def calculate(attacker, defender) do
     %CombatResult{
@@ -179,6 +120,9 @@ defmodule LaFamiglia.Combat do
     %{result | results_in_occupation?: results_in_occupation}
   end
 
+  defp calculate_plundered_resources(
+    %CombatResult{results_in_occupation?: true} = result),
+    do: %{result | resources_plundered: %{}}
   defp calculate_plundered_resources(%CombatResult{attacker_survived?: true} = result) do
     load =
       for({k, n} <- result.attacker_after_combat, do: Unit.get(k).load * n)

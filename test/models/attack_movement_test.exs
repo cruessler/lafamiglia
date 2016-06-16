@@ -82,10 +82,33 @@ defmodule LaFamiglia.AttackMovementTest do
 
     assert {:ok, _} = LaFamiglia.Event.handle(attack)
 
-    target = Repo.get(Villa, attack.target.id) |> Repo.preload(:occupation)
+    target =
+      Repo.get(Villa, attack.target.id)
+      |> Repo.preload(:occupation)
 
     assert target.is_occupied
     assert %Occupation{} = target.occupation
+    assert target.occupation.origin_id == attack.origin_id
+  end
+
+  test "gets handled when target is occupied", %{attack: attack} do
+    occupation =
+      Forge.saved_occupation(Repo, %{origin_id: attack.origin.id, target_id: attack.target.id})
+
+    target =
+      Repo.get(Villa, attack.target.id)
+      |> Repo.preload([:player, :unit_queue_items, :occupation])
+      |> Map.put(:is_occupied, true)
+
+    attack = %{attack | target: target}
+
+    assert {:ok, _} = LaFamiglia.Event.handle(attack)
+
+    target =
+      Repo.get(Villa, attack.target.id)
+      |> Repo.preload(:occupation)
+
+    assert is_nil(target.occupation)
   end
 
   test "can be canceled", %{attack: attack} do

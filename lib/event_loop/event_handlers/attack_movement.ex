@@ -3,6 +3,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
 
   alias LaFamiglia.Repo
   alias LaFamiglia.Combat
+  alias LaFamiglia.Combat.Effects
 
   def happens_at(movement) do
     movement.arrives_at
@@ -13,11 +14,14 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
 
     LaFamiglia.DateTime.clock!(attack.arrives_at)
 
-    attack = Repo.preload(attack, target: [:player, :unit_queue_items], origin: :player)
+    attack =
+      Repo.preload(attack,
+        target: [:player, :unit_queue_items, occupation: [:origin]],
+        origin: :player)
 
     Combat.new(attack)
     |> Combat.calculate
-    |> Combat.to_multi
+    |> Combat.Effects.to_multi
     |> Repo.transaction
   end
 end
