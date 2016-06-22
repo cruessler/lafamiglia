@@ -222,6 +222,9 @@ defmodule LaFamiglia.Villa do
     |> process_units_virtually_until(time)
   end
 
+  def process_virtually_until(%Villa{} = villa, time),
+    do: villa |> Changeset.change |> process_virtually_until(time)
+
   @doc """
   Processes resource gains.
 

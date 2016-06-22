@@ -12,7 +12,7 @@ defmodule LaFamiglia.Combat.Effects do
     %Combat{attack: %{target: %{is_occupied: true}},
             result: %{results_in_occupation?: true}} = combat)
   do
-    %{attack: attack, target_changeset: target_changeset, result: result} = combat
+    %{attack: attack, result: result} = combat
 
     occupation_multi = Occupation.from_combat(combat)
 
@@ -20,7 +20,8 @@ defmodule LaFamiglia.Combat.Effects do
       Changeset.change(attack.origin)
       |> Villa.subtract_supply(result.attacker_supply_loss)
     target_changeset =
-      target_changeset
+      attack.target
+      |> Villa.process_virtually_until(attack.arrives_at)
       |> Villa.subtract_resources(result.resources_plundered)
     origin_of_occupation_changeset =
       Changeset.change(attack.target.occupation.origin)
@@ -36,7 +37,7 @@ defmodule LaFamiglia.Combat.Effects do
     |> Multi.append(occupation_multi)
   end
   def to_multi(%Combat{result: %{results_in_occupation?: true}} = combat) do
-    %{attack: attack, target_changeset: target_changeset, result: result} = combat
+    %{attack: attack, result: result} = combat
 
     occupation_multi = Occupation.from_combat(combat)
 
@@ -44,7 +45,8 @@ defmodule LaFamiglia.Combat.Effects do
       Changeset.change(attack.origin)
       |> Villa.subtract_supply(result.attacker_supply_loss)
     target_changeset =
-      target_changeset
+      attack.target
+      |> Villa.process_virtually_until(attack.arrives_at)
       |> Villa.subtract_units(result.defender_losses)
       |> Villa.subtract_supply(result.defender_supply_loss)
 
@@ -56,13 +58,14 @@ defmodule LaFamiglia.Combat.Effects do
     |> Multi.append(occupation_multi)
   end
   def to_multi(%Combat{attack: %{target: %{is_occupied: true}}} = combat) do
-    %{attack: attack, target_changeset: target_changeset, result: result} = combat
+    %{attack: attack, result: result} = combat
 
     origin_changeset =
       Changeset.change(attack.origin)
       |> Villa.subtract_supply(result.attacker_supply_loss)
     target_changeset =
-      target_changeset
+      attack.target
+      |> Villa.process_virtually_until(attack.arrives_at)
       |> Villa.subtract_resources(result.resources_plundered)
     origin_of_occupation_changeset =
       Changeset.change(attack.target.occupation.origin)
@@ -78,13 +81,14 @@ defmodule LaFamiglia.Combat.Effects do
     |> append_comeback(combat)
   end
   def to_multi(%Combat{} = combat) do
-    %{attack: attack, target_changeset: target_changeset, result: result} = combat
+    %{attack: attack, result: result} = combat
 
     origin_changeset =
       Changeset.change(attack.origin)
       |> Villa.subtract_supply(result.attacker_supply_loss)
     target_changeset =
-      target_changeset
+      attack.target
+      |> Villa.process_virtually_until(attack.arrives_at)
       |> Villa.subtract_units(result.defender_losses)
       |> Villa.subtract_supply(result.defender_supply_loss)
       |> Villa.subtract_resources(result.resources_plundered)

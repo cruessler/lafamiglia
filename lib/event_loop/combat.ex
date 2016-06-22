@@ -9,10 +9,9 @@ defmodule LaFamiglia.Combat do
 
   alias __MODULE__
 
-  defstruct [:attack, :target_changeset, :result]
+  defstruct [:attack, :result]
   @type t :: %Combat{
     attack: AttackMovement.t,
-    target_changeset: Changeset.t,
     result: CombatResult.t
   }
 
@@ -23,20 +22,17 @@ defmodule LaFamiglia.Combat do
   end
 
   def calculate(%Combat{attack: attack} = combat) do
-    target_changeset =
-      Changeset.change(attack.target)
+    target =
+      attack.target
       |> Villa.process_virtually_until(attack.arrives_at)
+      |> Changeset.apply_changes
 
     defender =
-      if attack.target.is_occupied do
-        attack.target.occupation
-      else
-        Changeset.apply_changes(target_changeset)
-      end
+      if attack.target.is_occupied, do: attack.target.occupation, else: target
 
     result = Combat.calculate(attack, defender)
 
-    %{combat | target_changeset: target_changeset, result: result}
+    %{combat | result: result}
   end
 
   def calculate(attacker, defender) do
