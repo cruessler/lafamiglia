@@ -26,3 +26,9 @@
     <% end %>
   </tr>
 </table>
+
+<% if @report.data.results_in_occupation? do %>
+  <div>
+    This attack has resulted in an occupation.
+  </div>
+<% end %>
