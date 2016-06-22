@@ -1,22 +1,25 @@
 defmodule LaFamiglia.CombatReport do
   import Ecto.Changeset
 
+  alias Ecto.Multi
+
   alias LaFamiglia.Repo
   alias LaFamiglia.Combat
   alias LaFamiglia.Report
   alias LaFamiglia.ReportData
   alias LaFamiglia.RelatedReportVilla
 
-  def deliver!(combat) do
-    deliver_report_for!(combat.attack.origin, combat)
-    deliver_report_for!(combat.attack.target, combat)
+  @spec deliver(Combat.t) :: Multi.t
+  def deliver(combat) do
+    Multi.new
+    |> Multi.insert(:report_for_origin, report_for(combat.attack.origin, combat))
+    |> Multi.insert(:report_for_target, report_for(combat.attack.target, combat))
   end
 
-  defp deliver_report_for!(villa, combat) do
+  defp report_for(villa, combat) do
     %Report{}
     |> Report.changeset(data_for(villa, combat))
     |> put_assoc(:related_villas, [combat.attack.origin, combat.attack.target])
-    |> Repo.insert
   end
 
   defp data_for(villa, %{result: result} = combat) do

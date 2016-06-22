@@ -27,11 +27,7 @@ defmodule LaFamiglia.Combat.Effects do
       |> Villa.subtract_supply(result.defender_supply_loss)
 
     Multi.new
-    |> Multi.run(:deliver_report, fn(_) ->
-      CombatReport.deliver!(combat)
-
-      {:ok, nil}
-    end)
+    |> Multi.append(CombatReport.deliver(combat))
     |> Multi.delete(:attack, attack)
     |> Multi.update(:origin, origin_changeset)
     |> Multi.update(:target, target_changeset)
@@ -53,11 +49,7 @@ defmodule LaFamiglia.Combat.Effects do
       |> Villa.subtract_supply(result.defender_supply_loss)
 
     Multi.new
-    |> Multi.run(:deliver_report, fn(_) ->
-      CombatReport.deliver!(combat)
-
-      {:ok, nil}
-    end)
+    |> Multi.append(CombatReport.deliver(combat))
     |> Multi.delete(:attack, attack)
     |> Multi.update(:origin, origin_changeset)
     |> Multi.update(:target, target_changeset)
@@ -77,11 +69,7 @@ defmodule LaFamiglia.Combat.Effects do
       |> Villa.subtract_supply(result.defender_supply_loss)
 
     Multi.new
-    |> Multi.run(:deliver_report, fn(_) ->
-      CombatReport.deliver!(combat)
-
-      {:ok, nil}
-    end)
+    |> Multi.append(CombatReport.deliver(combat))
     |> Multi.delete(:attack, attack)
     |> Multi.update(:origin, origin_changeset)
     |> Multi.update(:target, target_changeset)
@@ -102,11 +90,7 @@ defmodule LaFamiglia.Combat.Effects do
       |> Villa.subtract_resources(result.resources_plundered)
 
     Multi.new
-    |> Multi.run(:deliver_report, fn(_) ->
-      CombatReport.deliver!(combat)
-
-      {:ok, nil}
-    end)
+    |> Multi.append(CombatReport.deliver(combat))
     |> Multi.delete(:attack, attack)
     |> Multi.update(:origin, origin_changeset)
     |> Multi.update(:target, target_changeset)

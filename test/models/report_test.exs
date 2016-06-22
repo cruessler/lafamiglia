@@ -43,7 +43,8 @@ defmodule LaFamiglia.ReportTest do
 
     Combat.new(context.attack)
     |> Combat.calculate
-    |> CombatReport.deliver!
+    |> CombatReport.deliver
+    |> Repo.transaction
 
     assert reports_count(context.origin.player) == old_reports_count + 1
   end
@@ -51,7 +52,8 @@ defmodule LaFamiglia.ReportTest do
   test "has associations", context do
     Combat.new(context.attack)
     |> Combat.calculate
-    |> CombatReport.deliver!
+    |> CombatReport.deliver
+    |> Repo.transaction
 
     [first, second] =
       from(r in Report, order_by: [desc: r.id], limit: 2, preload: :player)
@@ -64,7 +66,8 @@ defmodule LaFamiglia.ReportTest do
   test "has related villas", context do
     Combat.new(context.attack)
     |> Combat.calculate
-    |> CombatReport.deliver!
+    |> CombatReport.deliver
+    |> Repo.transaction
 
     report =
       from(r in Report, order_by: [desc: r.id], limit: 1, preload: :related_villas)
@@ -79,7 +82,8 @@ defmodule LaFamiglia.ReportTest do
   test "has title", context do
     Combat.new(context.attack)
     |> Combat.calculate
-    |> CombatReport.deliver!
+    |> CombatReport.deliver
+    |> Repo.transaction
 
     [first, second] =
       from(r in Report, order_by: [desc: r.id], limit: 2)
