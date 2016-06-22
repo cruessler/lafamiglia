@@ -2,10 +2,13 @@ defmodule LaFamiglia.ReportData do
   @behaviour Ecto.Type
   def type, do: :map
 
-  defstruct [:attacker_before_combat, :attacker_losses,
-             :defender_before_combat, :defender_losses,
-             :resources_plundered,
-             :winner]
+  defstruct [
+    :attacker_before_combat, :attacker_losses,
+    :defender_before_combat, :defender_losses,
+    :resources_plundered,
+    :results_in_occupation?,
+    :winner
+  ]
 
   defp atomify_keys(map) when is_map(map) do
     Enum.reduce map, %{}, fn({k, v}, acc) ->
