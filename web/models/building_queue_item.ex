@@ -38,7 +38,7 @@ defmodule LaFamiglia.BuildingQueueItem do
   end
 
   defp first_of_its_kind?([], _item), do: true
-  defp first_of_its_kind?([item|rest], item), do: true
+  defp first_of_its_kind?([item|_], item), do: true
   defp first_of_its_kind?([first|rest], item) do
     cond do
       first.building_id == item.building_id -> false
@@ -104,7 +104,7 @@ defmodule LaFamiglia.BuildingQueueItem do
       new_building_queue_items =
         villa.building_queue_items
         |> shift_later_items(item, time_diff)
-        |> Enum.map &Changeset.change/1
+        |> Enum.map(&Changeset.change/1)
 
       changeset =
         changeset
@@ -119,7 +119,7 @@ defmodule LaFamiglia.BuildingQueueItem do
     else
       changeset =
         changeset
-        |> Changeset.put_error(changeset, :building_queue_items, "You can only cancel the last building of its kind.")
+        |> Changeset.add_error(changeset, :building_queue_items, "You can only cancel the last building of its kind.")
 
       Multi.new
       |> Multi.update(:villa, changeset)

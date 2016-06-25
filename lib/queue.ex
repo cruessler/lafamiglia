@@ -2,7 +2,7 @@ defmodule LaFamiglia.Queue do
   def completed_at([]), do: LaFamiglia.DateTime.now
   def completed_at(queue) when is_list(queue), do: List.last(queue).completed_at
 
-  def build_time_left([first|rest], first),
+  def build_time_left([first|_], first),
     do: LaFamiglia.DateTime.time_diff(LaFamiglia.DateTime.now, first.completed_at)
   def build_time_left(_, item), do: item.build_time
 

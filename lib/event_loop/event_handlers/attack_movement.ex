@@ -3,7 +3,6 @@ defimpl LaFamiglia.Event, for: LaFamiglia.AttackMovement do
 
   alias LaFamiglia.Repo
   alias LaFamiglia.Combat
-  alias LaFamiglia.Combat.Effects
 
   def happens_at(movement) do
     movement.arrives_at

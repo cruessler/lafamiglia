@@ -109,13 +109,13 @@ defmodule LaFamiglia.Villa do
     |> validate_resources
   end
 
-  def order_units_changeset(%{data: villa} = changeset, units) do
+  def order_units_changeset(%Changeset{} = changeset, units) do
     changeset
     |> subtract_units(units)
     |> validate_units
   end
 
-  defp validate_maxlevel(%{data: villa} = changeset, item) do
+  defp validate_maxlevel(%Changeset{} = changeset, item) do
     building = Building.get(item.building_id)
 
     case Building.virtual_level(changeset, building) >= building.maxlevel do
@@ -216,7 +216,7 @@ defmodule LaFamiglia.Villa do
   Processes resource gains and recruiting of units without saving
   the results to the database.
   """
-  def process_virtually_until(%Changeset{data: villa} = changeset, time) do
+  def process_virtually_until(%Changeset{} = changeset, time) do
     changeset
     |> gain_resources_until(time)
     |> process_units_virtually_until(time)

@@ -58,7 +58,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
     end
   end
 
-  test "does not recruit more units than enqueued", %{villa: villa, changeset: changeset, unit: unit} do
+  test "does not recruit more units than enqueued", %{changeset: changeset, unit: unit} do
     {:ok, %{villa: villa}} =
       changeset
       |> UnitQueueItem.enqueue(unit, 1)

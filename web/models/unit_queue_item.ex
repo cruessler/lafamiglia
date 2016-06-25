@@ -103,7 +103,7 @@ defmodule LaFamiglia.UnitQueueItem do
     new_unit_queue_items =
       unit_queue_items
       |> shift_later_items(item, time_diff)
-      |> Enum.map &Changeset.change/1
+      |> Enum.map(&Changeset.change/1)
 
     changeset =
       changeset

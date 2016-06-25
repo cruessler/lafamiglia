@@ -5,13 +5,6 @@ defmodule LaFamiglia.Movement do
     end
   end
 
-  @doc """
-  This function returns the speed of an array of units in coordinates per
-  second.
-
-  The speed of a unit is given in coordinates per hour. A unit with a speed of 1
-  will take 1 hour to go from 0|0 to 0|1.
-  """
   defp speed(units) do
     speed =
       units
@@ -25,6 +18,13 @@ defmodule LaFamiglia.Movement do
     :math.sqrt(:math.pow(origin.x - target.x, 2) + :math.pow(origin.y - target.y, 2))
   end
 
+  @doc """
+  This function returns the time the given units need to go from `origin` to
+  `target` in seconds.
+
+  The speed of a unit is given in coordinates per hour. A unit with a speed of 1
+  will take 1 hour to go from 0|0 to 0|1.
+  """
   def duration(origin, target, units) do
     distance_between(origin, target) / speed(units)
   end

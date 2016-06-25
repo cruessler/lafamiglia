@@ -9,7 +9,6 @@ defimpl LaFamiglia.Event, for: LaFamiglia.UnitQueueItem do
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
   alias LaFamiglia.Unit
-  alias LaFamiglia.UnitQueueItem
 
   def happens_at(item) do
     item.completed_at

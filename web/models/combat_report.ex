@@ -3,11 +3,9 @@ defmodule LaFamiglia.CombatReport do
 
   alias Ecto.Multi
 
-  alias LaFamiglia.Repo
   alias LaFamiglia.Combat
   alias LaFamiglia.Report
   alias LaFamiglia.ReportData
-  alias LaFamiglia.RelatedReportVilla
 
   @spec deliver(Combat.t) :: Multi.t
   def deliver(combat) do

@@ -24,7 +24,7 @@ defmodule LaFamiglia.MessageTest do
     Repo.all(Conversation) |> Enum.count
   end
 
-  test "create message", %{sender_id: sender_id, receivers: receivers} = context do
+  test "create message", %{sender_id: sender_id, receivers: receivers} do
     invalid_messages = [
       %{text: "This is a text"}, # has neither sender nor receivers
       %{sender_id: sender_id,

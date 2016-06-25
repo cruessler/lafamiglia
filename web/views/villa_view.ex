@@ -36,7 +36,7 @@ defmodule LaFamiglia.VillaView do
                        method: :delete, class: "btn btn-primary"
   end
 
-  def building_queue_items_for(conn, [], _), do: ""
+  def building_queue_items_for(_, [], _), do: ""
   def building_queue_items_for(conn, [first|rest], building) do
     if first.building_id == building.id do
       [active_queue_item(conn, BuildingQueueItemView, first),
@@ -46,7 +46,7 @@ defmodule LaFamiglia.VillaView do
     end
   end
 
-  def unit_queue_items_for(conn, [], _), do: ""
+  def unit_queue_items_for(_, [], _), do: ""
   def unit_queue_items_for(conn, [first|rest], unit) do
     if first.unit_id == unit.id do
       [active_queue_item(conn, UnitQueueItemView, first),
