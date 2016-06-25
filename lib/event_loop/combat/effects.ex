@@ -23,6 +23,7 @@ defmodule LaFamiglia.Combat.Effects do
       attack.target
       |> Villa.process_virtually_until(attack.arrives_at)
       |> Villa.subtract_resources(result.resources_plundered)
+      |> Changeset.put_change(:is_occupied, true)
     origin_of_occupation_changeset =
       Changeset.change(attack.target.occupation.origin)
       |> Villa.subtract_supply(result.defender_supply_loss)
@@ -49,6 +50,7 @@ defmodule LaFamiglia.Combat.Effects do
       |> Villa.process_virtually_until(attack.arrives_at)
       |> Villa.subtract_units(result.defender_losses)
       |> Villa.subtract_supply(result.defender_supply_loss)
+      |> Changeset.put_change(:is_occupied, true)
 
     Multi.new
     |> Multi.append(CombatReport.deliver(combat))
@@ -67,6 +69,7 @@ defmodule LaFamiglia.Combat.Effects do
       attack.target
       |> Villa.process_virtually_until(attack.arrives_at)
       |> Villa.subtract_resources(result.resources_plundered)
+      |> Changeset.put_change(:is_occupied, false)
     origin_of_occupation_changeset =
       Changeset.change(attack.target.occupation.origin)
       |> Villa.subtract_supply(result.defender_supply_loss)

@@ -36,10 +36,5 @@ defmodule LaFamiglia.Occupation do
 
     Multi.new
     |> Multi.insert(:occupation, changeset)
-    |> Multi.run(:update_target, fn(%{occupation: occupation}) ->
-      assoc(occupation, :target) |> Repo.update_all(set: [is_occupied: true])
-
-      {:ok, nil}
-    end)
   end
 end
