@@ -1,4 +1,6 @@
 defmodule LaFamiglia.Movement do
+  @unit_speed Application.get_env(:la_famiglia, :unit_speed)
+
   def units(map) do
     Enum.filter LaFamiglia.Unit.all, fn(u) ->
       Map.get(map, u.key) > 0
@@ -11,7 +13,7 @@ defmodule LaFamiglia.Movement do
       |> Enum.map(fn(u) -> u.speed end)
       |> Enum.min
 
-    speed / 3600 * Application.get_env(:la_famiglia, :unit_speed)
+    speed / 3600 * @unit_speed
   end
 
   defp distance_between(origin, target) do

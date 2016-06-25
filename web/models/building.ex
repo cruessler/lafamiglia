@@ -4,6 +4,8 @@ defmodule LaFamiglia.Building do
 
   alias LaFamiglia.Villa
 
+  @game_speed Application.get_env(:la_famiglia, :game_speed)
+
   def all do
     Application.get_env(:la_famiglia, :buildings)
   end
@@ -38,6 +40,6 @@ defmodule LaFamiglia.Building do
   end
 
   def build_time(building, level) do
-    building.build_time.(level) / Application.get_env(:la_famiglia, :game_speed)
+    building.build_time.(level) / @game_speed
   end
 end
