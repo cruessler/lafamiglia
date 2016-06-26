@@ -25,18 +25,13 @@ defmodule LaFamiglia.AttackMovement do
     timestamps
   end
 
-  @required_fields ~w(unit_1 unit_2)
-  @optional_fields ~w()
-
   @doc """
-  Creates a changeset based on the `model` and `params`.
-
-  If no params are provided, an invalid changeset is returned
-  with no validation performed.
+  Builds a changeset based on the `struct` and `params`.
   """
-  def changeset(model, params \\ :empty) do
-    model
-    |> cast(params, @required_fields, @optional_fields)
+  def changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:unit_1, :unit_2])
+    |> validate_required([:unit_1, :unit_2])
     |> validate_origin_and_target_belong_to_different_players
     |> validate_at_least_one_unit
     |> assoc_constraint(:origin)
@@ -47,7 +42,7 @@ defmodule LaFamiglia.AttackMovement do
   def create(origin_changeset, target, params) do
     movement =
       %AttackMovement{}
-      |> cast(params, @required_fields, @optional_fields)
+      |> cast(params, [:unit_1, :unit_2])
 
     origin_changeset =
       Villa.order_units_changeset(origin_changeset, Unit.filter(movement))

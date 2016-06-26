@@ -30,18 +30,13 @@ defmodule LaFamiglia.Player do
     timestamps
   end
 
-  @required_fields ~w(name email password)
-  @optional_fields ~w(points)
-
   @doc """
-  Creates a changeset based on the `model` and `params`.
-
-  If no params are provided, an invalid changeset is returned
-  with no validation performed.
+  Builds a changeset based on the `struct` and `params`.
   """
-  def changeset(model, params \\ :empty) do
-    model
-    |> cast(params, @required_fields, @optional_fields)
+  def changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:name, :email, :password, :points])
+    |> validate_required([:name, :email, :password])
     |> validate_length(:password, min: 8)
     |> validate_length(:password_confirmation, min: 8)
     |> validate_confirmation(:password)

@@ -13,17 +13,13 @@ defmodule LaFamiglia.RelatedReportVilla do
     timestamps
   end
 
-  @required_fields ~w(related_report_id villa_id)
-
   @doc """
-  Creates a changeset based on the `model` and `params`.
-
-  If no params are provided, an invalid changeset is returned
-  with no validation performed.
+  Builds a changeset based on the `struct` and `params`.
   """
-  def changeset(model, params \\ :empty) do
-    model
-    |> cast(params, @required_fields, [])
+  def changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:related_report_id, :villa_id])
+    |> validate_required([:related_report_id, :villa_id])
     |> assoc_constraint(:related_report)
     |> assoc_constraint(:villa)
   end

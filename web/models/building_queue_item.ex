@@ -23,18 +23,13 @@ defmodule LaFamiglia.BuildingQueueItem do
     timestamps
   end
 
-  @required_fields ~w(building_id completed_at villa_id)
-  @optional_fields ~w()
-
   @doc """
-  Creates a changeset based on the `model` and `params`.
-
-  If no params are provided, an invalid changeset is returned
-  with no validation performed.
+  Builds a changeset based on the `struct` and `params`.
   """
-  def changeset(model, params \\ :empty) do
-    model
-    |> cast(params, @required_fields, @optional_fields)
+  def changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:building_id, :completed_at, :villa_id])
+    |> validate_required([:building_id, :completed_at, :villa_id])
   end
 
   defp first_of_its_kind?([], _item), do: true

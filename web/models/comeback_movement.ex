@@ -27,18 +27,13 @@ defmodule LaFamiglia.ComebackMovement do
     timestamps
   end
 
-  @required_fields ~w(unit_1 unit_2)
-  @optional_fields ~w(resource_1 resource_2 resource_3)
-
   @doc """
-  Creates a changeset based on the `model` and `params`.
-
-  If no params are provided, an invalid changeset is returned
-  with no validation performed.
+  Builds a changeset based on the `struct` and `params`.
   """
-  def changeset(model, params \\ :empty) do
-    model
-    |> cast(params, @required_fields, @optional_fields)
+  def changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:unit_1, :unit_2, :resource_1, :resource_2, :resource_3])
+    |> validate_required([:unit_1, :unit_2])
   end
 
   @doc """

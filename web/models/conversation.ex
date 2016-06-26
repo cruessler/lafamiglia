@@ -64,17 +64,12 @@ defmodule LaFamiglia.Conversation do
     # Return nil if no conversation was found.
   end
 
-  @required_fields ~w(participants)
-  @optional_fields ~w(messages last_message_sent_at)
-
   @doc """
-  Creates a changeset based on the `model` and `params`.
-
-  If no params are provided, an invalid changeset is returned
-  with no validation performed.
+  Builds a changeset based on the `struct` and `params`.
   """
-  def changeset(model, params \\ :empty) do
-    model
-    |> cast(params, @required_fields, @optional_fields)
+  def changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:participants, :messages, :last_message_sent_at])
+    |> validate_required([:participants])
   end
 end

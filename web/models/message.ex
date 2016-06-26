@@ -23,18 +23,13 @@ defmodule LaFamiglia.Message do
     timestamps
   end
 
-  @required_fields ~w(sender_id text sent_at)
-  @optional_fields ~w(conversation_id receivers)
-
   @doc """
-  Creates a changeset based on the `model` and `params`.
-
-  If no params are provided, an invalid changeset is returned
-  with no validation performed.
+  Builds a changeset based on the `struct` and `params`.
   """
-  def changeset(model, params \\ :empty) do
-    model
-    |> cast(params, @required_fields, @optional_fields)
+  def changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:sender_id, :text, :sent_at, :conversation_id, :receivers])
+    |> validate_required([:sender_id, :text, :sent_at])
     |> validate_length(:text, min: 1)
     |> validate_length(:receivers, min: 1, message: "must contain at least one player")
     |> assoc_constraint(:sender)

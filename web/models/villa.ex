@@ -70,20 +70,17 @@ defmodule LaFamiglia.Villa do
                       unit_1 unit_2
                       supply
                       resources_gained_until units_recruited_until
-                      player_id)
-  @optional_fields ~w()
+                      player_id)a
 
   @resources [:resource_1, :resource_2, :resource_3]
 
   @doc """
-  Creates a changeset based on the `model` and `params`.
-
-  If no params are provided, an invalid changeset is returned
-  with no validation performed.
+  Builds a changeset based on the `struct` and `params`.
   """
-  def changeset(model, params \\ :empty) do
-    model
-    |> cast(params, @required_fields, @optional_fields)
+  def changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, @required_fields)
+    |> validate_required(@required_fields)
     |> validate_length(:name, min: 3)
     |> unique_constraint(:x, name: :villas_x_y_index)
   end

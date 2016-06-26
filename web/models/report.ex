@@ -20,18 +20,13 @@ defmodule LaFamiglia.Report do
     timestamps
   end
 
-  @required_fields ~w(title data player_id)
-  @optional_fields ~w()
-
   @doc """
-  Creates a changeset based on the `model` and `params`.
-
-  If no params are provided, an invalid changeset is returned
-  with no validation performed.
+  Builds a changeset based on the `struct` and `params`.
   """
-  def changeset(model, params \\ :empty) do
-    model
-    |> cast(params, @required_fields, @optional_fields)
+  def changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:title, :data, :player_id])
+    |> validate_required([:title, :data, :player_id])
     |> assoc_constraint(:player)
     |> put_change(:delivered_at, LaFamiglia.DateTime.now)
     |> put_change(:read, false)
