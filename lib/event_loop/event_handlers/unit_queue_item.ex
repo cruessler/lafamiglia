@@ -5,6 +5,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.UnitQueueItem do
   import Ecto.Query
 
   alias Ecto.Changeset
+  alias Ecto.Multi
 
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
@@ -26,9 +27,9 @@ defimpl LaFamiglia.Event, for: LaFamiglia.UnitQueueItem do
       |> Villa.changeset(%{key => Map.get(villa, key) + item.number})
       |> Changeset.put_change(:units_recruited_until, item.completed_at)
 
-    Repo.transaction fn ->
-      Repo.update!(changeset)
-      Repo.delete!(item)
-    end
+    Multi.new
+    |> Multi.update(:villa, changeset)
+    |> Multi.delete(:item, item)
+    |> Repo.transaction
   end
 end

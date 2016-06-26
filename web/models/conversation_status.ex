@@ -1,6 +1,8 @@
 defmodule LaFamiglia.ConversationStatus do
   use LaFamiglia.Web, :model
 
+  alias Ecto.Multi
+
   alias LaFamiglia.Repo
 
   alias LaFamiglia.Player
@@ -31,9 +33,13 @@ defmodule LaFamiglia.ConversationStatus do
     |> assoc_constraint(:conversation)
   end
 
-  def update_read_until!(conversation, player) do
-    from(s in assoc(conversation, :conversation_statuses),
-      where: s.player_id == ^player.id)
-    |> Repo.update_all([set: [read_until: conversation.last_message_sent_at]])
+  def update_read_until(conversation, player) do
+    query =
+      from(s in assoc(conversation, :conversation_statuses),
+        where: s.player_id == ^player.id)
+    updates = [set: [read_until: conversation.last_message_sent_at]]
+
+    Multi.new
+    |> Multi.update_all(:update_read_until, query, updates)
   end
 end

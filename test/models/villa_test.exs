@@ -42,7 +42,7 @@ defmodule LaFamiglia.VillaTest do
     :random.seed(:erlang.monotonic_time)
 
     for _ <- 1..number_to_create do
-      Villa.create_for(player)
+      Villa.create_for(player) |> Repo.insert!
     end
 
     assert (villas_count + number_to_create) == Ecto.assoc(player, :villas) |> Repo.all |> Enum.count

@@ -207,7 +207,6 @@ defmodule LaFamiglia.Villa do
         |> Villa.recalc_points
         |> Villa.recalc_storage_capacity
         |> Villa.recalc_max_supply
-        |> Repo.insert!
       _ -> nil
     end
   end

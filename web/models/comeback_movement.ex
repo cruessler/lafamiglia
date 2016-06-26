@@ -3,6 +3,8 @@ defmodule LaFamiglia.ComebackMovement do
 
   import LaFamiglia.Movement
 
+  alias Ecto.Multi
+
   alias LaFamiglia.Repo
   alias LaFamiglia.Villa
   alias LaFamiglia.ComebackMovement
@@ -80,16 +82,16 @@ defmodule LaFamiglia.ComebackMovement do
     |> put_change(:arrives_at, new_arrives_at)
   end
 
-  def arrive!(comeback) do
-    Repo.transaction fn ->
-      comeback = Repo.preload(comeback, :origin)
+  def arrive(comeback) do
+    comeback = Repo.preload(comeback, :origin)
 
+    origin_changeset =
       change(comeback.origin)
       |> Villa.add_units(comeback)
       |> Villa.add_resources(comeback)
-      |> Repo.update!
 
-      Repo.delete(comeback)
-    end
+    Multi.new
+    |> Multi.update(:origin, origin_changeset)
+    |> Multi.delete(:comeback, comeback)
   end
 end

@@ -24,7 +24,7 @@ defmodule LaFamiglia.VillaControllerTest do
   end
 
   test "GET /villas/1", %{conn: conn, player: player} do
-    villa = Villa.create_for player
+    villa = Villa.create_for(player) |> Repo.insert!
 
     conn = get conn, "/villas/#{villa.id}"
 

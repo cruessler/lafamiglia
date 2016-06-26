@@ -5,6 +5,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.BuildingQueueItem do
   import Ecto.Query, only: [from: 2]
 
   alias Ecto.Changeset
+  alias Ecto.Multi
 
   alias LaFamiglia.Building
 
@@ -35,11 +36,10 @@ defimpl LaFamiglia.Event, for: LaFamiglia.BuildingQueueItem do
       |> Villa.recalc_storage_capacity
       |> Villa.recalc_max_supply
 
-    Repo.transaction fn ->
-      Repo.update!(changeset)
-      Repo.delete!(item)
-
-      Player.recalc_points!(villa.player)
-    end
+    Multi.new
+    |> Multi.update(:villa, changeset)
+    |> Multi.delete(:item, item)
+    |> Multi.append(Player.recalc_points(villa.player))
+    |> Repo.transaction
   end
 end

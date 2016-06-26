@@ -1,6 +1,8 @@
 defmodule LaFamiglia.Player do
   use LaFamiglia.Web, :model
 
+  alias Ecto.Multi
+
   alias Comeonin.Bcrypt
 
   alias LaFamiglia.Repo
@@ -65,12 +67,17 @@ defmodule LaFamiglia.Player do
     end
   end
 
-  def recalc_points!(player) do
-    player_points =
-      from(v in assoc(player, :villas), select: sum(v.points))
-      |> Repo.one
+  def recalc_points(player) do
+    Multi.new
+    |> Multi.run(:recalc_player_points, fn(_) ->
+      player_points =
+        from(v in assoc(player, :villas), select: sum(v.points))
+        |> Repo.one
 
-    from(p in Player, where: p.id == ^player.id)
-    |> Repo.update_all(set: [points: player_points])
+      from(p in Player, where: p.id == ^player.id)
+      |> Repo.update_all(set: [points: player_points])
+
+      {:ok, nil}
+    end)
   end
 end

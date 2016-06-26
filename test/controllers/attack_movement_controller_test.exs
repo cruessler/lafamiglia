@@ -8,13 +8,12 @@ defmodule LaFamiglia.AttackMovementControllerTest do
     player = Forge.saved_player(Repo)
     origin =
       Villa.create_for(player)
-      |> Ecto.Changeset.change
       |> Villa.add_units(%{unit_1: 1})
-      |> Repo.update!
+      |> Repo.insert!
     conn   = conn |> with_login(player)
 
     enemy  = Forge.saved_player(Repo)
-    target = Villa.create_for(enemy)
+    target = Villa.create_for(enemy) |> Repo.insert!
 
     {:ok, %{conn: conn, player: player, origin: origin, target: target}}
   end

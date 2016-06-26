@@ -1,6 +1,8 @@
 defimpl LaFamiglia.Event, for: LaFamiglia.ComebackMovement do
   require Logger
 
+  alias LaFamiglia.Repo
+
   alias LaFamiglia.ComebackMovement
 
   def happens_at(movement) do
@@ -12,6 +14,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.ComebackMovement do
 
     LaFamiglia.DateTime.clock!(comeback.arrives_at)
 
-    ComebackMovement.arrive!(comeback)
+    ComebackMovement.arrive(comeback)
+    |> Repo.transaction
   end
 end

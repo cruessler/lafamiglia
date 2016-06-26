@@ -19,7 +19,8 @@ defmodule LaFamiglia.ConversationController do
       |> Repo.get!(id)
       |> Repo.preload([messages: :sender])
 
-    ConversationStatus.update_read_until!(conversation, conn.assigns.current_player)
+    ConversationStatus.update_read_until(conversation, conn.assigns.current_player)
+    |> Repo.transaction
 
     changeset =
       Ecto.Changeset.change(%Message{},

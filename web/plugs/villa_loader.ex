@@ -10,6 +10,8 @@ defmodule LaFamiglia.Plugs.VillaLoader do
 
   import Ecto
 
+  alias Ecto.Multi
+
   alias LaFamiglia.Repo
   alias LaFamiglia.Player
   alias LaFamiglia.Villa
@@ -41,11 +43,16 @@ defmodule LaFamiglia.Plugs.VillaLoader do
 
   defp create_new_villa(conn) do
     player = conn.assigns.current_player
-    villa  = Villa.create_for(player)
 
-    Player.recalc_points!(player)
+    multi =
+      Multi.new
+      |> Multi.insert(:villa, Villa.create_for(player))
+      |> Multi.append(Player.recalc_points(player))
 
-    villa
+    case Repo.transaction(multi) do
+      {:ok, %{villa: villa}} -> villa
+      _ -> raise "Villa could not be created"
+    end
   end
 
   defp load_villa(conn) do
