@@ -16,13 +16,14 @@ defmodule LaFamiglia.Message do
     belongs_to :conversation, Conversation
 
     field :text, :string
+    field :sent_at, Ecto.DateTime
 
     field :receivers, {:array, :map}, virtual: true
 
     timestamps
   end
 
-  @required_fields ~w(sender_id text)
+  @required_fields ~w(sender_id text sent_at)
   @optional_fields ~w(conversation_id receivers)
 
   @doc """
@@ -47,46 +48,30 @@ defmodule LaFamiglia.Message do
       {:ok, conversation} ->
         continue_conversation(sender, conversation, text)
       _ ->
-        changeset =
-          changeset(%Message{},
-            %{sender_id: sender.id,
-              receivers: receivers,
-              text: text})
-        conversation_multi =
-          Conversation.create(%{participants: participants})
+        conversation_changeset =
+          Conversation.create(
+            %{participants: participants,
+              last_message_sent_at: LaFamiglia.DateTime.now})
 
-        Multi.new
-        |> Multi.append(conversation_multi)
-        |> Multi.run(:message, fn(%{conversation: conversation}) ->
-          changeset
-          |> put_change(:conversation_id, conversation.id)
-          |> Repo.insert
-        end)
-        |> Multi.run(:update_conversation, fn(%{message: message}) ->
-           {:ok, update_conversation(message)}
-        end)
+        changeset(%Message{},
+          %{sender_id: sender.id,
+            receivers: receivers,
+            text: text,
+            sent_at: LaFamiglia.DateTime.now})
+        |> put_assoc(:conversation, conversation_changeset)
     end
   end
 
   def continue_conversation(sender, conversation, text) do
-    changeset =
-      changeset(%Message{},
-        %{sender_id: sender.id,
-          conversation_id: conversation.id,
-          text: text})
+    conversation_changeset =
+      conversation
+      |> change(%{last_message_sent_at: LaFamiglia.DateTime.now})
 
-    Multi.new
-    |> Multi.insert(:message, changeset)
-    |> Multi.run(:update_conversation, fn(%{message: message}) ->
-       {:ok, update_conversation(message)}
-    end)
-  end
-
-  defp update_conversation(message) do
-    assoc(message, :conversation)
-    |> Repo.one
-    |> change(%{last_message_sent_at: message.inserted_at})
-    |> Repo.update!
+    changeset(%Message{},
+      %{sender_id: sender.id,
+        text: text,
+        sent_at: LaFamiglia.DateTime.now})
+    |> put_assoc(:conversation, conversation_changeset)
   end
 end
 

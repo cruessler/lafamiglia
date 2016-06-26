@@ -15,7 +15,7 @@ defmodule LaFamiglia.MessageController do
       |> Repo.one!
 
     Message.continue_conversation(conn.assigns.current_player, conversation, text)
-    |> Repo.transaction
+    |> Repo.insert
 
     redirect(conn, to: conversation_path(conn, :show, conversation.id))
   end
@@ -27,14 +27,14 @@ defmodule LaFamiglia.MessageController do
       |> Repo.all
       |> Enum.uniq
 
-    multi = Message.open_conversation(conn.assigns.current_player, receivers, text)
+    changeset = Message.open_conversation(conn.assigns.current_player, receivers, text)
 
-    case Repo.transaction(multi) do
-      {:error, :message, changeset, _} ->
+    case Repo.insert(changeset) do
+      {:error, changeset} ->
         conn
         |> assign(:changeset, changeset)
         |> render("new.html")
-      {:ok, %{message: message}} ->
+      {:ok, message} ->
         conn
         |> redirect(to: conversation_path(conn, :show, message.conversation_id))
     end

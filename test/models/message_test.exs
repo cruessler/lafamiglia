@@ -37,9 +37,9 @@ defmodule LaFamiglia.MessageTest do
                            |> Repo.insert
     end
 
-    multi = Message.open_conversation(%{id: sender_id}, receivers, "This is a text.")
+    changeset = Message.open_conversation(%{id: sender_id}, receivers, "This is a text.")
 
-    assert {:ok, %{message: message}} = Repo.transaction(multi)
+    assert {:ok, message} = Repo.insert(changeset)
 
     statuses =
       from(s in ConversationStatus,
@@ -53,15 +53,15 @@ defmodule LaFamiglia.MessageTest do
     old_conversation_count = conversation_count
 
     conversation = Forge.saved_conversation(Repo)
-    multi =
+    changeset =
       Message.continue_conversation(
         %{id: context.sender_id}, conversation, "This is a text.")
 
     for _ <- 0..2 do
-      assert {:ok, %{message: message}} = Repo.transaction(multi)
+      assert {:ok, message} = Repo.insert(changeset)
       message = Repo.preload(message, :conversation)
 
-      assert message.inserted_at == message.conversation.last_message_sent_at
+      assert message.sent_at == message.conversation.last_message_sent_at
     end
 
     assert conversation_count == old_conversation_count + 1

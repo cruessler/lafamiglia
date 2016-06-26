@@ -19,9 +19,9 @@ defmodule LaFamiglia.ConversationTest do
   test "create conversation", context do
     old_conversation_count = conversation_count
 
-    message = Conversation.create(%{participants: context.participants})
+    conversation = Conversation.create(%{participants: context.participants})
 
-    for _ <- 0..2 do assert {:ok, %{conversation: _}} = Repo.transaction(message) end
+    for _ <- 0..2 do assert {:ok, %Conversation{}} = Repo.insert(conversation) end
 
     assert conversation_count == old_conversation_count + 3
   end

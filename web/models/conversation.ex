@@ -27,12 +27,8 @@ defmodule LaFamiglia.Conversation do
       Changeset.change(%ConversationStatus{}, %{player_id: p.id})
     end
 
-    changeset =
-      change(%__MODULE__{})
-      |> put_assoc(:conversation_statuses, statuses)
-
-    Multi.new
-    |> Multi.insert(:conversation, changeset)
+    change(%__MODULE__{})
+    |> put_assoc(:conversation_statuses, statuses)
   end
 
   @doc """
