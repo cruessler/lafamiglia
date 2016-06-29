@@ -28,7 +28,7 @@ defmodule LaFamiglia.Mixfile do
   defp applications(:dev),  do: applications(:test)
   defp applications(:test), do: applications(:all) ++ [:blacksmith, :faker]
   defp applications(_),     do: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
-                                 :phoenix_ecto, :postgrex, :comeonin]
+                                 :phoenix_ecto, :postgrex, :comeonin, :ex_machina]
 
 
   # Specifies your project dependencies
@@ -36,7 +36,7 @@ defmodule LaFamiglia.Mixfile do
   # Type `mix help deps` for examples and options
   defp deps do
     [{:phoenix, "~> 1.1"},
-     {:phoenix_ecto, "~> 3.0.0-rc"},
+     {:phoenix_ecto, "~> 3.0"},
      {:postgrex, "~> 0.11.0"},
      {:poison, "~> 2.0", override: true},
      {:phoenix_html, "~> 2.5"},
@@ -49,6 +49,8 @@ defmodule LaFamiglia.Mixfile do
      {:blacksmith, "~> 0.1", only: [:dev, :test]},
      # https://github.com/igas/faker/
      {:faker, "~> 0.5", only: [:dev, :test]},
+     # https://github.com/thoughtbot/ex_machina/
+     {:ex_machina, "~> 1.0"},
      {:gettext, "~> 0.9"}]
   end
 end
