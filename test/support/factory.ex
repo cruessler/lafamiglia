@@ -67,4 +67,8 @@ defmodule LaFamiglia.Factory do
       build_time: @build_time
     }
   end
+
+  def conversation_factory do
+    %LaFamiglia.Conversation{}
+  end
 end
