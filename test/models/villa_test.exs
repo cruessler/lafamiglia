@@ -3,24 +3,11 @@ defmodule LaFamiglia.VillaTest do
 
   alias LaFamiglia.Villa
   alias LaFamiglia.Unit
-  alias LaFamiglia.UnitQueueItem
 
-  @valid_attrs %{ name: "New villa", x: 0, y: 0, player_id: 1,
-                  resource_1: 0, resource_2: 0, resource_3: 0,
-                  building_1: 1, building_2: 0,
-                  building_3: 0, building_4: 0, building_5: 0,
-                  building_6: 0,
-                  unit_1: 0, unit_2: 0,
-                  supply: 0, max_supply: 100 }
   @invalid_attrs %{ name: "Ne" }
 
   test "changeset with valid attributes" do
-    attrs =
-      @valid_attrs
-      |> Map.put(:resources_gained_until, LaFamiglia.DateTime.now)
-      |> Map.put(:units_recruited_until, LaFamiglia.DateTime.now)
-
-    changeset = Villa.changeset(%Villa{}, attrs)
+    changeset = build(:villa) |> change
     assert changeset.valid?
   end
 
@@ -30,63 +17,58 @@ defmodule LaFamiglia.VillaTest do
   end
 
   test "should find an empty space for a new villa" do
-    refute is_nil(Villa.empty_coordinates)
+    assert {_, _} = Villa.empty_coordinates
   end
 
   test "should create new villas" do
-    player = Forge.saved_player(Repo)
+    player = insert(:player)
 
-    villas_count     = Ecto.assoc(player, :villas) |> Repo.all |> Enum.count
-    number_to_create = 121
-
-    :random.seed(:erlang.monotonic_time)
+    villas_count     = assoc(player, :villas) |> Repo.all |> Enum.count
+    number_to_create = (Villa.max_x + 1) * (Villa.max_y + 1)
 
     for _ <- 1..number_to_create do
       Villa.create_for(player) |> Repo.insert!
     end
 
-    assert (villas_count + number_to_create) == Ecto.assoc(player, :villas) |> Repo.all |> Enum.count
+    assert (villas_count + number_to_create) == assoc(player, :villas) |> Repo.all |> Enum.count
   end
 
   test "has_resources?" do
-    villa     = Forge.villa(resource_1: 10, resource_2: 10, resource_3: 0)
-    changeset = Ecto.Changeset.change(villa)
+    changeset =
+      build(:villa, %{resource_1: 10, resource_2: 10, resource_3: 0})
+      |> change
 
     assert Villa.has_resources?(changeset, %{resource_1: 10, resource_2: 10, resource_3: 0})
     refute Villa.has_resources?(changeset, %{resource_1: 10, resource_2: 10, resource_3: 10})
   end
 
   test "process_units_virtually_until" do
-    villa     = Forge.saved_villa(Repo) |> Repo.preload(:unit_queue_items)
-    changeset = Ecto.Changeset.change(villa)
-    unit   = Unit.get(1)
-    number = Map.get(villa, unit.key)
+    villa = build(:villa) |> with_unit_queue
 
-    {:ok, %{villa: villa}} =
-      changeset
-      |> UnitQueueItem.enqueue(unit, 10)
-      |> Repo.transaction
+    [first, second] = villa.unit_queue_items
+
+    unit   = Unit.get(first.unit_id)
+    number = Unit.number(villa, unit)
 
     changeset =
       villa
-      # Since `villa.unit_queue_items` is not updated by `UnitQueueItem.enqueue`
-      # the association has to be forcefully reloaded.
-      |> Repo.preload(:unit_queue_items, force: true)
-      |> Ecto.Changeset.change
+      |> change
+      |> Villa.process_units_virtually_until(LaFamiglia.DateTime.from_now(first.build_time))
 
-    changeset = Villa.process_units_virtually_until(changeset, LaFamiglia.DateTime.from_now(Unit.build_time(unit) + 1))
-
-    assert Unit.number(changeset, unit) == number + 1
-    assert Unit.virtual_number(changeset, unit) == number + 10
+    assert Unit.number(changeset, unit) == number + first.number
+    assert Unit.virtual_number(changeset, unit) == number + first.number + second.number
   end
 
   test "recalc_points" do
-    villa      = Forge.saved_villa(Repo)
+    villa = build(:villa)
     old_points = villa.points
-    changeset  = Ecto.Changeset.change(villa, %{building_1: villa.building_1 + 1})
 
-    changeset = Villa.recalc_points(changeset)
-    refute is_nil(Ecto.Changeset.get_field(changeset, :points))
-    assert Ecto.Changeset.get_field(changeset, :points) != old_points
+    changeset =
+      villa
+      |> change(%{building_1: villa.building_1 + 1})
+      |> Villa.recalc_points
+
+    assert is_integer(get_field(changeset, :points))
+    assert get_field(changeset, :points) >= old_points
   end
 end

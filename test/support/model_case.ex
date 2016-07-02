@@ -24,6 +24,8 @@ defmodule LaFamiglia.ModelCase do
       import Ecto.Query
       import LaFamiglia.ModelCase
 
+      import LaFamiglia.Factory
+
       alias LaFamiglia.Villa
     end
   end
