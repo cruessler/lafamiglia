@@ -25,8 +25,8 @@ defmodule LaFamiglia.Report do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:title, :data, :player_id])
-    |> validate_required([:title, :data, :player_id])
+    |> cast(params, [:title, :data])
+    |> validate_required([:title, :data])
     |> assoc_constraint(:player)
     |> put_change(:delivered_at, LaFamiglia.DateTime.now)
     |> put_change(:read, false)

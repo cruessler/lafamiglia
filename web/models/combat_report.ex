@@ -17,15 +17,14 @@ defmodule LaFamiglia.CombatReport do
   defp report_for(villa, combat) do
     %Report{}
     |> Report.changeset(data_for(villa, combat))
+    |> put_assoc(:player, villa.player)
     |> put_assoc(:related_villas, [combat.attack.origin, combat.attack.target])
   end
 
   defp data_for(villa, %{result: result} = combat) do
     report_data = struct(ReportData, Map.from_struct(result))
 
-    %{title: title_for(villa, combat),
-      data: report_data,
-      player_id: villa.player.id}
+    %{title: title_for(villa, combat), data: report_data}
   end
 
   defp title_for(villa, %{attack: attack}) do
