@@ -71,4 +71,25 @@ defmodule LaFamiglia.Factory do
   def conversation_factory do
     %LaFamiglia.Conversation{}
   end
+
+  def attack_factory do
+    %LaFamiglia.AttackMovement{
+      origin: build(:villa),
+      target: build(:villa, %{unit_queue_items: []}),
+      arrives_at: LaFamiglia.DateTime.from_now(10),
+      unit_1: 100,
+      unit_2: 0
+    }
+  end
+
+  def report_factory do
+    %LaFamiglia.Report{
+      title: "Attack on a villa",
+      data: %LaFamiglia.ReportData{},
+      player: build(:player),
+      delivered_at: LaFamiglia.DateTime.now,
+      read: false,
+      related_villas: build_pair(:villa)
+    }
+  end
 end

@@ -23,78 +23,38 @@ defmodule LaFamiglia.ReportTest do
   setup do
     LaFamiglia.DateTime.clock!
 
-    attack =
-      Forge.saved_attack_movement(Repo)
-      |> Repo.preload([origin: [:player], target: [:player, :unit_queue_items]])
+    attack = build(:attack)
 
-    {:ok, %{
-        attack: attack,
-        origin: attack.origin,
-        target: attack.target,
-        result: Combat.calculate(attack, attack.target)}}
+    [report_for_origin: {:insert, first, []}, report_for_target: {:insert, second, []}] =
+      attack
+      |> Combat.new
+      |> Combat.calculate
+      |> CombatReport.deliver
+      |> Ecto.Multi.to_list
+
+    {:ok, %{attack: attack, first: first, second: second}}
   end
 
-  defp reports_count(player) do
-    from(r in Ecto.assoc(player, :reports), select: count(r.id)) |> Repo.one
+  test "is valid", %{attack: attack, first: first, second: second} do
+    assert first.valid?
+    assert second.valid?
+
+    assert get_change(first, :title) == "Attack on #{attack.target}"
+    assert get_change(second, :title) == "Attack from #{attack.origin}"
   end
 
-  test "gets gelivered", context do
-    old_reports_count = reports_count(context.origin.player)
+  test "has associations", %{attack: attack, first: first} do
+    [first_related, second_related] = get_change(first, :related_villas)
 
-    Combat.new(context.attack)
-    |> Combat.calculate
-    |> CombatReport.deliver
-    |> Repo.transaction
+    assert get_field(first_related, :player) == attack.origin.player
+    assert get_field(second_related, :player) == attack.target.player
 
-    assert reports_count(context.origin.player) == old_reports_count + 1
-  end
-
-  test "has associations", context do
-    Combat.new(context.attack)
-    |> Combat.calculate
-    |> CombatReport.deliver
-    |> Repo.transaction
-
-    [first, second] =
-      from(r in Report, order_by: [desc: r.id], limit: 2, preload: :player)
-      |> Repo.all
-
-    assert second.player.id == context.origin.player.id
-    assert first.player.id  == context.target.player.id
-  end
-
-  test "has related villas", context do
-    Combat.new(context.attack)
-    |> Combat.calculate
-    |> CombatReport.deliver
-    |> Repo.transaction
-
-    report =
-      from(r in Report, order_by: [desc: r.id], limit: 1, preload: :related_villas)
-      |> Repo.one
-
-    [first, second] = report.related_villas
-
-    assert second.id == context.target.id
-    assert first.id  == context.origin.id
-  end
-
-  test "has title", context do
-    Combat.new(context.attack)
-    |> Combat.calculate
-    |> CombatReport.deliver
-    |> Repo.transaction
-
-    [first, second] =
-      from(r in Report, order_by: [desc: r.id], limit: 2)
-      |> Repo.all
-
-    assert first.title  == "Attack from #{context.origin}"
-    assert second.title == "Attack on #{context.target}"
+    assert second_related.data == attack.target
+    assert first_related.data == attack.origin
   end
 
   test "can be deleted" do
-    report = Forge.saved_report(Repo)
+    report = insert(:report)
 
     assert {:ok, _} = Repo.delete(report)
   end
