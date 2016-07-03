@@ -15,11 +15,5 @@ defmodule LaFamiglia.PlayerTest do
   test "changeset with invalid attributes" do
     changeset = Player.changeset(%Player{}, @invalid_attrs)
     refute changeset.valid?
-
-    changeset = Player.changeset(%Player{}, @valid_attrs)
-    Repo.insert!(changeset)
-
-    changeset = Player.changeset(%Player{}, @valid_attrs)
-    assert_raise Ecto.InvalidChangesetError, fn -> Repo.insert!(changeset) end
   end
 end
