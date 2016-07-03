@@ -1,17 +1,13 @@
 defmodule LaFamiglia.CombatTest do
   use LaFamiglia.ModelCase
 
-  alias LaFamiglia.Repo
-
   alias LaFamiglia.Combat
   alias LaFamiglia.{Resource, Unit}
 
   setup do
     LaFamiglia.DateTime.clock!
 
-    attack =
-      Forge.saved_attack_movement(Repo)
-      |> Repo.preload([:origin, :target])
+    attack = build(:attack)
 
     {:ok, %{result: Combat.calculate(attack, attack.target)}}
   end
@@ -38,9 +34,7 @@ defmodule LaFamiglia.CombatTest do
   end
 
   test "results in occupation" do
-    attack =
-      Forge.saved_attack_movement(Repo, %{unit_1: 1000, unit_2: 2})
-      |> Repo.preload(:target)
+    attack = build(:attack, %{unit_1: 1000, unit_2: 2})
 
     result = Combat.calculate(attack, attack.target)
 
