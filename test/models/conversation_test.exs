@@ -1,28 +1,14 @@
 defmodule LaFamiglia.ConversationTest do
   use LaFamiglia.ModelCase
 
-  alias LaFamiglia.Repo
   alias LaFamiglia.Conversation
 
-  setup do
+  test "create conversation" do
     participants =
-      Forge.saved_player_list(Repo, 2)
+      build_pair(:player)
       |> Enum.map(fn(p) -> %{id: p.id} end)
 
-    {:ok, %{participants: participants}}
-  end
-
-  defp conversation_count do
-    Repo.all(Conversation) |> Enum.count
-  end
-
-  test "create conversation", context do
-    old_conversation_count = conversation_count
-
-    conversation = Conversation.create(%{participants: context.participants})
-
-    for _ <- 0..2 do assert {:ok, %Conversation{}} = Repo.insert(conversation) end
-
-    assert conversation_count == old_conversation_count + 3
+    conversation = Conversation.create(%{participants: participants})
+    assert conversation.valid?
   end
 end
