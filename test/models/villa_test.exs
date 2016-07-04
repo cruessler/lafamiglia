@@ -2,7 +2,7 @@ defmodule LaFamiglia.VillaTest do
   use LaFamiglia.ModelCase
 
   alias LaFamiglia.Villa
-  alias LaFamiglia.Unit
+  alias LaFamiglia.{Resource, Unit}
 
   @invalid_attrs %{ name: "Ne" }
 
@@ -42,6 +42,22 @@ defmodule LaFamiglia.VillaTest do
     refute Villa.has_resources?(changeset, %{resource_1: 10, resource_2: 10, resource_3: 10})
   end
 
+  test "gain_resources_until" do
+    villa = build(:villa, %{resource_1: 0, resource_2: 0, resource_3: 0})
+
+    changeset =
+      change(villa)
+      |> Villa.gain_resources_until(LaFamiglia.DateTime.from_now(10))
+
+    resources = Resource.filter(changeset)
+
+    changeset = Villa.gain_resources_until(changeset, LaFamiglia.DateTime.from_now(20))
+
+    new_resources = Resource.filter(changeset)
+
+    assert new_resources[:resource_1] == 2 * resources[:resource_1]
+  end
+
   test "process_units_virtually_until" do
     villa = build(:villa) |> with_unit_queue
 
@@ -53,6 +69,13 @@ defmodule LaFamiglia.VillaTest do
     changeset =
       villa
       |> change
+      |> Villa.process_units_virtually_until(LaFamiglia.DateTime.from_now(first.build_time))
+
+    assert Unit.number(changeset, unit) == number + first.number
+    assert Unit.virtual_number(changeset, unit) == number + first.number + second.number
+
+    changeset =
+      changeset
       |> Villa.process_units_virtually_until(LaFamiglia.DateTime.from_now(first.build_time))
 
     assert Unit.number(changeset, unit) == number + first.number

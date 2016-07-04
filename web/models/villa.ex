@@ -226,15 +226,17 @@ defmodule LaFamiglia.Villa do
 
   This function assumes constant resource gains. It is the responsibility of
   the caller, i. e. mostly the event handler, to guarantee that there is no
-  change in resource gains between `villa.resources_gained_until` and `time`.
+  change in resource gains between `resources_gained_until` and `time`.
   """
-  def gain_resources_until(%Changeset{data: villa} = changeset, time) do
-    case LaFamiglia.DateTime.time_diff(villa.resources_gained_until, time) do
+  def gain_resources_until(%Changeset{} = changeset, time) do
+    resources_gained_until = get_field(changeset, :resources_gained_until)
+
+    case LaFamiglia.DateTime.time_diff(resources_gained_until, time) do
       0 ->
         changeset
       time_diff ->
         changeset
-        |> add_resources(resource_gains(villa, time_diff))
+        |> add_resources(resource_gains(changeset, time_diff))
         |> put_change(:resources_gained_until, time)
     end
   end
@@ -279,7 +281,9 @@ defmodule LaFamiglia.Villa do
     put_change(changeset, :supply, get_field(changeset, :supply) - supply)
   end
 
-  def resource_gains(villa, time_diff) do
+  def resource_gains(%Changeset{} = changeset, time_diff),
+    do: resource_gains(apply_changes(changeset), time_diff)
+  def resource_gains(%Villa{} = villa, time_diff) do
     for {k, v} <- Application.get_env(:la_famiglia, :resource_gains).(villa),
       into: %{}, do: {k, v * time_diff / 3600}
   end
@@ -298,14 +302,16 @@ defmodule LaFamiglia.Villa do
     end
   end
 
-  def process_units_virtually_until(%Changeset{data: villa} = changeset, time) do
+  def process_units_virtually_until(%Changeset{} = changeset, time) do
     case get_field(changeset, :unit_queue_items) do
       [first|rest] ->
         unit = Unit.get(first.unit_id)
         key  = unit.key
 
+        units_recruited_until = get_field(changeset, :units_recruited_until)
+
         number_recruited =
-          UnitQueueItem.units_recruited_between(first, villa.units_recruited_until, time)
+          UnitQueueItem.units_recruited_between(first, units_recruited_until, time)
 
         first      = Changeset.change(first, %{number: first.number - number_recruited})
         changesets = [first | Enum.map(rest, &Changeset.change/1)]
