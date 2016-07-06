@@ -3,11 +3,12 @@ defmodule LaFamiglia.UnitQueueItemController do
 
   alias LaFamiglia.Unit
   alias LaFamiglia.UnitQueueItem
+  alias LaFamiglia.Actions.{Enqueue, Dequeue}
 
   def create(conn, %{"villa_id" => villa_id, "unit_id" => unit_id, "number" => number}) do
     unit   = Unit.get(String.to_integer(unit_id))
     number = String.to_integer(number)
-    multi  = UnitQueueItem.enqueue(conn.assigns.current_villa_changeset, unit, number)
+    multi  = Enqueue.enqueue(conn.assigns.current_villa_changeset, unit, number)
 
     case Repo.transaction(multi) do
       {:error, :villa, changeset} ->
@@ -24,7 +25,7 @@ defmodule LaFamiglia.UnitQueueItemController do
 
   def delete(conn, %{"id" => id}) do
     item  = Repo.get_by!(UnitQueueItem, id: id, villa_id: conn.assigns.current_villa.id)
-    multi = UnitQueueItem.dequeue(conn.assigns.current_villa_changeset, item)
+    multi = Dequeue.dequeue(conn.assigns.current_villa_changeset, item)
 
     case Repo.transaction(multi) do
       {:error, :villa, changeset} ->

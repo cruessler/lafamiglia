@@ -2,11 +2,9 @@ defmodule LaFamiglia.UnitQueueItem do
   use LaFamiglia.Web, :model
 
   alias Ecto.Changeset
-  alias Ecto.Multi
 
   import LaFamiglia.Queue
 
-  alias LaFamiglia.Repo
   alias LaFamiglia.Villa
   alias LaFamiglia.Unit
 
@@ -73,13 +71,8 @@ defmodule LaFamiglia.UnitQueueItem do
                                 build_time: build_time / 1,
                                 completed_at: completed_at)
 
-    Multi.new
-    |> Multi.update(:villa, Villa.recruit_changeset(changeset, new_item, costs, supply))
-    |> Multi.run(:send_to_queue, fn(%{villa: villa}) ->
-      villa.unit_queue_items
-      |> List.last
-      |> LaFamiglia.EventCallbacks.send_to_queue
-    end)
+    changeset
+    |> Villa.recruit_changeset(new_item, costs, supply)
   end
 
   def dequeue(%Changeset{data: villa} = changeset, item) do
@@ -98,18 +91,11 @@ defmodule LaFamiglia.UnitQueueItem do
     new_unit_queue_items =
       unit_queue_items
       |> shift_later_items(item, time_diff)
-      |> Enum.map(&Changeset.change/1)
+      |> Enum.map(&change/1)
 
-    changeset =
-      changeset
-      |> Villa.add_resources(refunds)
-      |> put_change(:supply, villa.supply - unit.supply * number_left)
-      |> put_assoc(:unit_queue_items, new_unit_queue_items)
-
-    Multi.new
-    |> Multi.update(:villa, changeset)
-    |> Multi.run(:drop_from_queue, fn(_) ->
-      LaFamiglia.EventCallbacks.drop_from_queue(item)
-    end)
+    changeset
+    |> Villa.add_resources(refunds)
+    |> put_change(:supply, villa.supply - unit.supply * number_left)
+    |> put_assoc(:unit_queue_items, new_unit_queue_items)
   end
 end
