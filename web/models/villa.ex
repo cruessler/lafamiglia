@@ -85,8 +85,10 @@ defmodule LaFamiglia.Villa do
     |> unique_constraint(:x, name: :villas_x_y_index)
   end
 
-  def build_changeset(%{data: villa} = changeset, new_item, costs) do
-    new_building_queue_items = Enum.map(villa.building_queue_items ++ [new_item], &Changeset.change/1)
+  def build_changeset(changeset, new_item, costs) do
+    building_queue_items = get_field(changeset, :building_queue_items)
+
+    new_building_queue_items = Enum.map(building_queue_items ++ [new_item], &Changeset.change/1)
 
     changeset
     |> subtract_resources(costs)
@@ -95,8 +97,10 @@ defmodule LaFamiglia.Villa do
     |> validate_resources
   end
 
-  def recruit_changeset(%{data: villa} = changeset, new_item, costs, supply) do
-    new_unit_queue_items = Enum.map(villa.unit_queue_items ++ [new_item], &Changeset.change/1)
+  def recruit_changeset(changeset, new_item, costs, supply) do
+    unit_queue_items = get_field(changeset, :unit_queue_items)
+
+    new_unit_queue_items = Enum.map(unit_queue_items ++ [new_item], &Changeset.change/1)
 
     changeset
     |> subtract_resources(costs)
