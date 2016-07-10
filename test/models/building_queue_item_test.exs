@@ -2,91 +2,71 @@ defmodule LaFamiglia.BuildingQueueItemTest do
   use LaFamiglia.ModelCase
 
   alias LaFamiglia.Building
-
   alias LaFamiglia.BuildingQueueItem
 
   setup do
-    villa     = Forge.saved_villa(Repo) |> Repo.preload(:building_queue_items)
-    changeset = Ecto.Changeset.change(villa)
-    building  = Building.get(1)
-
-    {:ok, %{villa: villa, changeset: changeset, building: building}}
+    {:ok, %{building: Building.get(1)}}
   end
 
-  test "should add building queue item", %{villa: villa, changeset: changeset, building: building} do
+  test "should add building queue item", %{building: building} do
+    villa = build(:villa)
+
     assert Building.virtual_level(villa, building) == 1
 
-    for i <- 1..3 do
-      changeset
-      |> BuildingQueueItem.enqueue(building)
-      |> Repo.transaction
+    changeset = change(villa) |> BuildingQueueItem.enqueue(building)
 
-      items = Ecto.assoc(villa, :building_queue_items) |> Repo.all
+    assert Building.virtual_level(changeset, building) == 2
 
-      assert Enum.count(items) == i
-    end
+    changeset = BuildingQueueItem.enqueue(changeset, building)
 
-    villa     = Repo.get(Villa, villa.id) |> Repo.preload(:building_queue_items)
-    changeset = Ecto.Changeset.change(villa)
-
-    assert Building.virtual_level(changeset, building) == 4
+    assert Building.virtual_level(changeset, building) == 3
   end
 
-  test "should cancel building queue item", %{villa: villa, changeset: changeset, building: building} do
-    assert {:ok, _} =
-      changeset
-      |> BuildingQueueItem.enqueue(building)
-      |> Repo.transaction
+  test "should cancel building queue item" do
+    villa = build(:villa) |> with_building_queue |> Repo.insert!
 
-    villa     = Repo.get(Villa, villa.id) |> Repo.preload(:building_queue_items)
-    changeset = Ecto.Changeset.change(villa)
-
-    assert {:ok, _} =
-      changeset
+    assert {:ok, new_villa} =
+      change(villa)
       |> BuildingQueueItem.dequeue(List.last(villa.building_queue_items))
-      |> Repo.transaction
+      |> Repo.update
+
+    assert length(new_villa.building_queue_items) == length(villa.building_queue_items) - 1
   end
 
-  test "should respect validations", %{changeset: changeset, building: building} do
-    assert {:error, :villa, _, _} =
-      changeset
-      |> Villa.changeset(%{resource_1: 0})
-      |> BuildingQueueItem.enqueue(building)
-      |> Repo.transaction
-
-    assert {:error, :villa, _, _} =
-      changeset
-      |> Villa.changeset(%{building_1: building.maxlevel})
-      |> BuildingQueueItem.enqueue(building)
-      |> Repo.transaction
-  end
-
-  test "should update `resources_gained_until` when event is handled", %{changeset: changeset, building: building} do
-    {:ok, %{villa: villa}} =
-      changeset
-      |> BuildingQueueItem.enqueue(building)
-      |> Repo.transaction
-
-    {:ok, %{villa: villa}} =
-      villa
-      |> Ecto.Changeset.change
-      |> BuildingQueueItem.enqueue(building)
-      |> Repo.transaction
-
-    [first_item|_] = villa.building_queue_items
-
-    assert Ecto.Changeset.get_field(changeset, :resources_gained_until) != first_item.completed_at
-
-    LaFamiglia.Event.handle(first_item)
+  test "should respect validations", %{building: building} do
+    villa = build(:villa)
 
     changeset =
-      from(v in Villa,
-           where: v.id == ^villa.id,
-           preload: [:building_queue_items, :unit_queue_items])
-      |> Repo.one
-      |> Ecto.Changeset.change
-      |> Villa.process_virtually_until(first_item.completed_at)
+      villa
+      |> Villa.changeset(%{resource_1: 0})
+      |> BuildingQueueItem.enqueue(building)
 
-    assert Ecto.Changeset.get_field(changeset, :resources_gained_until) == first_item.completed_at
+    refute changeset.valid?
+
+    changeset =
+      villa
+      |> Villa.changeset(%{building_1: building.maxlevel})
+      |> BuildingQueueItem.enqueue(building)
+
+    refute changeset.valid?
+  end
+
+  test "should update `resources_gained_until` when event is handled" do
+    villa = build(:villa) |> with_building_queue |> Repo.insert!
+    changeset = change(villa)
+
+    [first|_] = villa.building_queue_items
+
+    assert get_field(changeset, :resources_gained_until) != first.completed_at
+
+    LaFamiglia.Event.handle(first)
+
+    changeset =
+      Repo.get(Villa, villa.id)
+      |> Repo.preload([:building_queue_items, :unit_queue_items])
+      |> change
+      |> Villa.process_virtually_until(first.completed_at)
+
+    assert get_field(changeset, :resources_gained_until) == first.completed_at
   end
 end

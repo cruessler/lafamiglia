@@ -2,7 +2,6 @@ defmodule LaFamiglia.BuildingQueueItem do
   use LaFamiglia.Web, :model
 
   alias Ecto.Changeset
-  alias Ecto.Multi
 
   import LaFamiglia.Queue
 
@@ -79,13 +78,8 @@ defmodule LaFamiglia.BuildingQueueItem do
                                 build_time: build_time / 1,
                                 completed_at: completed_at)
 
-    Multi.new
-    |> Multi.update(:villa, Villa.build_changeset(changeset, new_item, costs))
-    |> Multi.run(:send_to_queue, fn(%{villa: villa}) ->
-      villa.building_queue_items
-      |> List.last
-      |> LaFamiglia.EventCallbacks.send_to_queue
-    end)
+    changeset
+    |> Villa.build_changeset(new_item, costs)
   end
 
   def dequeue(%Changeset{data: villa} = changeset, item) do
@@ -101,23 +95,12 @@ defmodule LaFamiglia.BuildingQueueItem do
         |> shift_later_items(item, time_diff)
         |> Enum.map(&Changeset.change/1)
 
-      changeset =
-        changeset
-        |> Villa.add_resources(refunds)
-        |> put_assoc(:building_queue_items, new_building_queue_items)
-
-      Multi.new
-      |> Multi.update(:villa, changeset)
-      |> Multi.run(:drop_from_queue, fn(_) ->
-        LaFamiglia.EventCallbacks.drop_from_queue(item)
-      end)
+      changeset
+      |> Villa.add_resources(refunds)
+      |> put_assoc(:building_queue_items, new_building_queue_items)
     else
-      changeset =
-        changeset
-        |> Changeset.add_error(changeset, :building_queue_items, "You can only cancel the last building of its kind.")
-
-      Multi.new
-      |> Multi.update(:villa, changeset)
+      changeset
+      |> Changeset.add_error(changeset, :building_queue_items, "You can only cancel the last building of its kind.")
     end
   end
 end

@@ -1,7 +1,7 @@
 defmodule LaFamiglia.Factory do
   use ExMachina.Ecto, repo: LaFamiglia.Repo
 
-  alias LaFamiglia.Unit
+  alias LaFamiglia.{Building, Unit}
 
   @hashed_password Comeonin.Bcrypt.hashpwsalt("password")
 
@@ -46,6 +46,31 @@ defmodule LaFamiglia.Factory do
       resources_gained_until: LaFamiglia.DateTime.now,
       units_recruited_until: LaFamiglia.DateTime.now,
       player: build(:player)
+    }
+  end
+
+  def with_building_queue(villa) do
+    build_times = [
+      Building.build_time(Building.get(1), 1),
+      Building.build_time(Building.get(1), 2)
+    ]
+
+    completed_at = [
+      LaFamiglia.DateTime.from_now(Enum.at(build_times, 0)),
+      LaFamiglia.DateTime.from_now(Enum.at(build_times, 0) + Enum.at(build_times, 1))
+    ]
+
+    items =
+      for {t, c} <- Enum.zip(build_times, completed_at) do
+        build(:building_queue_item, %{build_time: t, completed_at: c})
+      end
+
+    %{villa | building_queue_items: items}
+  end
+
+  def building_queue_item_factory() do
+    %LaFamiglia.BuildingQueueItem{
+      building_id: 1
     }
   end
 
