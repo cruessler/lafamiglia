@@ -5,25 +5,12 @@ defmodule LaFamiglia.AttackMovementTest do
   alias LaFamiglia.ComebackMovement
   alias LaFamiglia.Occupation
   alias LaFamiglia.Report
-  alias LaFamiglia.{Resource, Unit}
+  alias LaFamiglia.Resource
 
   setup do
     LaFamiglia.DateTime.clock!
 
-    attack =
-      Forge.saved_attack_movement(Repo)
-      |> Repo.preload(origin: :player, target: :player)
-
-    origin = Forge.saved_villa(Repo, unit_1: 10)
-    target = Forge.saved_villa(Repo)
-    origin_changeset = Ecto.Changeset.change(origin)
-
-    movement_params = %{unit_1: 1, unit_2: 0}
-
-    {:ok, %{attack: attack,
-            origin: origin, target: target,
-            origin_changeset: origin_changeset,
-            movement_params: movement_params}}
+    :ok
   end
 
   defp report_count do
@@ -31,7 +18,9 @@ defmodule LaFamiglia.AttackMovementTest do
     |> Repo.one
   end
 
-  test "gets handled when attacker wins", %{attack: attack} do
+  test "gets handled when attacker wins" do
+    attack = insert(:attack)
+
     old_report_count = report_count
     old_supply       = attack.origin.supply
 
@@ -53,23 +42,20 @@ defmodule LaFamiglia.AttackMovementTest do
     assert comeback.resource_1 == report.data.resources_plundered.resource_1
   end
 
-  test "gets handled when attacker loses", %{attack: attack} do
-    attack = %{attack | unit_1: 1}
+  test "gets handled when attacker loses" do
+    attack = insert(:attack, %{unit_1: 1})
 
     assert {:ok, _} = LaFamiglia.Event.handle(attack)
 
     assert from(c in ComebackMovement) |> Repo.all |> Enum.count == 0
   end
 
-  test "gets handled when attacker wins and target has no resources", context do
+  test "gets handled when attacker wins and target has no resources" do
     target_without_resources =
-      Forge.saved_villa(Repo, resource_1: 0.0, resource_2: 0.0, resource_3: 0.0)
+      insert(:villa, %{resource_1: 0.0, resource_2: 0.0, resource_3: 0.0})
 
     attack =
-      AttackMovement.create(context.origin_changeset,
-                            target_without_resources,
-                            Unit.filter(context.origin))
-      |> Repo.insert!
+      insert(:attack, %{target: target_without_resources})
 
     assert {:ok, _} = LaFamiglia.Event.handle(attack)
 
@@ -77,8 +63,8 @@ defmodule LaFamiglia.AttackMovementTest do
     refute is_nil(comeback.resource_1)
   end
 
-  test "gets handled when attacker begins an occupation", context do
-    attack = %{context.attack | unit_2: 1}
+  test "gets handled when attacker begins an occupation" do
+    attack = insert(:attack, %{unit_2: 1})
 
     assert {:ok, _} = LaFamiglia.Event.handle(attack)
 
@@ -91,16 +77,9 @@ defmodule LaFamiglia.AttackMovementTest do
     assert target.occupation.origin_id == attack.origin_id
   end
 
-  test "gets handled when target is occupied", %{attack: attack} do
-    occupation =
-      Forge.saved_occupation(Repo, %{origin_id: attack.origin.id, target_id: attack.target.id})
-
-    target =
-      Repo.get(Villa, attack.target.id)
-      |> Repo.preload([:player, :unit_queue_items, :occupation])
-      |> Map.put(:is_occupied, true)
-
-    attack = %{attack | target: target}
+  test "gets handled when target is occupied" do
+    occupation = insert(:occupation)
+    attack = insert(:attack, %{target: occupation.target})
 
     assert {:ok, _} = LaFamiglia.Event.handle(attack)
 
@@ -111,48 +90,57 @@ defmodule LaFamiglia.AttackMovementTest do
     assert is_nil(target.occupation)
   end
 
-  test "can be canceled", %{attack: attack} do
-    {:ok, %{comeback: comeback}} = AttackMovement.cancel(attack) |> Repo.transaction
+  test "can be canceled" do
+    attack = build(:attack)
 
-    assert comeback.origin.id == attack.origin.id
-    assert comeback.unit_1 == attack.unit_1
-    assert Ecto.DateTime.compare(comeback.arrives_at, attack.arrives_at) == :gt
+    changeset = AttackMovement.cancel(attack)
+
+    assert get_field(changeset, :origin) == attack.origin
+    assert get_field(changeset, :unit_1) == attack.unit_1
+    assert Ecto.DateTime.compare(get_field(changeset, :arrives_at), attack.arrives_at) == :gt
   end
 
-  test "arrives_at is in the future", context do
-    {:ok, movement} =
-      AttackMovement.create(context.origin_changeset,
-                            context.target,
-                            context.movement_params)
-      |> Repo.insert
+  test "arrives_at is in the future" do
+    target = build(:villa)
 
-    assert Ecto.DateTime.compare(movement.arrives_at, LaFamiglia.DateTime.now) == :gt
+    arrives_at =
+      build(:villa, %{unit_1: 1})
+      |> change
+      |> AttackMovement.create(target, %{unit_1: 1, unit_2: 0})
+      |> get_change(:arrives_at)
+
+    assert Ecto.DateTime.compare(arrives_at, LaFamiglia.DateTime.now) == :gt
   end
 
-  test "is invalid without units", context do
+  test "is invalid without units" do
+    target = build(:villa)
+
     changeset =
-      AttackMovement.create(context.origin_changeset,
-                            context.target,
-                            %{context.movement_params | unit_1: 0})
+      build(:villa)
+      |> change
+      |> AttackMovement.create(target, %{unit_1: 0, unit_2: 0})
 
     refute changeset.valid?
   end
 
-  test "is invalid when origin == target", context do
+  test "is invalid when origin == target" do
+    origin = build(:villa)
+
     changeset =
-      AttackMovement.create(context.origin_changeset,
-                            context.origin,
-                            context.movement_params)
+      change(origin)
+      |> AttackMovement.create(origin, %{unit_1: 1, unit_2: 0})
 
     refute changeset.valid?
   end
 
-  test "is invalid when origin does not have units", context do
-    origin           = Forge.saved_villa(Repo)
-    origin_changeset = Ecto.Changeset.change(origin)
+  test "is invalid when origin does not have units" do
+    target = build(:villa)
 
-    assert {:error, _} =
-      AttackMovement.create(origin_changeset, context.target, context.movement_params)
-      |> Repo.update
+    changeset =
+      build(:villa, %{unit_1: 0})
+      |> change
+      |> AttackMovement.create(target, %{unit_1: 1, unit_2: 0})
+
+    refute changeset.valid?
   end
 end

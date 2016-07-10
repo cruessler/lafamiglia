@@ -3,6 +3,7 @@ defmodule LaFamiglia.AttackMovementController do
 
   alias LaFamiglia.Villa
   alias LaFamiglia.AttackMovement
+  alias LaFamiglia.Actions.Attack
 
   def new(conn, %{"target_id" => target_id}) do
     target    = Repo.get!(Villa, target_id)
@@ -23,7 +24,7 @@ defmodule LaFamiglia.AttackMovementController do
 
     target    = Repo.get!(Villa, movement_params["target_id"])
     changeset = AttackMovement.create(conn.assigns.current_villa_changeset, target, movement_params)
-    multi     = AttackMovement.attack(changeset)
+    multi     = Attack.attack(changeset)
 
     case Repo.transaction(multi) do
       {:error, :attack_movement, changeset, _} ->

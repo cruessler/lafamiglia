@@ -107,6 +107,16 @@ defmodule LaFamiglia.Factory do
     }
   end
 
+  def occupation_factory do
+    %LaFamiglia.Occupation{
+      origin: build(:villa),
+      target: build(:villa, %{is_occupied: true}),
+      unit_1: 100,
+      unit_2: 2,
+      succeeds_at: LaFamiglia.DateTime.from_now(10)
+    }
+  end
+
   def report_factory do
     %LaFamiglia.Report{
       title: "Attack on a villa",

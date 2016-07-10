@@ -4,9 +4,7 @@ defmodule LaFamiglia.AttackMovement do
   import LaFamiglia.Movement
 
   alias Ecto.Changeset
-  alias Ecto.Multi
 
-  alias LaFamiglia.Repo
   alias LaFamiglia.Villa
   alias LaFamiglia.AttackMovement
 
@@ -32,17 +30,12 @@ defmodule LaFamiglia.AttackMovement do
     struct
     |> cast(params, [:unit_1, :unit_2])
     |> validate_required([:unit_1, :unit_2])
-    |> validate_origin_and_target_belong_to_different_players
-    |> validate_at_least_one_unit
-    |> assoc_constraint(:origin)
-    |> assoc_constraint(:target)
-    |> calculate_arrives_at
   end
 
   def create(origin_changeset, target, params) do
     movement =
       %AttackMovement{}
-      |> cast(params, [:unit_1, :unit_2])
+      |> changeset(params)
 
     origin_changeset =
       Villa.order_units_changeset(origin_changeset, Unit.filter(movement))
@@ -57,24 +50,8 @@ defmodule LaFamiglia.AttackMovement do
     |> calculate_arrives_at
   end
 
-  def attack(changeset) do
-    Multi.new
-    |> Multi.insert(:attack_movement, changeset)
-    |> Multi.run(:send_to_queue, fn(%{attack_movement: movement}) ->
-      LaFamiglia.EventCallbacks.send_to_queue(movement)
-    end)
-  end
-
   def cancel(attack) do
-    changeset = ComebackMovement.from_attack(attack)
-
-    Multi.new
-    |> Multi.delete(:attack, attack)
-    |> Multi.insert(:comeback, changeset)
-    |> Multi.run(:update_queue, fn(%{attack: attack, comeback: comeback}) ->
-      LaFamiglia.EventCallbacks.drop_from_queue(attack)
-      LaFamiglia.EventCallbacks.send_to_queue(comeback)
-    end)
+    ComebackMovement.from_attack(attack)
   end
 
   defp validate_origin_and_target_belong_to_different_players(changeset) do
