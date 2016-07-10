@@ -26,7 +26,7 @@ defmodule LaFamiglia.Mixfile do
   defp elixirc_paths(_),     do: ["lib", "web"]
 
   defp applications(:dev),  do: applications(:test)
-  defp applications(:test), do: applications(:all) ++ [:blacksmith, :faker]
+  defp applications(:test), do: applications(:all)
   defp applications(_),     do: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
                                  :phoenix_ecto, :postgrex, :comeonin, :ex_machina]
 
@@ -44,11 +44,6 @@ defmodule LaFamiglia.Mixfile do
      # https://github.com/elixircnx/comeonin
      {:comeonin, "~> 1.0"},
      {:cowboy, "~> 1.0"},
-     # http://icanmakeitbetter.com/elixir-testing-blacksmith/
-     # https://github.com/batate/blacksmith/
-     {:blacksmith, "~> 0.1", only: [:dev, :test]},
-     # https://github.com/igas/faker/
-     {:faker, "~> 0.5", only: [:dev, :test]},
      # https://github.com/thoughtbot/ex_machina/
      {:ex_machina, "~> 1.0"},
      {:gettext, "~> 0.9"}]
