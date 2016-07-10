@@ -6,14 +6,12 @@ defmodule LaFamiglia.ComebackMovementTest do
   setup do
     LaFamiglia.DateTime.clock!
 
-    comeback =
-      Forge.saved_comeback_movement(Repo)
-      |> Repo.preload(origin: :player, target: :player)
-
-    {:ok, %{comeback: comeback}}
+    :ok
   end
 
-  test "gets handled", %{comeback: comeback} do
+  test "gets handled" do
+    comeback = insert(:comeback)
+
     assert LaFamiglia.Event.handle(comeback)
 
     origin = Repo.get(Villa, comeback.origin.id)

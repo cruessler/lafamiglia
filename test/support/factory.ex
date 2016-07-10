@@ -117,6 +117,19 @@ defmodule LaFamiglia.Factory do
     }
   end
 
+  def comeback_factory do
+    %LaFamiglia.ComebackMovement{
+      origin: build(:villa),
+      target: build(:villa),
+      arrives_at: LaFamiglia.DateTime.from_now(10),
+      unit_1: 100,
+      unit_2: 0,
+      resource_1: 50,
+      resource_2: 60,
+      resource_3: 70
+    }
+  end
+
   def report_factory do
     %LaFamiglia.Report{
       title: "Attack on a villa",
