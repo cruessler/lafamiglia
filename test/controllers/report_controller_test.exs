@@ -2,7 +2,7 @@ defmodule LaFamiglia.ReportControllerTest do
   use LaFamiglia.ConnCase
 
   setup do
-    player = Forge.saved_player(Repo)
+    player = insert(:player)
     conn   = conn |> with_login(player)
 
     {:ok, %{conn: conn, player: player}}
@@ -15,7 +15,7 @@ defmodule LaFamiglia.ReportControllerTest do
   end
 
   test "GET /reports/1", %{conn: conn, player: player} do
-    report = Forge.saved_report(Repo, player_id: player.id)
+    report = insert(:report, %{player: player})
 
     conn = get conn, "/reports/#{report.id}"
 

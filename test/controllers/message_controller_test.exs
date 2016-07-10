@@ -3,23 +3,20 @@ defmodule LaFamiglia.MessageControllerTest do
 
   alias LaFamiglia.Conversation
 
-  setup do
-    player = Forge.saved_player(Repo)
-    conn   = conn |> with_login(player)
+  test "create messages" do
+    player = insert(:player)
+    receiver = insert(:player)
 
-    {:ok, %{conn: conn, player: player}}
-  end
-
-  test "create messages", context do
-    receiver = Forge.saved_player(Repo)
-
-    conn = post context.conn, "/messages", [message: [text: "This is a text.", receivers: [receiver.id]]]
+    conn =
+      conn
+      |> with_login(player)
+      |> post( "/messages", [message: [text: "This is a text.", receivers: [receiver.id]]])
 
     conversation =
       from(c in Conversation, preload: :participants, order_by: [desc: :id], limit: 1)
       |> Repo.one!
 
-    assert Enum.any? conversation.participants, fn(p) -> p.id == context.player.id end
+    assert Enum.any? conversation.participants, fn(p) -> p.id == player.id end
 
     conn = get conn, "/conversations/#{conversation.id}"
 

@@ -5,7 +5,7 @@ defmodule LaFamiglia.VillaControllerTest do
   alias LaFamiglia.Villa
 
   setup do
-    player = Forge.saved_player(Repo)
+    player = insert(:player)
     conn   = conn |> with_login(player)
 
     {:ok, %{conn: conn, player: player}}
@@ -33,7 +33,7 @@ defmodule LaFamiglia.VillaControllerTest do
   end
 
   test "GET /villas/1 does not show wrong villa", %{conn: conn} do
-    villa = Forge.saved_villa(Repo)
+    villa = insert(:villa)
 
     conn = get conn, "/villas/#{villa.id}"
 

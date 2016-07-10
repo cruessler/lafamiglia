@@ -33,6 +33,8 @@ defmodule LaFamiglia.ConnCase do
       @endpoint LaFamiglia.Endpoint
 
       import LaFamiglia.ConnHelper
+
+      import LaFamiglia.Factory
     end
   end
 
