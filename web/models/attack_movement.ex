@@ -82,7 +82,7 @@ defmodule LaFamiglia.AttackMovement do
     target = get_field(changeset, :target)
 
     cond do
-      origin.player_id == target.player_id ->
+      origin == target ->
         add_error(changeset, :target, "must not be owned by you")
       true ->
         changeset
