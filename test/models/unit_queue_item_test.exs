@@ -80,24 +80,4 @@ defmodule LaFamiglia.UnitQueueItemTest do
     # Thus, no refunds are to be expected.
     assert resources != Resource.filter(villa)
   end
-
-  test "should update `units_recruited_until` when event is handled" do
-    villa = build(:villa) |> with_unit_queue |> Repo.insert!
-    changeset = villa |> change
-
-    [first|_] = villa.unit_queue_items
-
-    assert get_field(changeset, :units_recruited_until) != first.completed_at
-
-    LaFamiglia.Event.handle(first)
-
-    changeset =
-      Repo.get(Villa, villa.id)
-      |> Repo.preload(:unit_queue_items)
-      |> change
-      |> Villa.process_virtually_until(first.completed_at)
-
-    assert get_field(changeset, :units_recruited_until) == first.completed_at
-    assert hd(get_field(changeset, :unit_queue_items)).number == 10
-  end
 end
