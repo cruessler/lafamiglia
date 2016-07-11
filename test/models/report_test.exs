@@ -21,8 +21,6 @@ defmodule LaFamiglia.ReportTest do
   end
 
   setup do
-    LaFamiglia.DateTime.clock!
-
     attack = build(:attack)
 
     [report_for_origin: {:insert, first, []}, report_for_target: {:insert, second, []}] =

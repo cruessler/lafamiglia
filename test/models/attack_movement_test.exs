@@ -3,12 +3,6 @@ defmodule LaFamiglia.AttackMovementTest do
 
   alias LaFamiglia.AttackMovement
 
-  setup do
-    LaFamiglia.DateTime.clock!
-
-    :ok
-  end
-
   test "can be canceled" do
     attack = build(:attack)
 

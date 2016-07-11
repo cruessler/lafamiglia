@@ -5,8 +5,6 @@ defmodule LaFamiglia.CombatTest do
   alias LaFamiglia.{Resource, Unit}
 
   setup do
-    LaFamiglia.DateTime.clock!
-
     attack = build(:attack)
 
     {:ok, %{result: Combat.calculate(attack, attack.target)}}
