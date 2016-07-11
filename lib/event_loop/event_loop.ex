@@ -18,7 +18,7 @@ defmodule LaFamiglia.EventLoop do
   end
 
   def handle_event(event, state) do
-    LaFamiglia.Event.handle(event)
+    {:ok, _} = LaFamiglia.Event.handle(event)
 
     {:ok, state}
   end
