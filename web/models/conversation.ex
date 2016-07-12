@@ -26,7 +26,9 @@ defmodule LaFamiglia.Conversation do
   end
 
   def create(params) do
-    participants = for p <- params.participants, do: Changeset.change(p)
+    participants =
+      for p <- params.participants,
+        do: Changeset.change(p, %{unread_conversations: p.unread_conversations + 1})
 
     %Conversation{}
     |> cast(params, [:last_message_sent_at])

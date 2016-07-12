@@ -29,6 +29,7 @@ defmodule LaFamiglia.MessageTest do
 
     assert changeset.valid?
     assert length(participants) == 3
+    assert first.unread_conversations == 1
   end
 
   test "add message to existing conversation" do
@@ -38,19 +39,21 @@ defmodule LaFamiglia.MessageTest do
     changeset = Message.continue_conversation(sender, conversation, "This is a text.")
 
     conversation = get_field(changeset, :conversation)
-    first = hd(conversation.conversation_statuses)
+    first = hd(conversation.participants)
 
     assert changeset.valid?
     assert conversation.last_message_sent_at == get_change(changeset, :sent_at)
+    assert first.unread_conversations == 1
 
     message = apply_changes(changeset)
 
     changeset = Message.continue_conversation(message.sender, message.conversation, "This is a text.")
 
     conversation = get_field(changeset, :conversation)
-    first = hd(conversation.conversation_statuses)
+    first = hd(conversation.participants)
 
     assert changeset.valid?
     assert conversation.last_message_sent_at == get_change(changeset, :sent_at)
+    assert first.unread_conversations == 1
   end
 end

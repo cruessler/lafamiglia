@@ -62,11 +62,30 @@ defmodule LaFamiglia.Message do
 
     conversation_changeset =
       conversation
-      |> change(%{last_message_sent_at: LaFamiglia.DateTime.now})
+      |> change_conversation
+      |> put_change(:last_message_sent_at, sent_at)
 
     changeset(%Message{}, %{text: text, sent_at: sent_at})
     |> put_assoc(:sender, sender)
     |> put_assoc(:conversation, conversation_changeset)
+  end
+
+  defp change_conversation(conversation) do
+    conversation = Repo.preload(conversation, [:participants, :conversation_statuses])
+
+    new_participants =
+      for s <- conversation.conversation_statuses do
+        participant = Enum.find(conversation.participants, fn p -> p.id == s.player_id end)
+
+        if s.read_until == conversation.last_message_sent_at do
+          change(participant, %{unread_conversations: participant.unread_conversations + 1})
+        else
+          change(participant)
+        end
+      end
+
+    change(conversation)
+    |> put_assoc(:participants, new_participants)
   end
 end
 

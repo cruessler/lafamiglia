@@ -96,7 +96,7 @@ defmodule LaFamiglia.Factory do
   def conversation_factory do
     sent_at = LaFamiglia.DateTime.from_now(-10)
 
-    participants = build_list(3, :player)
+    participants = build_list(3, :player, %{unread_conversations: 0})
 
     statuses = for p <- participants do
       %LaFamiglia.ConversationStatus{
