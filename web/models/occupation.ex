@@ -1,7 +1,6 @@
 defmodule LaFamiglia.Occupation do
   use LaFamiglia.Web, :model
 
-  alias LaFamiglia.Repo
   alias LaFamiglia.Villa
 
   alias Ecto.Multi

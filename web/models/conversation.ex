@@ -1,9 +1,6 @@
 defmodule LaFamiglia.Conversation do
   use LaFamiglia.Web, :model
 
-  alias Ecto.Changeset
-  alias Ecto.Multi
-
   alias LaFamiglia.Repo
 
   alias LaFamiglia.Player
@@ -28,7 +25,7 @@ defmodule LaFamiglia.Conversation do
   def create(params) do
     participants =
       for p <- params.participants,
-        do: Changeset.change(p, %{unread_conversations: p.unread_conversations + 1})
+        do: change(p, %{unread_conversations: p.unread_conversations + 1})
 
     %Conversation{}
     |> cast(params, [:last_message_sent_at])
@@ -66,14 +63,5 @@ defmodule LaFamiglia.Conversation do
       unless is_nil(conversation), do: {:ok, Repo.get(Conversation, conversation.id)}
     end
     # Return nil if no conversation was found.
-  end
-
-  @doc """
-  Builds a changeset based on the `struct` and `params`.
-  """
-  def changeset(struct, params \\ %{}) do
-    struct
-    |> cast(params, [:participants, :messages, :last_message_sent_at])
-    |> validate_required([:participants])
   end
 end

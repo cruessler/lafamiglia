@@ -3,8 +3,6 @@ defmodule LaFamiglia.ConversationStatus do
 
   alias Ecto.Multi
 
-  alias LaFamiglia.Repo
-
   alias LaFamiglia.Player
   alias LaFamiglia.Conversation
 
