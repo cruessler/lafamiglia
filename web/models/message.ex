@@ -28,8 +28,8 @@ defmodule LaFamiglia.Message do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:sender_id, :text, :sent_at, :conversation_id, :receivers])
-    |> validate_required([:sender_id, :text, :sent_at])
+    |> cast(params, [:text, :sent_at, :conversation_id, :receivers])
+    |> validate_required([:text, :sent_at])
     |> validate_length(:text, min: 1)
     |> validate_length(:receivers, min: 1, message: "must contain at least one player")
     |> assoc_constraint(:sender)
@@ -37,35 +37,35 @@ defmodule LaFamiglia.Message do
   end
 
   def open_conversation(sender, receivers, text) do
-    participants = [%{id: sender.id}|receivers]
+    participants = [sender|receivers]
 
     case Conversation.find_by_participants(participants) do
       {:ok, conversation} ->
         continue_conversation(sender, conversation, text)
       _ ->
-        conversation_changeset =
-          Conversation.create(
-            %{participants: participants,
-              last_message_sent_at: LaFamiglia.DateTime.now})
+        sent_at = LaFamiglia.DateTime.now
+        # `receivers` is of type `{:array, :map}`, and thus does not accept
+        # structs.
+        receivers = for r <- receivers, do: %{id: r.id}
 
-        changeset(%Message{},
-          %{sender_id: sender.id,
-            receivers: receivers,
-            text: text,
-            sent_at: LaFamiglia.DateTime.now})
+        conversation_changeset =
+          Conversation.create(%{participants: participants, last_message_sent_at: sent_at})
+
+        changeset(%Message{}, %{receivers: receivers, text: text, sent_at: sent_at})
+        |> put_assoc(:sender, sender)
         |> put_assoc(:conversation, conversation_changeset)
     end
   end
 
   def continue_conversation(sender, conversation, text) do
+    sent_at = LaFamiglia.DateTime.now
+
     conversation_changeset =
       conversation
       |> change(%{last_message_sent_at: LaFamiglia.DateTime.now})
 
-    changeset(%Message{},
-      %{sender_id: sender.id,
-        text: text,
-        sent_at: LaFamiglia.DateTime.now})
+    changeset(%Message{}, %{text: text, sent_at: sent_at})
+    |> put_assoc(:sender, sender)
     |> put_assoc(:conversation, conversation_changeset)
   end
 end

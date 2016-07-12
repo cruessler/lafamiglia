@@ -94,7 +94,22 @@ defmodule LaFamiglia.Factory do
   end
 
   def conversation_factory do
-    %LaFamiglia.Conversation{}
+    sent_at = LaFamiglia.DateTime.from_now(-10)
+
+    participants = build_list(3, :player)
+
+    statuses = for p <- participants do
+      %LaFamiglia.ConversationStatus{
+        player: p,
+        read_until: sent_at
+      }
+    end
+
+    %LaFamiglia.Conversation{
+      participants: participants,
+      conversation_statuses: statuses,
+      last_message_sent_at: sent_at
+    }
   end
 
   def attack_factory do

@@ -21,9 +21,7 @@ defmodule LaFamiglia.MessageController do
   end
   def create(conn, %{"message" => %{"text" => text, "receivers" => receivers}} = _params) do
     receivers =
-      from(p in Player,
-        select: %{id: p.id},
-        where: p.id in ^receivers)
+      from(p in Player, where: p.id in ^receivers)
       |> Repo.all
       |> Enum.uniq
 

@@ -4,11 +4,7 @@ defmodule LaFamiglia.ConversationTest do
   alias LaFamiglia.Conversation
 
   test "create conversation" do
-    participants =
-      build_pair(:player)
-      |> Enum.map(fn(p) -> %{id: p.id} end)
-
-    conversation = Conversation.create(%{participants: participants})
+    conversation = Conversation.create(%{participants: build_pair(:player)})
     assert conversation.valid?
   end
 end

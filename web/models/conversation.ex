@@ -11,6 +11,8 @@ defmodule LaFamiglia.Conversation do
   alias LaFamiglia.Message
   alias LaFamiglia.ConversationStatus
 
+  alias __MODULE__
+
   schema "conversations" do
     field :last_message_sent_at, Ecto.DateTime
     field :new_messages, :boolean, virtual: true
@@ -24,12 +26,11 @@ defmodule LaFamiglia.Conversation do
   end
 
   def create(params) do
-    statuses = for p <- params.participants do
-      Changeset.change(%ConversationStatus{}, %{player_id: p.id})
-    end
+    participants = for p <- params.participants, do: Changeset.change(p)
 
-    change(%__MODULE__{})
-    |> put_assoc(:conversation_statuses, statuses)
+    %Conversation{}
+    |> cast(params, [:last_message_sent_at])
+    |> put_assoc(:participants, participants)
   end
 
   @doc """
@@ -60,7 +61,7 @@ defmodule LaFamiglia.Conversation do
       |> Repo.all
       |> Enum.find(fn(c) -> c.participant_count == length(participants) end)
 
-      unless is_nil(conversation), do: {:ok, conversation}
+      unless is_nil(conversation), do: {:ok, Repo.get(Conversation, conversation.id)}
     end
     # Return nil if no conversation was found.
   end
