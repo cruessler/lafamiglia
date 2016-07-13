@@ -2,7 +2,6 @@ defmodule LaFamiglia.ConversationController do
   use LaFamiglia.Web, :controller
 
   alias LaFamiglia.Conversation
-  alias LaFamiglia.ConversationStatus
   alias LaFamiglia.Message
 
   def index(conn, _params) do
@@ -19,8 +18,9 @@ defmodule LaFamiglia.ConversationController do
       |> Repo.get!(id)
       |> Repo.preload([messages: :sender])
 
-    ConversationStatus.update_read_until(conversation, conn.assigns.current_player)
-    |> Repo.transaction
+    {:ok, player} =
+      Conversation.update_read_until_for(conn.assigns.current_player, conversation)
+      |> Repo.update
 
     changeset =
       Ecto.Changeset.change(%Message{},
@@ -29,6 +29,7 @@ defmodule LaFamiglia.ConversationController do
 
     conn
     |> load_conversations
+    |> assign(:current_player, player)
     |> assign(:conversation, conversation)
     |> assign(:changeset, changeset)
     |> render("show.html")

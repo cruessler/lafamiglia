@@ -64,4 +64,40 @@ defmodule LaFamiglia.Conversation do
     end
     # Return nil if no conversation was found.
   end
+
+  defp unread_conversations(statuses, last_message_sent_at),
+    do: unread_conversations(statuses, last_message_sent_at, 0)
+
+  defp unread_conversations([], _, acc), do: acc
+  defp unread_conversations([first|rest], last_message_sent_at, acc) do
+    read_until = get_field(first, :read_until)
+
+    case Ecto.DateTime.compare(read_until, last_message_sent_at) do
+      :lt -> unread_conversations(rest, acc + 1)
+      _ -> unread_conversations(rest, acc)
+    end
+  end
+
+  @doc """
+  Updates the associated `ConversationStatus` of a given `conversation` as well
+  as the `player`’s `unread_conversations`.
+
+  Returns a changeset for `player`.
+  """
+  def update_read_until_for(%{id: player_id} = player, conversation) do
+    player = Repo.preload(player, conversation_statuses: :conversation)
+
+    new_statuses = for s <- player.conversation_statuses do
+      case s.player_id do
+        ^player_id -> change(s, %{read_until: conversation.last_message_sent_at})
+        _ -> change(s)
+      end
+    end
+
+    unread_conversations =
+      unread_conversations(new_statuses, conversation.last_message_sent_at)
+
+    change(player, %{unread_conversations: unread_conversations})
+    |> put_assoc(:conversation_statuses, new_statuses)
+  end
 end
