@@ -6,7 +6,7 @@ defmodule LaFamiglia.VillaControllerTest do
 
   setup do
     player = insert(:player)
-    conn   = conn |> with_login(player)
+    conn   = build_conn() |> with_login(player)
 
     {:ok, %{conn: conn, player: player}}
   end

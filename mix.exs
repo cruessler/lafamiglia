@@ -35,7 +35,7 @@ defmodule LaFamiglia.Mixfile do
   #
   # Type `mix help deps` for examples and options
   defp deps do
-    [{:phoenix, "~> 1.1"},
+    [{:phoenix, "~> 1.2"},
      {:phoenix_ecto, "~> 3.0"},
      {:postgrex, "~> 0.11.0"},
      {:poison, "~> 2.0", override: true},

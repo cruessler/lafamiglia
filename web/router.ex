@@ -32,7 +32,7 @@ defmodule LaFamiglia.Router do
 
     resources "/players", PlayerController, only: [ :create, :new ]
 
-    scope "" do
+    scope "/" do
       pipe_through :ingame
 
       scope "/players" do

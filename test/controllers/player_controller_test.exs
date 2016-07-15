@@ -7,7 +7,7 @@ defmodule LaFamiglia.PlayerControllerTest do
                        password: "password",
                        password_confirmation: "password"]]
 
-    conn = post conn(), "/players", params
+    conn = post build_conn(), "/players", params
 
     assert html_response(conn, 302)
   end

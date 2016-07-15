@@ -8,7 +8,7 @@ defmodule LaFamiglia.AttackMovementControllerTest do
     target = insert(:villa)
 
     conn =
-      conn
+      build_conn()
       |> with_login(origin.player)
       |> get("/villas/#{origin.id}/attack_movements/new?target_id=#{target.id}")
 

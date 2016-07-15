@@ -8,7 +8,7 @@ defmodule LaFamiglia.MessageControllerTest do
     receiver = insert(:player)
 
     conn =
-      conn
+      build_conn()
       |> with_login(player)
       |> post( "/messages", [message: [text: "This is a text.", receivers: [receiver.id]]])
 
