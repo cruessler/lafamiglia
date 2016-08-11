@@ -43,21 +43,23 @@ defmodule LaFamiglia.ModelCase do
   end
 
   @doc """
-  Helper for returning list of errors in model when passed certain data.
+  Helper for returning list of errors in a struct when given certain data.
 
   ## Examples
 
-  Given a User model that has validation for the presence of a value for the
-  `:name` field and validation that `:password` is "safe":
+  Given a User schema that lists `:name` as a required field and validates
+  `:password` to be safe, it would return:
 
-      iex> errors_on(%User{}, password: "password")
-      [{:password, "is unsafe"}, {:name, "is blank"}]
+      iex> errors_on(%User{}, %{password: "password"})
+      [password: "is unsafe", name: "is blank"]
 
-  You would then write your assertion like:
+  You could then write your assertion like:
 
-      assert {:password, "is unsafe"} in errors_on(%User{}, password: "password")
+      assert {:password, "is unsafe"} in errors_on(%User{}, %{password: "password"})
   """
-  def errors_on(model, data) do
-    model.__struct__.changeset(model, data).errors
+  def errors_on(struct, data) do
+    struct.__struct__.changeset(struct, data)
+    |> Ecto.Changeset.traverse_errors(&LaFamiglia.ErrorHelpers.translate_error/1)
+    |> Enum.flat_map(fn {key, errors} -> for msg <- errors, do: {key, msg} end)
   end
 end

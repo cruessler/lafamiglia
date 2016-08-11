@@ -9,7 +9,8 @@ defmodule LaFamiglia.Mixfile do
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps]
+     aliases: aliases(),
+     deps: deps()]
   end
 
   # Configuration for the OTP application
@@ -27,7 +28,7 @@ defmodule LaFamiglia.Mixfile do
 
   defp applications(:dev),  do: applications(:test)
   defp applications(:test), do: applications(:all)
-  defp applications(_),     do: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
+  defp applications(_),     do: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
                                  :phoenix_ecto, :postgrex, :comeonin, :ex_machina]
 
 
@@ -36,6 +37,7 @@ defmodule LaFamiglia.Mixfile do
   # Type `mix help deps` for examples and options
   defp deps do
     [{:phoenix, "~> 1.2"},
+     {:phoenix_pubsub, "~> 1.0"},
      {:phoenix_ecto, "~> 3.0"},
      {:postgrex, "~> 0.11.0"},
      {:poison, "~> 2.0", override: true},
@@ -47,5 +49,17 @@ defmodule LaFamiglia.Mixfile do
      # https://github.com/thoughtbot/ex_machina/
      {:ex_machina, "~> 1.0"},
      {:gettext, "~> 0.9"}]
+  end
+
+  # Aliases are shortcuts or tasks specific to the current project.
+  # For example, to create, migrate and run the seeds file at once:
+  #
+  #     $ mix ecto.setup
+  #
+  # See the documentation for `Mix` for more info on aliases.
+  defp aliases do
+    ["ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+     "ecto.reset": ["ecto.drop", "ecto.setup"],
+     "test": ["ecto.create --quiet", "ecto.migrate", "test"]]
   end
 end
