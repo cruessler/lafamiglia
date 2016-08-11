@@ -12,4 +12,6 @@ defmodule LaFamiglia.Mechanics do
   def max_supply(villa) do
     100 + 100 * villa.building_2 + :math.pow(villa.building_2, 1.4) |> round
   end
+
+  def unit_for_occupation, do: :unit_2
 end

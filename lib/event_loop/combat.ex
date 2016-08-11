@@ -15,7 +15,7 @@ defmodule LaFamiglia.Combat do
     result: CombatResult.t
   }
 
-  @unit_for_occupation Application.get_env(:la_famiglia, :unit_for_occupation)
+  @unit_for_occupation LaFamiglia.Mechanics.unit_for_occupation
 
   def new(attack) do
     %Combat{attack: attack}
