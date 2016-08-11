@@ -1,6 +1,7 @@
 defmodule LaFamiglia.Villa do
   use LaFamiglia.Web, :model
 
+  alias LaFamiglia.Mechanics
   alias LaFamiglia.Building
   alias LaFamiglia.Unit
 
@@ -288,8 +289,8 @@ defmodule LaFamiglia.Villa do
   def resource_gains(%Changeset{} = changeset, time_diff),
     do: resource_gains(apply_changes(changeset), time_diff)
   def resource_gains(%Villa{} = villa, time_diff) do
-    for {k, v} <- Application.get_env(:la_famiglia, :resource_gains).(villa),
-      into: %{}, do: {k, v * time_diff / 3600}
+    for {k, v} <- Mechanics.resource_gains(villa), into: %{},
+      do: {k, v * time_diff / 3600}
   end
 
   def add_units(%Changeset{} = changeset, units) do
@@ -340,14 +341,14 @@ defmodule LaFamiglia.Villa do
   end
 
   def recalc_storage_capacity(%Changeset{} = changeset) do
-    new_storage_capacity =
-      Application.get_env(:la_famiglia, :storage_capacity).(Changeset.apply_changes(changeset))
+    new_storage_capacity = Mechanics.storage_capacity(Changeset.apply_changes(changeset))
+
     put_change(changeset, :storage_capacity, new_storage_capacity)
   end
 
   def recalc_max_supply(%Changeset{} = changeset) do
-    new_max_supply =
-      Application.get_env(:la_famiglia, :max_supply).(Changeset.apply_changes(changeset))
+    new_max_supply = Mechanics.max_supply(Changeset.apply_changes(changeset))
+
     put_change(changeset, :max_supply, new_max_supply)
   end
 end

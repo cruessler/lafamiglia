@@ -2,13 +2,15 @@ defmodule LaFamiglia.Building do
   import Ecto.Changeset
   alias Ecto.Changeset
 
+  alias LaFamiglia.Mechanics
+
   alias LaFamiglia.Villa
 
   @game_speed Application.get_env(:la_famiglia, :game_speed)
 
-  def all do
-    Application.get_env(:la_famiglia, :buildings)
-  end
+  defstruct [:id, :key, :build_time, :costs, :maxlevel, :defense, :points]
+
+  def all, do: Mechanics.Buildings.buildings
 
   def get(id) when is_integer(id) do
     Enum.find(all, fn(b) -> b.id == id end)
