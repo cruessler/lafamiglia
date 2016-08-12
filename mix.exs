@@ -48,6 +48,7 @@ defmodule LaFamiglia.Mixfile do
      {:cowboy, "~> 1.0"},
      # https://github.com/thoughtbot/ex_machina/
      {:ex_machina, "~> 1.0"},
+     {:distillery, "~> 0.9"},
      {:gettext, "~> 0.9"}]
   end
 

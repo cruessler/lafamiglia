@@ -33,4 +33,7 @@ erl_crash.dump
 # phoenix.gen.secret`.
 /config/config.exs
 
+# edelivery artifacts
+/rel/la_famiglia/
+
 *.swp
