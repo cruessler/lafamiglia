@@ -47,6 +47,9 @@ config :logger, level: :info
 #     config :la_famiglia, LaFamiglia.Endpoint, server: true
 #
 
+config :la_famiglia, LaFamiglia.Endpoint, server: true
+config :la_famiglia, :start_event_loop, true
+
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
 import_config "prod.secret.exs"
