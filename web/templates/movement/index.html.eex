@@ -3,7 +3,7 @@
 <h2>Attacks</h2>
 
 <table class="table table-striped">
-  <%= for m <- @attacks do %>
+  <%= for m <- @current_player.attack_movements do %>
     <tr>
       <td><%= m.id %></td>
       <td><%= m.origin %> → <%= m.target %></td>
@@ -18,7 +18,7 @@
 <h2>Returning troops</h2>
 
 <table class="table table-striped">
-  <%= for m <- @comebacks do %>
+  <%= for m <- @current_player.comeback_movements do %>
     <tr>
       <td><%= m.id %></td>
       <td><%= m.origin %> ← <%= m.target %></td>
@@ -26,6 +26,21 @@
         <td><%= "#{u.key}: #{Unit.number(m, u)}" %></td>
       <% end %>
       <td><%= m.arrives_at %></td>
+    </tr>
+  <% end %>
+</table>
+
+<h2>Occupied villas</h2>
+
+<table class="table table-striped">
+  <%= for o <- @current_player.occupations do %>
+    <tr>
+      <td><%= o.id %></td>
+      <td><%= o.origin %> → <%= o.target %></td>
+      <%= for u <- LaFamiglia.Unit.all do %>
+        <td><%= "#{u.key}: #{Unit.number(o, u)}" %></td>
+      <% end %>
+      <td><%= o.succeeds_at %></td>
     </tr>
   <% end %>
 </table>

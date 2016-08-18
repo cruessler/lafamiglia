@@ -25,6 +25,11 @@ defmodule LaFamiglia.Player do
 
     has_many :villas, Villa
 
+    has_many :attack_movements, through: [:villas, :attack_movements]
+    has_many :comeback_movements, through: [:villas, :comeback_movements]
+
+    has_many :occupations, through: [:villas, :occupations]
+
     has_many :conversation_statuses, ConversationStatus
     many_to_many :conversations, Conversation, join_through: ConversationStatus
 

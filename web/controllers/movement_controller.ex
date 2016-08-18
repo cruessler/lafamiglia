@@ -1,17 +1,16 @@
 defmodule LaFamiglia.MovementController do
   use LaFamiglia.Web, :controller
 
-  alias Ecto.Changeset
-
-  alias LaFamiglia.AttackMovement
-  alias LaFamiglia.ComebackMovement
-
   def index(conn, _params) do
-    attacks   = Repo.all(AttackMovement) |> Repo.preload([:origin, :target])
-    comebacks = Repo.all(ComebackMovement) |> Repo.preload([:origin, :target])
+    current_player =
+      conn.assigns.current_player
+      |> Repo.preload(
+        [attack_movements: [:origin, :target],
+         comeback_movements: [:origin, :target],
+         occupations: [:origin, :target]])
 
     conn
-    |> assign(:current_villa, Changeset.apply_changes(conn.assigns.current_villa_changeset))
-    |> render("index.html", attacks: attacks, comebacks: comebacks)
+    |> assign(:current_player, current_player)
+    |> render("index.html")
   end
 end
