@@ -25,14 +25,14 @@ defmodule LaFamiglia.EventHandler.AttackTest do
     target = Repo.get(Villa, attack.target.id)
     assert Resource.filter(target) != Resource.filter(attack.target)
 
-    report = from(r in Report, order_by: [desc: :id], limit: 1) |> Repo.one
+    report = from(r in Report, order_by: [desc: :id], limit: 1, preload: :combat_report) |> Repo.one
     assert attack.arrives_at == report.delivered_at
 
     comeback = from(c in ComebackMovement, preload: :origin) |> Repo.one
     assert comeback.origin.id == attack.origin.id
     assert Ecto.DateTime.compare(comeback.arrives_at, attack.arrives_at) == :gt
     assert comeback.resource_1 > 0
-    assert comeback.resource_1 == report.data.resources_plundered.resource_1
+    assert comeback.resource_1 == report.combat_report.resources_plundered.resource_1
   end
 
   test "gets handled when attacker loses" do

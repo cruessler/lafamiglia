@@ -148,11 +148,14 @@ defmodule LaFamiglia.Factory do
   def report_factory do
     %LaFamiglia.Report{
       title: "Attack on a villa",
-      data: %LaFamiglia.ReportData{},
       player: build(:player),
       delivered_at: LaFamiglia.DateTime.now,
       read: false,
       related_villas: build_pair(:villa)
     }
+  end
+
+  def combat_report_factory do
+    build(:report, combat_report: %LaFamiglia.CombatReport{})
   end
 end

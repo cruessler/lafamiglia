@@ -1,12 +1,11 @@
 defmodule LaFamiglia.ReportTest do
   use LaFamiglia.ModelCase
 
-  alias LaFamiglia.{Combat, CombatReport}
+  alias LaFamiglia.Combat
   alias LaFamiglia.Report
-  alias LaFamiglia.ReportData
+  alias LaFamiglia.CombatReport
 
   @valid_attrs %{title: "This is a title",
-                 data: %ReportData{winner: :attacker},
                  player_id: 1}
   @invalid_attrs %{}
 
@@ -52,7 +51,7 @@ defmodule LaFamiglia.ReportTest do
   end
 
   test "can be deleted" do
-    report = insert(:report)
+    report = insert(:combat_report)
 
     assert {:ok, _} = Repo.delete(report)
   end

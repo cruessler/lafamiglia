@@ -15,7 +15,7 @@ defmodule LaFamiglia.ReportControllerTest do
   end
 
   test "GET /reports/1", %{conn: conn, player: player} do
-    report = insert(:report, %{player: player})
+    report = insert(:combat_report, %{player: player})
 
     conn = get conn, "/reports/#{report.id}"
 
