@@ -158,4 +158,8 @@ defmodule LaFamiglia.Factory do
   def combat_report_factory do
     build(:report, combat_report: %LaFamiglia.CombatReport{})
   end
+
+  def conquest_report_factory do
+    build(:report, conquest_report: %LaFamiglia.ConquestReport{})
+  end
 end
