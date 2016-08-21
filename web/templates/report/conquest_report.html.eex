@@ -1,0 +1,3 @@
+<h1><%= @report.title %> <small><%= @report.delivered_at %></small></h1>
+
+<h2>The village’s ownership has been transferred.</h2>

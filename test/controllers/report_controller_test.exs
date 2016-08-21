@@ -20,5 +20,11 @@ defmodule LaFamiglia.ReportControllerTest do
     conn = get conn, "/reports/#{report.id}"
 
     assert html_response(conn, 200) =~ report.title
+
+    report = insert(:conquest_report, %{player: player})
+
+    conn = get conn, "/reports/#{report.id}"
+
+    assert html_response(conn, 200) =~ report.title
   end
 end

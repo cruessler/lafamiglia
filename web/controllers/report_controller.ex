@@ -31,10 +31,20 @@ defmodule LaFamiglia.ReportController do
   end
 
   def show(conn, %{"id" => id}) do
-    report = Repo.get!(assoc(conn.assigns.current_player, :reports), id)
+    report =
+      Repo.get!(assoc(conn.assigns.current_player, :reports), id)
+      |> Report.preload_payload
+
+    payload = Report.payload(report)
+
+    report_name =
+      payload.__struct__
+      |> Atom.to_string
+      |> Phoenix.Naming.resource_name
 
     conn
     |> assign(:report, report)
+    |> assign(:report_name, report_name <> ".html")
     |> render("show.html")
   end
 

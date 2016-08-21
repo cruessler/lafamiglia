@@ -1,0 +1,38 @@
+<h1><%= @report.title %> <small><%= @report.delivered_at %></small></h1>
+
+<% if @report.combat_report.attacker_wins do %>
+  <h2>The attacker has won.</h2>
+<% else %>
+  <h2>The defender has won.</h2>
+<% end %>
+
+<h3>The attacker</h3>
+
+<%= render "_units.html", units: @report.combat_report.attacker_before_combat,
+                          losses: @report.combat_report.attacker_losses %>
+
+<h3>The defender</h3>
+
+<%= render "_units.html", units: @report.combat_report.defender_before_combat,
+                          losses: @report.combat_report.defender_losses %>
+
+<h3>Plundered resources</h3>
+
+<table class="table table-striped units">
+  <tr>
+    <%= for k <- LaFamiglia.Resource.all do %>
+      <th><%= k %></th>
+    <% end %>
+  </tr>
+  <tr>
+    <%= for k <- LaFamiglia.Resource.all do %>
+      <td><%= @report.combat_report.resources_plundered[k] || "0" %></td>
+    <% end %>
+  </tr>
+</table>
+
+<% if @report.combat_report.results_in_occupation do %>
+  <div>
+    This attack has resulted in an occupation.
+  </div>
+<% end %>
