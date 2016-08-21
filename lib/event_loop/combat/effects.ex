@@ -36,6 +36,7 @@ defmodule LaFamiglia.Combat.Effects do
     |> Multi.update(:origin_of_occupation, origin_of_occupation_changeset)
     |> Multi.delete(:occupation, attack.target.occupation)
     |> Multi.append(occupation_multi)
+    |> notify_queue
   end
   def to_multi(%Combat{result: %{results_in_occupation?: true}} = combat) do
     %{attack: attack, result: result} = combat
@@ -58,6 +59,7 @@ defmodule LaFamiglia.Combat.Effects do
     |> Multi.update(:origin, origin_changeset)
     |> Multi.update(:target, target_changeset)
     |> Multi.append(occupation_multi)
+    |> notify_queue
   end
   def to_multi(%Combat{attack: %{target: %{is_occupied: true}}} = combat) do
     %{attack: attack, result: result} = combat
@@ -82,6 +84,7 @@ defmodule LaFamiglia.Combat.Effects do
     |> Multi.update(:origin_of_occupation, origin_of_occupation_changeset)
     |> Multi.delete(:occupation, attack.target.occupation)
     |> append_comeback(combat)
+    |> notify_queue
   end
   def to_multi(%Combat{} = combat) do
     %{attack: attack, result: result} = combat
@@ -102,6 +105,22 @@ defmodule LaFamiglia.Combat.Effects do
     |> Multi.update(:origin, origin_changeset)
     |> Multi.update(:target, target_changeset)
     |> append_comeback(combat)
+    |> notify_queue
+  end
+
+  defp notify_queue(multi) do
+    multi
+    |> Multi.run(:send_to_queue, fn(changes) ->
+      case changes do
+        %{comeback: comeback} ->
+          LaFamiglia.EventQueue.cast({:new_event, comeback})
+        %{occupation: occupation} ->
+          LaFamiglia.EventQueue.cast({:new_event, occupation})
+        _ -> nil
+      end
+
+      {:ok, nil}
+    end)
   end
 
   defp append_comeback(multi, %Combat{result: %{attacker_survived?: true}} = combat) do
@@ -109,11 +128,6 @@ defmodule LaFamiglia.Combat.Effects do
 
     multi
     |> Multi.insert(:comeback, changeset)
-    |> Multi.run(:send_to_queue, fn(%{comeback: comeback}) ->
-      LaFamiglia.EventQueue.cast({:new_event, comeback})
-
-      {:ok, nil}
-    end)
   end
   defp append_comeback(multi, _), do: multi
 end
