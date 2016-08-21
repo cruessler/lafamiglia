@@ -73,14 +73,14 @@ defmodule LaFamiglia.ReportController do
   end
 
   defp load_grouped_reports(conn, _params) do
-    current_player_id = conn.assigns.current_player.id
+    current_player = conn.assigns.current_player
 
     grouped_reports =
       from(r in Report,
         join: v in assoc(r, :related_villas),
         group_by: v.id,
         order_by: [desc: max(r.delivered_at)],
-        where: r.player_id == ^current_player_id and v.player_id != ^current_player_id,
+        where: r.player_id == ^current_player.id,
         select: %{delivered_at: max(r.delivered_at), villa: %{id: v.id, name: v.name, x: v.x, y: v.y}})
       |> Repo.all
       # Using max(…) in a select makes Ecto not cast the respective column
