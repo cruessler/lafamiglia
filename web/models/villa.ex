@@ -80,6 +80,8 @@ defmodule LaFamiglia.Villa do
 
   @resources [:resource_1, :resource_2, :resource_3]
 
+  @game_speed Application.get_env(:la_famiglia, :game_speed)
+
   @doc """
   Builds a changeset based on the `struct` and `params`.
   """
@@ -295,7 +297,7 @@ defmodule LaFamiglia.Villa do
     do: resource_gains(apply_changes(changeset), time_diff)
   def resource_gains(%Villa{} = villa, time_diff) do
     for {k, v} <- Mechanics.resource_gains(villa), into: %{},
-      do: {k, v * time_diff / 3600}
+      do: {k, v * time_diff / 3600 * @game_speed}
   end
 
   def add_units(%Changeset{} = changeset, units) do
