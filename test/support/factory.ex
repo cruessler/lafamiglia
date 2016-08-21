@@ -45,7 +45,7 @@ defmodule LaFamiglia.Factory do
       max_supply: 100,
       resources_gained_until: LaFamiglia.DateTime.now,
       units_recruited_until: LaFamiglia.DateTime.now,
-      player: build(:player)
+      player: build(:player, %{points: 1})
     }
   end
 
