@@ -76,7 +76,7 @@ defmodule LaFamiglia.EventQueue do
     #   new_queue = :ordsets.del_element(to_tuple(event), queue)
     #
     # See http://dev.mysql.com/doc/refman/5.6/en/fractional-seconds.html,
-    # https://github.com/elixir-lang/ecto/pull/515),
+    # https://github.com/elixir-lang/ecto/pull/515
     new_queue = :ordsets.filter(fn({_, module, id}) ->
       !(module == event.__struct__ && id == event.id)
     end, queue)
