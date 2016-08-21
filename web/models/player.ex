@@ -23,7 +23,9 @@ defmodule LaFamiglia.Player do
 
     field :unread_conversations, :integer, default: 0
 
-    has_many :villas, Villa
+    # `on_replace: :nilify` allows for `put_assoc(:villas, [])` to be used in
+    # tests.
+    has_many :villas, Villa, on_replace: :nilify
 
     has_many :attack_movements, through: [:villas, :attack_movements]
     has_many :comeback_movements, through: [:villas, :comeback_movements]
@@ -70,17 +72,27 @@ defmodule LaFamiglia.Player do
     end
   end
 
-  def recalc_points(player) do
+  def recalc_points(players) when is_list(players) do
+    ids = for p <- players, do: p.id
+
     Multi.new
     |> Multi.run(:recalc_player_points, fn(_) ->
-      player_points =
-        from(v in assoc(player, :villas), select: sum(v.points))
-        |> Repo.one
+      from(p in Player,
+        update:
+          [set: [points: fragment("(SELECT SUM(v.points) FROM villas AS v WHERE v.player_id = ?)", p.id)]],
+        where: p.id in ^ids)
+      |> Repo.update_all([])
 
-      from(p in Player, where: p.id == ^player.id)
-      |> Repo.update_all(set: [points: player_points])
+      # Players having 0 villas will have `NULL` points after the previous
+      # query. Their points have to explicitly be set to `0` by the following
+      # query.
+      from(p in Player,
+        update: [set: [points: 0]],
+        where: p.id in ^ids and is_nil(p.points))
+      |> Repo.update_all([])
 
       {:ok, nil}
     end)
   end
+  def recalc_points(%Player{} = player), do: recalc_points([player])
 end
