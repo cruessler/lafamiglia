@@ -18,9 +18,9 @@ defmodule LaFamiglia.ComebackMovement do
     field :unit_1, :integer
     field :unit_2, :integer
 
-    field :resource_1, :integer
-    field :resource_2, :integer
-    field :resource_3, :integer
+    field :resource_1, :integer, default: 0
+    field :resource_2, :integer, default: 0
+    field :resource_3, :integer, default: 0
 
     field :arrives_at, Ecto.DateTime
 
@@ -75,6 +75,22 @@ defmodule LaFamiglia.ComebackMovement do
     |> put_assoc(:origin, attack.origin)
     |> put_assoc(:target, attack.target)
     |> put_change(:arrives_at, new_arrives_at)
+  end
+
+  @doc """
+  This function creates a ComebackMovement.
+
+  It is used when an occupation succeeds and the occupying units return.
+  """
+  def from_occupation(occupation) do
+    duration_of_return = duration(occupation.origin, occupation.target, units(occupation))
+    arrives_at = LaFamiglia.DateTime.from_now(duration_of_return)
+
+    %ComebackMovement{}
+    |> changeset(Unit.filter(occupation))
+    |> put_assoc(:origin, occupation.origin)
+    |> put_assoc(:target, occupation.target)
+    |> put_change(:arrives_at, arrives_at)
   end
 
   def arrive(comeback) do
