@@ -36,4 +36,12 @@ defmodule LaFamiglia.Report do
     |> put_change(:delivered_at, LaFamiglia.DateTime.now)
     |> put_change(:read, false)
   end
+
+  def payload(%{combat_report: %CombatReport{} = payload}), do: payload
+  def payload(%{conquest_report: %ConquestReport{} = payload}), do: payload
+
+  def preload_payload(report) do
+    report
+    |> Repo.preload([:combat_report, :conquest_report])
+  end
 end

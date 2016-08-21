@@ -4,6 +4,7 @@ defmodule LaFamiglia.ReportTest do
   alias LaFamiglia.Combat
   alias LaFamiglia.Report
   alias LaFamiglia.CombatReport
+  alias LaFamiglia.ConquestReport
 
   @valid_attrs %{title: "This is a title",
                  player_id: 1}
@@ -54,5 +55,10 @@ defmodule LaFamiglia.ReportTest do
     report = insert(:combat_report)
 
     assert {:ok, _} = Repo.delete(report)
+  end
+
+  test "get payload" do
+    assert %CombatReport{} = build(:combat_report) |> Report.payload
+    assert %ConquestReport{} = build(:conquest_report) |> Report.payload
   end
 end
