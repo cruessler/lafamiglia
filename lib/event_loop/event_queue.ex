@@ -25,6 +25,7 @@ defmodule LaFamiglia.EventQueue do
   alias LaFamiglia.UnitQueueItem
   alias LaFamiglia.AttackMovement
   alias LaFamiglia.ComebackMovement
+  alias LaFamiglia.Occupation
 
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, Dict.put(opts, :name, LaFamiglia.EventQueue))
@@ -39,7 +40,8 @@ defmodule LaFamiglia.EventQueue do
       from(i in BuildingQueueItem, order_by: [asc: i.completed_at]),
       from(i in UnitQueueItem,     order_by: [asc: i.completed_at]),
       from(m in AttackMovement,    order_by: [asc: m.arrives_at]),
-      from(m in ComebackMovement,  order_by: [asc: m.arrives_at])
+      from(m in ComebackMovement,  order_by: [asc: m.arrives_at]),
+      from(o in Occupation,        order_by: [asc: o.succeeds_at])
     ]
 
     queue =
