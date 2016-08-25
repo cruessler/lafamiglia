@@ -2,8 +2,7 @@ defmodule LaFamiglia.Villa do
   use LaFamiglia.Web, :model
 
   alias LaFamiglia.Mechanics
-  alias LaFamiglia.Building
-  alias LaFamiglia.Unit
+  alias LaFamiglia.{Resource, Building, Unit}
 
   alias LaFamiglia.Repo
   alias LaFamiglia.Player
@@ -78,8 +77,6 @@ defmodule LaFamiglia.Villa do
                       resources_gained_until units_recruited_until
                       player_id)a
 
-  @resources [:resource_1, :resource_2, :resource_3]
-
   @game_speed Application.get_env(:la_famiglia, :game_speed)
 
   @doc """
@@ -142,7 +139,7 @@ defmodule LaFamiglia.Villa do
 
   defp validate_resources(changeset) do
     enough_resources =
-      Enum.all? @resources, fn(r) -> get_field(changeset, r) > 0 end
+      Enum.all? Resource.all, fn(r) -> get_field(changeset, r) > 0 end
 
     case enough_resources do
       false -> add_error(changeset, :resources, "Not enough resources.")
@@ -269,7 +266,7 @@ defmodule LaFamiglia.Villa do
   def add_resources(%Changeset{} = changeset, resources) do
     storage_capacity = get_field(changeset, :storage_capacity)
 
-    Enum.reduce @resources, changeset, fn(r, changeset) ->
+    Enum.reduce Resource.all, changeset, fn(r, changeset) ->
       changeset
       |> put_change(r, min(get_field(changeset, r) + Map.get(resources, r, 0),
                            storage_capacity / 1))
@@ -283,7 +280,7 @@ defmodule LaFamiglia.Villa do
   end
 
   def subtract_resources(%Changeset{} = changeset, resources) do
-    Enum.reduce @resources, changeset, fn(r, changeset) ->
+    Enum.reduce Resource.all, changeset, fn(r, changeset) ->
       changeset
       |> put_change(r, get_field(changeset, r) - Map.get(resources, r, 0))
     end
