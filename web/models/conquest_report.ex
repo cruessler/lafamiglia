@@ -38,7 +38,8 @@ defmodule LaFamiglia.ConquestReport do
     |> Report.changeset(%{title: title_for(villa, occupation)})
     |> put_assoc(:conquest_report, conquest_report)
     |> put_assoc(:player, villa.player)
-    |> put_assoc(:related_villas, [occupation.origin, occupation.target])
+    |> put_assoc(:origin, occupation.origin)
+    |> put_assoc(:target, occupation.target)
   end
 
   defp title_for(villa, occupation) do

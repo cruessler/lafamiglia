@@ -17,7 +17,7 @@ defmodule LaFamiglia.ReportController do
           villa_id = String.to_integer(villa_id)
 
           from(r in query,
-            join: v in assoc(r, :related_villas),
+            join: v in Villa, on: v.id == r.origin_id or v.id == r.target_id,
             where: v.id == ^villa_id)
         _ ->
           query
@@ -49,23 +49,17 @@ defmodule LaFamiglia.ReportController do
   end
 
   defp load_villa_grouped_by(%{params: %{"villa_id" => villa_id}} = conn, _) do
-    villa =
-      from(v in Villa, where: v.id == ^villa_id)
-      |> Repo.one
+    villa = Repo.get!(Villa, villa_id)
 
     conn
     |> assign(:grouped_by, villa)
   end
   defp load_villa_grouped_by(%{params: %{"id" => report_id}} = conn, _) do
-    villas =
-      from(v in Villa,
-        join: r in assoc(v, :related_reports),
-        where: r.id == ^report_id,
-        select: %{id: v.id})
-      |> Repo.all
+    report =
+      Repo.get!(assoc(conn.assigns.current_player, :reports), report_id)
 
     conn
-    |> assign(:grouped_by, villas)
+    |> assign(:grouped_by, [%{id: report.origin_id}, %{id: report.target_id}])
   end
   defp load_villa_grouped_by(conn, _) do
     conn
@@ -77,7 +71,7 @@ defmodule LaFamiglia.ReportController do
 
     grouped_reports =
       from(r in Report,
-        join: v in assoc(r, :related_villas),
+        join: v in Villa, on: v.id == r.origin_id or v.id == r.target_id,
         group_by: v.id,
         order_by: [desc: max(r.delivered_at)],
         where: r.player_id == ^current_player.id,

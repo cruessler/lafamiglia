@@ -42,13 +42,14 @@ defmodule LaFamiglia.ReportTest do
   end
 
   test "has associations", %{attack: attack, first: first} do
-    [first_related, second_related] = get_change(first, :related_villas)
+    origin = get_change(first, :origin)
+    target = get_change(first, :target)
 
-    assert get_field(first_related, :player) == attack.origin.player
-    assert get_field(second_related, :player) == attack.target.player
+    assert get_field(origin, :player) == attack.origin.player
+    assert get_field(target, :player) == attack.target.player
 
-    assert second_related.data == attack.target
-    assert first_related.data == attack.origin
+    assert target.data == attack.target
+    assert origin.data == attack.origin
   end
 
   test "can be deleted" do

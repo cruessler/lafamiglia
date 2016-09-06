@@ -49,7 +49,8 @@ defmodule LaFamiglia.CombatReport do
     |> Report.changeset(%{title: title_for(villa, combat)})
     |> put_assoc(:combat_report, combat_report)
     |> put_assoc(:player, villa.player)
-    |> put_assoc(:related_villas, [combat.attack.origin, combat.attack.target])
+    |> put_assoc(:origin, combat.attack.origin)
+    |> put_assoc(:target, combat.attack.target)
   end
 
   defp title_for(villa, %{attack: attack}) do

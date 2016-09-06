@@ -5,11 +5,13 @@ defmodule LaFamiglia.Report do
 
   alias LaFamiglia.Player
   alias LaFamiglia.Villa
-  alias LaFamiglia.RelatedReportVilla
   alias LaFamiglia.{CombatReport, ConquestReport}
 
   schema "reports" do
     belongs_to :player, Player
+
+    belongs_to :origin, Villa
+    belongs_to :target, Villa
 
     field :title, :string
     field :read, :boolean
@@ -18,9 +20,6 @@ defmodule LaFamiglia.Report do
     has_one :conquest_report, ConquestReport
 
     field :delivered_at, Ecto.DateTime
-
-    many_to_many :related_villas, Villa, join_through: RelatedReportVilla,
-                                         join_keys: [related_report_id: :id, villa_id: :id]
 
     timestamps
   end

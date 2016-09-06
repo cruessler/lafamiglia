@@ -146,12 +146,15 @@ defmodule LaFamiglia.Factory do
   end
 
   def report_factory do
+    [origin, target] = build_pair(:villa)
+
     %LaFamiglia.Report{
       title: "Attack on a villa",
       player: build(:player),
       delivered_at: LaFamiglia.DateTime.now,
       read: false,
-      related_villas: build_pair(:villa)
+      origin: origin,
+      target: target
     }
   end
 
