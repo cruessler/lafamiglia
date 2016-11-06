@@ -5,6 +5,7 @@ import Time exposing (Time)
 
 type alias Unit =
     { id : Int
+    , key : String
     , name : String
     , speed : Float
     }

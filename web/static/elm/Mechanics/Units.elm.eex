@@ -4,5 +4,5 @@ import Unit exposing (Unit)
 
 
 all =
-  [ <%= for(u <- units, do: "Unit #{u.id} \"Unit #{u.id}\" #{u.speed}") |> Enum.join(",") %>
+  [ <%= for(u <- units, do: "Unit #{u.id} \"#{u.key}\" \"Unit #{u.id}\" #{u.speed}") |> Enum.join(",") %>
   ]
