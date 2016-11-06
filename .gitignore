@@ -36,4 +36,6 @@ erl_crash.dump
 # edelivery artifacts
 /rel/la_famiglia/
 
+web/static/elm/Mechanics/*.elm
+
 *.swp
