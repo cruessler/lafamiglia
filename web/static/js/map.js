@@ -255,7 +255,8 @@ class InteractiveMap extends React.Component {
         </div>
         <InfoBox playerId={this.props.playerId}
                  origin={this.props.origin}
-                 target={this.state.clickedVilla} />
+                 target={this.state.clickedVilla}
+                 unitNumbers={this.props.unitNumbers} />
         <StatusBar villa={this.state.hoveredVilla} />
       </div>
     )

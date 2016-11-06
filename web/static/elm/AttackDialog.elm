@@ -10,6 +10,7 @@ import Html.App as Html
 import Html.Attributes exposing (class, rel, href, style, attribute)
 import Html.Events exposing (onClick, on)
 import Json.Decode as Json
+import Dict exposing (Dict)
 import String
 import Time exposing (Time)
 import Format
@@ -39,6 +40,7 @@ type alias Slider =
 type alias Flags =
     { origin : Villa
     , target : Villa
+    , unitNumbers : List ( String, Int )
     }
 
 
@@ -50,12 +52,25 @@ type alias Model =
     }
 
 
+initSliders : List ( String, Int ) -> List Slider
+initSliders unitNumbers =
+    let
+        unitNumbers' =
+            Dict.fromList unitNumbers
+
+        number unit =
+            Dict.get unit.key unitNumbers'
+                |> Maybe.withDefault 0
+    in
+        List.map (\u -> Slider u 0 (number u) 0) Mechanics.Units.all
+
+
 init : Flags -> ( Model, Cmd a )
 init flags =
     ( { origin = flags.origin
       , target = flags.target
       , now = Nothing
-      , sliders = List.map (\u -> Slider u 0 0 0) Mechanics.Units.all
+      , sliders = (initSliders flags.unitNumbers)
       }
     , Cmd.none
     )

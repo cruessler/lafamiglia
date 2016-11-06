@@ -14,9 +14,16 @@ class InfoBox extends React.Component {
   }
 
   onClick(e) {
+    // Elm expects `unitNumbers` to be of type `List ( String, Int )` which
+    // translates to `Array [ Array [ String, Int ] ]` in JS.
+    const unitNumbers =
+      Array.map(Object.keys(this.props.unitNumbers),
+        k => [k, this.props.unitNumbers[k]])
+
     let params =
       { "origin": this.props.origin,
-        "target": this.props.target }
+        "target": this.props.target,
+        "unitNumbers": unitNumbers }
 
     const body = $("body").get(0)
     Elm.AttackDialog.embed(body, params)
