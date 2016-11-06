@@ -1,0 +1,63 @@
+.modal-content {
+  padding: 3%;
+  padding-top: initial;
+  padding-bottom: initial;
+}
+.modal-body {
+  padding-top: initial;
+}
+
+table.arrival-info {
+  width: 100%;
+  color: #606060;
+  transition: color 0.15s ease-out;
+}
+table.arrival-info.units-selected {
+  color: #000000;
+  transition: color 0.15s ease-in;
+}
+
+tr.arrives-at {
+  font-size: 130%;
+}
+tr.arrives-in td {
+  padding-bottom: .1em;
+}
+
+table.overview {
+  width: 100%
+}
+tr.units-chosen {
+  font-size: 150%;
+}
+tr.units-chosen td {
+  padding-top: .2em;
+  padding-bottom: .1em;
+}
+
+table.overview td:nth-child(1),
+table.arrival-info td:nth-child(1) {
+  width: 30%;
+}
+
+div.slider {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  margin-bottom: 2em;
+}
+
+div.slider input[type="range"] {
+  border: none;
+  margin-bottom: 0.6em;
+}
+
+div.relative-links {
+  margin-left: auto;
+}
+
+a.adjacent-link {
+  margin-left: 0.4em;
+  margin-right: 0.4em;
+}

@@ -55,6 +55,11 @@ exports.config = {
       options: {
         includePaths: ['bower_components']
       }
+    },
+    elmBrunch: {
+      mainModules: ['web/static/elm/AttackDialog.elm'],
+      outputFolder: 'web/static/vendor',
+      outputFile: 'elm.js'
     }
   }
 };
