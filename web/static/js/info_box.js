@@ -1,4 +1,10 @@
 class InfoBox extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.onClick = this.onClick.bind(this)
+  }
+
   villaToString(villa) {
     if(villa) {
       return `[${villa.player.name}] ${villa.name} ${villa.x}|${villa.y}`
@@ -7,23 +13,43 @@ class InfoBox extends React.Component {
     }
   }
 
-  render() {
-    const villa = this.props.villa
+  onClick(e) {
+    let params =
+      { "origin": this.props.origin,
+        "target": this.props.target }
 
-    if(villa) {
-      let actionNodes = [<a href={villa.reports_url} key="show-reports"
+    const body = $("body").get(0)
+    Elm.AttackDialog.embed(body, params)
+    // Beware: Right now, there is no teardown of the DOM elements created by
+    // Elm. Clicking on "Attack" multiple times will create multiple attack
+    // dialogs even though at most one of them is visible at any time.
+    //
+    // This is because it is planned to rewrite the Map code in Elm. When that
+    // will be done the teardown code would become obsolete.
+
+    setTimeout(() => $("#attack-modal").modal("show"), 0)
+  }
+
+  render() {
+    const target = this.props.target
+
+    if(target) {
+      let actionNodes = [<a href={target.reports_url} key="show-reports"
                             className="btn btn-primary">Show reports</a>]
 
-      if(villa.player.id == this.props.playerId) {
-        actionNodes.push(<a href={villa.switch_to_url} key="switch-to-villa"
+      if(target.player.id == this.props.playerId) {
+        actionNodes.push(<a href={target.switch_to_url} key="switch-to-villa"
                             className="btn btn-primary">Switch to villa</a>)
       } else {
-        actionNodes.push(<a href={villa.attack_url} key="attack-villa"
-                            className="btn btn-primary">Attack</a>)
+        actionNodes.push(
+            <a onClick={this.onClick} key="attack-villa"
+             ref={(l) => this.attackLink = l}
+             className="btn btn-primary">Attack</a>)
       }
 
+
       return <div className="info-box">
-               <h4>{this.villaToString(villa)}</h4>
+               <h4>{this.villaToString(target)}</h4>
 
                <div className="actions">
                  {actionNodes}

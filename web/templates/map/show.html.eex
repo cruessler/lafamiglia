@@ -21,5 +21,6 @@ body {
 }
 </style>
 
-<%= react_component("InteractiveMap", %{centerX: @center_x, centerY: @center_y,
+<%= react_component("InteractiveMap", %{origin: Map.take(@current_villa, [:id, :name, :x, :y]),
+                                        centerX: @center_x, centerY: @center_y,
                                         playerId: @current_player.id}) %>
