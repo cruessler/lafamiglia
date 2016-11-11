@@ -41,6 +41,7 @@ type alias Flags =
     { origin : Villa
     , target : Villa
     , unitNumbers : List ( String, Int )
+    , csrfToken : Maybe String
     }
 
 
@@ -49,6 +50,7 @@ type alias Model =
     , target : Villa
     , now : Maybe Time
     , sliders : List Slider
+    , csrfToken : Maybe String
     }
 
 
@@ -71,6 +73,7 @@ init flags =
       , target = flags.target
       , now = Nothing
       , sliders = (initSliders flags.unitNumbers)
+      , csrfToken = flags.csrfToken
       }
     , Cmd.none
     )
