@@ -21,6 +21,10 @@ body {
 }
 </style>
 
+<script>
+  window.csrfToken = "<%= get_csrf_token %>"
+</script>
+
 <%= react_component("InteractiveMap",
   %{origin: Map.take(@current_villa, [:id, :name, :x, :y]),
     unitNumbers: Unit.filter(@current_villa),

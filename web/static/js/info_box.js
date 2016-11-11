@@ -23,7 +23,8 @@ class InfoBox extends React.Component {
     let params =
       { "origin": this.props.origin,
         "target": this.props.target,
-        "unitNumbers": unitNumbers }
+        "unitNumbers": unitNumbers,
+        "csrfToken": window.csrfToken }
 
     const body = $("body").get(0)
     Elm.AttackDialog.embed(body, params)
