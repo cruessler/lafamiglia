@@ -2,7 +2,7 @@ defmodule LaFamiglia.Router do
   use LaFamiglia.Web, :router
 
   pipeline :browser do
-    plug :accepts, ["html", "json"]
+    plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_flash
     plug :protect_from_forgery
@@ -13,6 +13,9 @@ defmodule LaFamiglia.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+
+    plug :fetch_session
+    plug :protect_from_forgery
   end
 
   pipeline :ingame do
@@ -61,7 +64,6 @@ defmodule LaFamiglia.Router do
       resources "/reports", ReportController, only: [ :index, :show ]
 
       get "/map/:x/:y", MapController, :show
-      get "/map", MapController, :show
 
       get "/help", HelpController, :index
     end
@@ -69,8 +71,13 @@ defmodule LaFamiglia.Router do
     get "/", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", LaFamiglia do
-  #   pipe_through :api
-  # end
+  scope "/api/v1", LaFamiglia do
+    pipe_through :api
+
+    scope "/" do
+      pipe_through :ingame
+
+      get "/map", MapController, :show
+    end
+  end
 end

@@ -2,6 +2,8 @@ import InfoBox from "web/static/js/info_box"
 import MapCells from "web/static/js/map_cells"
 import StatusBar from "web/static/js/status_bar"
 
+const API_PATH = "/api/v1/map"
+
 class InteractiveMap extends React.Component {
   constructor(props) {
     super(props)
@@ -112,7 +114,7 @@ class InteractiveMap extends React.Component {
     // data type, jQuery adds `*/*` to the header which causes Phoenix to assume
     // `html` is the requested format.
     // https://github.com/phoenixframework/phoenix/blob/master/lib/phoenix/controller.ex
-    $.ajax("/map", { beforeSend: (xhr) => xhr.setRequestHeader("Accept", "application/json"),
+    $.ajax(API_PATH, { beforeSend: (xhr) => xhr.setRequestHeader("Accept", "application/json"),
       data: { min_x: upperLeftCorner.x, min_y: upperLeftCorner.y,
         max_x: lowerRightCorner.x, max_y: lowerRightCorner.y },
         success: (data) => this.setState({ villas: this.mergeVillas(this.state.villas, data) })
