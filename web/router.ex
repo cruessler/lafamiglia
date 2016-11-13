@@ -71,7 +71,7 @@ defmodule LaFamiglia.Router do
     get "/", PageController, :index
   end
 
-  scope "/api/v1", LaFamiglia do
+  scope "/api/v1", LaFamiglia.Api do
     pipe_through :api
 
     scope "/" do
