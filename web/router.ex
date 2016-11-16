@@ -77,6 +77,10 @@ defmodule LaFamiglia.Router do
     scope "/" do
       pipe_through :ingame
 
+      resources "/villas", VillaController, only: [] do
+        resources "/attack_movements", AttackMovementController, only: [ :create ]
+      end
+
       get "/map", MapController, :show
     end
   end

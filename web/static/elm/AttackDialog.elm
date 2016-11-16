@@ -9,10 +9,14 @@ import Html exposing (..)
 import Html.App as Html
 import Html.Attributes exposing (class, rel, href, style, attribute)
 import Html.Events exposing (onClick, on)
-import Json.Decode as Json
+import Http
+import Task exposing (Task)
+import Json.Decode as Json exposing ((:=))
+import Json.Encode as Encode
 import Dict exposing (Dict)
 import String
 import Time exposing (Time)
+import Api
 import Format
 import Mechanics
 import Mechanics.Units
@@ -27,6 +31,11 @@ main =
         , view = view
         , subscriptions = (\m -> Time.every Time.second Tick)
         }
+
+
+attackEndpointUrl : Villa -> String
+attackEndpointUrl origin =
+    "/api/v1/villas/" ++ (toString origin.id) ++ "/attack_movements"
 
 
 type alias Slider =
@@ -82,6 +91,9 @@ init flags =
 type Msg
     = SetValue Int Int
     | Tick Time
+    | Attack
+    | PostFail Http.Error
+    | PostSucceed (Api.Response () ())
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -104,6 +116,48 @@ update msg model =
 
         Tick time ->
             ( { model | now = Just time }, Cmd.none )
+
+        Attack ->
+            ( model, postAttack model )
+
+        PostFail _ ->
+            ( model, Cmd.none )
+
+        PostSucceed _ ->
+            ( model, Cmd.none )
+
+
+postAttack : Model -> Cmd Msg
+postAttack model =
+    case model.csrfToken of
+        Just csrfToken ->
+            let
+                units =
+                    List.map (\s -> ( s.unit.key, Encode.int s.current )) model.sliders
+
+                movement =
+                    units ++ [ ( "target_id", Encode.int model.target.id ) ]
+
+                params =
+                    Encode.object [ ( "attack_movement", Encode.object movement ) ]
+                        |> Encode.encode 0
+
+                task =
+                    Http.send Http.defaultSettings
+                        { verb = "POST"
+                        , headers =
+                            [ ( "Content-Type", "application/json" )
+                            , ( "X-CSRF-Token", csrfToken )
+                            ]
+                        , url = attackEndpointUrl model.origin
+                        , body = Http.string params
+                        }
+            in
+                Api.fromJson (Json.succeed ()) (Json.succeed ()) task
+                    |> Task.perform PostFail PostSucceed
+
+        Nothing ->
+            Cmd.none
 
 
 modalHeader : Model -> Html Msg
@@ -319,6 +373,7 @@ modalFooter =
         , button
             [ attribute "type" "button"
             , class "btn btn-primary"
+            , onClick Attack
             ]
             [ text "Attack" ]
         ]
