@@ -245,8 +245,22 @@ sliderLinks id slider =
         step =
             toFloat (slider.max - slider.min) / toFloat (numSteps)
 
+        {- This helper expects `acc` to be sorted. -}
+        uniq : Int -> List Int -> List Int
+        uniq current acc =
+            case acc of
+                x :: xs ->
+                    if x == current then
+                        acc
+                    else
+                        current :: acc
+
+                [] ->
+                    [ current ]
+
         values =
             List.map (\i -> round <| toFloat (slider.min + i) * step) steps
+                |> List.foldr uniq []
     in
         [ div [ class "absolute-links" ] (List.map (sliderLink id) values)
         , div [ class "relative-links" ]
