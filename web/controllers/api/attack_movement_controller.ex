@@ -21,7 +21,7 @@ defmodule LaFamiglia.Api.AttackMovementController do
         conn
         |> put_status(:bad_request)
         |> render(LaFamiglia.ChangesetView, "error.json", changeset: changeset)
-      {:ok, movement} ->
+      {:ok, %{attack_movement: movement}} ->
         conn
         |> put_status(:created)
         |> render("create.json", movement: movement)

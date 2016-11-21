@@ -32,7 +32,7 @@ defmodule LaFamiglia.AttackMovementController do
         |> assign(:changeset, changeset)
         |> assign(:target, target)
         |> render("new.html")
-      {:ok, _movement} ->
+      {:ok, _} ->
         conn
         |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))
     end
