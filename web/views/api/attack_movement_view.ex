@@ -2,6 +2,6 @@ defmodule LaFamiglia.Api.AttackMovementView do
   use LaFamiglia.Web, :view
 
   def render("create.json", %{movement: movement}) do
-    movement
+    %{attack_movement: %{id: movement.id}}
   end
 end

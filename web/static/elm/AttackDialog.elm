@@ -59,6 +59,8 @@ type alias Model =
     , target : Villa
     , now : Maybe Time
     , sliders : List Slider
+    , messages : List String
+    , errors : List String
     , csrfToken : Maybe String
     }
 
@@ -82,6 +84,8 @@ init flags =
       , target = flags.target
       , now = Nothing
       , sliders = (initSliders flags.unitNumbers)
+      , messages = []
+      , errors = []
       , csrfToken = flags.csrfToken
       }
     , Cmd.none
@@ -93,7 +97,7 @@ type Msg
     | Tick Time
     | Attack
     | PostFail Http.Error
-    | PostSucceed (Api.Response () ())
+    | PostSucceed (Api.Response (List String) ())
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -123,8 +127,13 @@ update msg model =
         PostFail _ ->
             ( model, Cmd.none )
 
-        PostSucceed _ ->
-            ( model, Cmd.none )
+        PostSucceed response ->
+            case response of
+                Api.Success _ ->
+                    ( { model | messages = [ "Your troops are on their way!" ], errors = [] }, Cmd.none )
+
+                Api.Error errors ->
+                    ( { model | messages = [], errors = errors }, Cmd.none )
 
 
 postAttack : Model -> Cmd Msg
@@ -153,11 +162,16 @@ postAttack model =
                         , body = Http.string params
                         }
             in
-                Api.fromJson (Json.succeed ()) (Json.succeed ()) task
+                Api.fromJson decodeErrorResponse (Json.succeed ()) task
                     |> Task.perform PostFail PostSucceed
 
         Nothing ->
             Cmd.none
+
+
+decodeErrorResponse : Json.Decoder (List String)
+decodeErrorResponse =
+    Json.at [ "errors", "unit_count" ] (Json.list Json.string)
 
 
 modalHeader : Model -> Html Msg
@@ -348,8 +362,16 @@ arrivalInfo model =
 modalBody : Model -> Html Msg
 modalBody model =
     let
+        messages =
+            ul [ class "alert alert-info" ] (List.map (\m -> li [] [ text m ]) model.messages)
+
+        errors =
+            ul [ class "alert alert-danger" ] (List.map (\e -> li [] [ text e ]) model.errors)
+
         children =
             [ h3 [] [ text "Overview" ]
+            , messages
+            , errors
             , overview model.sliders
             , arrivalInfo model
             , h3 [] [ text "Choose the units to send" ]
