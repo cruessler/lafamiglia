@@ -17,8 +17,7 @@ class InfoBox extends React.Component {
     // Elm expects `unitNumbers` to be of type `List ( String, Int )` which
     // translates to `Array [ Array [ String, Int ] ]` in JS.
     const unitNumbers =
-      Array.map(Object.keys(this.props.unitNumbers),
-        k => [k, this.props.unitNumbers[k]])
+      Object.keys(this.props.unitNumbers).map(k => [k, this.props.unitNumbers[k]])
 
     let params =
       { "origin": this.props.origin,
