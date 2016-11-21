@@ -21,16 +21,23 @@ defmodule Mix.Tasks.LaFamiglia.Postcompile do
 
       with {:ok, info_source}   <- File.stat(source),
            {:ok, info_template} <- File.stat(template),
-           {:ok, info_target}   <- File.stat(target),
            source_mtime   = Ecto.DateTime.from_erl(info_source.mtime),
-           template_mtime = Ecto.DateTime.from_erl(info_template.mtime),
-           target_mtime   = Ecto.DateTime.from_erl(info_target.mtime)
+           template_mtime = Ecto.DateTime.from_erl(info_template.mtime)
       do
         # Compile the template if either itself or the corresponding source
-        # file has been changed.
-        if Ecto.DateTime.compare(source_mtime, target_mtime) == :gt ||
-           Ecto.DateTime.compare(template_mtime, target_mtime) == :gt
-        do
+        # file has been changed or if the target file does not exist.
+        compile =
+          case File.stat(target) do
+            {:ok, info_target} ->
+              target_mtime = Ecto.DateTime.from_erl(info_target.mtime)
+
+              Ecto.DateTime.compare(source_mtime, target_mtime) == :gt ||
+              Ecto.DateTime.compare(template_mtime, target_mtime) == :gt
+
+            _ -> true
+          end
+
+        if compile do
           Mix.shell.info "Compiling #{Path.basename template} to #{Path.basename target}"
 
           compiled_file = EEx.eval_file(template, template_variables)
