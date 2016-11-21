@@ -20,17 +20,16 @@ La Famiglia is developed in [Elixir](http://elixir-lang.org), using
 
 Right now, La Famiglia is, in most parts, a tech preview exploring the
 possibilities of Elixir and Phoenix. Some parts are already in good shape while
-others are still more proof of concept.
+others are still more of a proof of concept.
 
 ## TODO
 
 Among the things not yet implemented are:
 
-- occupying and conquering other players’ villas,
+- release management with [distillery](https://github.com/bitwalker/distillery)
+  and [edeliver](https://github.com/boldpoker/edeliver),
 - i18n,
-- time zones (currently all dates are saved and displayed as UTC; work on this
-  is postponed until the release of Elixir 1.3 which will provide date and time
-  types).
+- time zones.
 
 ## Installation
 
@@ -47,6 +46,7 @@ Prerequisites: Erlang 18, Elixir 1.2, PostgreSQL 9.4.
   See http://www.phoenixframework.org/docs/deployment.
 - `mix deps.get`
 - `MIX_ENV=prod mix compile`
+- `MIX_ENV=prod mix la_famiglia.postcompile`
 - `MIX_ENV=prod mix ecto.create`
 - `MIX_ENV=prod mix ecto.migrate`
 - `brunch build --production`
@@ -61,15 +61,13 @@ Prerequisites: Erlang 18, Elixir 1.2, PostgreSQL 9.4.
 - `git pull`
 - `mix deps.get` if necessary
 - `MIX_ENV=prod mix compile`
+- `MIX_ENV=prod mix la_famiglia.postcompile`
 - `MIX_ENV=prod mix ecto.migrate` if necessary
 - `brunch build --production`
 - `MIX_ENV=prod mix phoenix.digest`
 - `bower install` if necessary
+- `npm install` if necessary
 - Restart the server.
-
-Currently, `exrm` cannot be used for release management as parts of La
-Famiglia’s configuration are dynamic while `exrm` only works with static
-configuration.
 
 # License
 
