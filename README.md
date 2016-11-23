@@ -16,7 +16,7 @@ important and interesting part of it.
 La Famiglia is developed in [Elixir](http://elixir-lang.org), using
 [Phoenix](http://www.phoenixframework.org/).
 
-# Status
+## Status
 
 Right now, La Famiglia is, in most parts, a tech preview exploring the
 possibilities of Elixir and Phoenix. Some parts are already in good shape while
@@ -38,6 +38,13 @@ Among the things not yet implemented are:
 Prerequisites: Erlang 18, Elixir 1.2, PostgreSQL 9.4.
 
 - `git clone https://github.com/cruessler/lafamiglia.git`
+- Copy sample configuration files:
+```
+    cd lafamiglia/config
+    cp config.sample.exs config.exs
+    cp prod.sample.exs prod.exs
+    cp prod.secret.sample.exs prod.secret.exs
+```
 - Configure host and port in `config/prod.exs`.
   The sample config uses the env variable `PORT` for setting the port (useful if
   La Famiglia is supposed to run behind a proxy).
@@ -49,11 +56,12 @@ Prerequisites: Erlang 18, Elixir 1.2, PostgreSQL 9.4.
 - `MIX_ENV=prod mix la_famiglia.postcompile`
 - `MIX_ENV=prod mix ecto.create`
 - `MIX_ENV=prod mix ecto.migrate`
-- `brunch build --production`
-- `MIX_ENV=prod mix phoenix.digest`
 - `npm install`
 - `bower install`
-- `PORT=$PORT HOST=$HOST MIX_ENV=prod mix la_famiglia.server`
+- `./node_modules/brunch/bin/brunch build --production` (Make sure you have
+  `elm-make` available in your `$PATH`.)
+- `MIX_ENV=prod mix phoenix.digest`
+- `PORT=$PORT MIX_ENV=prod mix la_famiglia.server`
 
 ### Upgrade
 
@@ -63,12 +71,12 @@ Prerequisites: Erlang 18, Elixir 1.2, PostgreSQL 9.4.
 - `MIX_ENV=prod mix compile`
 - `MIX_ENV=prod mix la_famiglia.postcompile`
 - `MIX_ENV=prod mix ecto.migrate` if necessary
-- `brunch build --production`
-- `MIX_ENV=prod mix phoenix.digest`
-- `bower install` if necessary
 - `npm install` if necessary
+- `bower install` if necessary
+- `./node_modules/brunch/bin/brunch build --production`
+- `MIX_ENV=prod mix phoenix.digest`
 - Restart the server.
 
-# License
+## License
 
 La Famiglia is distributed under the terms of the MIT license.
