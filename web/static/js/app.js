@@ -30,8 +30,22 @@ class App {
       }
     }
   }
+
+  static mountElmModules() {
+    const nodes = $("[data-elm-module]").toArray()
+
+    for(const node of nodes) {
+      const elmModule = Elm[$(node).data("elm-module")]
+      const params    = $(node).data("elm-params") || {}
+
+      if(elmModule != undefined) {
+        elmModule.embed(node, params)
+      }
+    }
+  }
 }
 
 App.mountReactComponents()
+App.mountElmModules()
 
 export default App
