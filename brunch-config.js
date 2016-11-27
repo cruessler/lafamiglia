@@ -57,7 +57,9 @@ exports.config = {
       }
     },
     elmBrunch: {
-      mainModules: ['web/static/elm/AttackDialog.elm'],
+      mainModules:
+        ['web/static/elm/AttackDialog.elm',
+         'web/static/elm/Map.elm'],
       outputFolder: 'web/static/vendor',
       outputFile: 'elm.js'
     }

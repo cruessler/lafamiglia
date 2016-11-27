@@ -20,3 +20,5 @@ body {
   overflow: scroll;
 }
 </style>
+
+<div data-elm-module="Map"></div>
