@@ -20,10 +20,18 @@ type alias Model =
     { center : Position
     , dragging : Bool
     , startPosition : Maybe Mouse.Position
+    , offset : Offset
+    , startOffset : Offset
     }
 
 
 type alias Position =
+    { x : Int
+    , y : Int
+    }
+
+
+type alias Offset =
     { x : Int
     , y : Int
     }
@@ -38,6 +46,8 @@ init flags =
     ( { center = flags.center
       , dragging = False
       , startPosition = Nothing
+      , offset = { x = 0, y = 0 }
+      , startOffset = { x = 0, y = 0 }
       }
     , Cmd.none
     )
@@ -57,6 +67,7 @@ update msg model =
             { model
                 | dragging = True
                 , startPosition = Just position
+                , startOffset = model.offset
             }
                 ! []
 
@@ -71,7 +82,18 @@ update msg model =
             { model | dragging = False, startPosition = Nothing } ! []
 
         Move position ->
-            model ! []
+            case model.startPosition of
+                Just start ->
+                    let
+                        newOffset =
+                            { x = model.startOffset.x + position.x - start.x
+                            , y = model.startOffset.y + position.y - start.y
+                            }
+                    in
+                        { model | offset = newOffset } ! []
+
+                Nothing ->
+                    model ! []
 
 
 view : Model -> Html Msg
@@ -79,13 +101,23 @@ view model =
     let
         cells =
             List.map (\i -> div [ class "cell" ] [ text (toString i) ]) [1..100]
+
+        mapStyle =
+            [ ( "transform"
+              , "translate("
+                    ++ (toString model.offset.x)
+                    ++ "px, "
+                    ++ (toString model.offset.y)
+                    ++ "px)"
+              )
+            ]
     in
         div [ class "container-fluid map-viewport" ]
             [ div
                 [ class "map-inner-viewport"
                 , onMouseLeave MouseLeave
                 ]
-                [ div [ class "map" ] cells
+                [ div [ class "map", style mapStyle ] cells
                 ]
             ]
 
