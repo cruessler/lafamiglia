@@ -14,16 +14,22 @@ main =
 
 
 type alias Model =
-    ()
+    { center : Position }
+
+
+type alias Position =
+    { x : Int
+    , y : Int
+    }
 
 
 type alias Flags =
-    {}
+    { center : Position }
 
 
 init : Flags -> ( Model, Cmd () )
 init flags =
-    ( ()
+    ( { center = flags.center }
     , Cmd.none
     )
 
