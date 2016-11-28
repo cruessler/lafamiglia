@@ -2,6 +2,9 @@ module Map exposing (main)
 
 import Html exposing (..)
 import Html.App as Html
+import Html.Attributes exposing (class, rel, href, style, attribute)
+import Html.Events exposing (onMouseLeave)
+import Mouse
 
 
 main =
@@ -9,12 +12,15 @@ main =
         { init = init
         , update = update
         , view = view
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subscriptions
         }
 
 
 type alias Model =
-    { center : Position }
+    { center : Position
+    , dragging : Bool
+    , startPosition : Maybe Mouse.Position
+    }
 
 
 type alias Position =
@@ -27,22 +33,66 @@ type alias Flags =
     { center : Position }
 
 
-init : Flags -> ( Model, Cmd () )
+init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { center = flags.center }
+    ( { center = flags.center
+      , dragging = False
+      , startPosition = Nothing
+      }
     , Cmd.none
     )
 
 
-type alias Msg =
-    ()
+type Msg
+    = MouseDown Mouse.Position
+    | MouseUp Mouse.Position
+    | Move Mouse.Position
+    | MouseLeave
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    model ! []
+    case msg of
+        MouseDown position ->
+            { model
+                | dragging = True
+                , startPosition = Just position
+            }
+                ! []
+
+        MouseUp position ->
+            { model
+                | dragging = False
+                , startPosition = Nothing
+            }
+                ! []
+
+        MouseLeave ->
+            { model | dragging = False, startPosition = Nothing } ! []
+
+        Move position ->
+            model ! []
 
 
 view : Model -> Html Msg
 view model =
-    div [] []
+    let
+        cells =
+            List.map (\i -> div [ class "cell" ] [ text (toString i) ]) [1..100]
+    in
+        div [ class "container-fluid map-viewport" ]
+            [ div
+                [ class "map-inner-viewport"
+                , onMouseLeave MouseLeave
+                ]
+                [ div [ class "map" ] cells
+                ]
+            ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    if model.dragging then
+        Sub.batch [ Mouse.moves Move, Mouse.ups MouseUp ]
+    else
+        Mouse.downs MouseDown
