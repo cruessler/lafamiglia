@@ -33,4 +33,13 @@ defmodule LaFamiglia.AppView do
 
     content_tag(tag, "", Dict.merge(attrs, data_attributes))
   end
+
+  def elm_module(module, params \\ %{}, attrs \\ []) do
+    {tag, attrs} = Keyword.pop(attrs, :tag, :div)
+    data_attributes =
+      [ "data-elm-module": module,
+        "data-elm-params": html_escape(Poison.encode!(params)) ]
+
+    content_tag(tag, "", Dict.merge(attrs, data_attributes))
+  end
 end

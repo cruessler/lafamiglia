@@ -21,4 +21,4 @@ body {
 }
 </style>
 
-<div data-elm-module="Map"></div>
+<%= elm_module("Map", %{center: %{ x: @center_x, y: @center_y }}) %>
