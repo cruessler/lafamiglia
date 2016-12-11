@@ -22,6 +22,8 @@ type alias Model =
     , startPosition : Maybe Mouse.Position
     , offset : Offset
     , startOffset : Offset
+    , dimensions : Dimensions
+    , cellDimensions : Dimensions
     }
 
 
@@ -37,8 +39,32 @@ type alias Offset =
     }
 
 
+type alias Dimensions =
+    { width : Int
+    , height : Int
+    }
+
+
 type alias Flags =
-    { center : Position }
+    { center : Position
+    , dimensions : Dimensions
+    }
+
+
+{-|
+  Calculate the dimensions of a single map cell.
+
+  Must correspond to `div.cell`’s percentage value in `_map.scss`.
+-}
+cellDimensions : Dimensions -> Dimensions
+cellDimensions dimensions =
+    let
+        width =
+            round ((toFloat dimensions.width) / 10.0)
+    in
+        { width = width
+        , height = width
+        }
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -48,6 +74,8 @@ init flags =
       , startPosition = Nothing
       , offset = { x = 0, y = 0 }
       , startOffset = { x = 0, y = 0 }
+      , dimensions = flags.dimensions
+      , cellDimensions = cellDimensions flags.dimensions
       }
     , Cmd.none
     )

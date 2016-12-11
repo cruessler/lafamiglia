@@ -21,4 +21,15 @@ body {
 }
 </style>
 
-<%= elm_module("Map", %{center: %{ x: @center_x, y: @center_y }}) %>
+<div id="map"></div>
+
+<script type="text/javascript">
+  setTimeout(() => {
+    const node = document.getElementById("map")
+    const dimensions = { width: $(node).width(), height: $(node).height() }
+
+    Elm.Map.embed(node,
+      { center: { x: <%= @center_x %>, y: <%= @center_y %> },
+        dimensions: dimensions })
+  }, 0)
+</script>
