@@ -1,10 +1,15 @@
 module Map exposing (main)
 
+import Dict exposing (Dict)
 import Html exposing (..)
 import Html.App as Html
 import Html.Attributes exposing (class, rel, href, style, attribute)
 import Html.Events exposing (onMouseLeave)
+import Http
+import Json.Decode as Json exposing (..)
 import Mouse
+import Task
+import Villa exposing (Villa)
 
 
 main =
@@ -16,8 +21,14 @@ main =
         }
 
 
+villasEndpointUrl : String
+villasEndpointUrl =
+    "/api/v1/map"
+
+
 type alias Model =
-    { center : Position
+    { villas : Dict ( Int, Int ) Villa
+    , center : Position
     , dragging : Bool
     , startPosition : Maybe Mouse.Position
     , offset : Offset
@@ -69,16 +80,21 @@ cellDimensions dimensions =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { center = flags.center
-      , dragging = False
-      , startPosition = Nothing
-      , offset = { x = 0, y = 0 }
-      , startOffset = { x = 0, y = 0 }
-      , dimensions = flags.dimensions
-      , cellDimensions = cellDimensions flags.dimensions
-      }
-    , Cmd.none
-    )
+    let
+        model =
+            { villas = Dict.empty
+            , center = flags.center
+            , dragging = False
+            , startPosition = Nothing
+            , offset = { x = 0, y = 0 }
+            , startOffset = { x = 0, y = 0 }
+            , dimensions = flags.dimensions
+            , cellDimensions = cellDimensions flags.dimensions
+            }
+    in
+        ( model
+        , fetchVillas model
+        )
 
 
 type Msg
@@ -86,6 +102,8 @@ type Msg
     | MouseUp Mouse.Position
     | Move Mouse.Position
     | MouseLeave
+    | FetchFail Http.Error
+    | FetchSucceed (Dict ( Int, Int ) Villa)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -104,7 +122,7 @@ update msg model =
                 | dragging = False
                 , startPosition = Nothing
             }
-                ! []
+                ! [ fetchVillas model ]
 
         MouseLeave ->
             { model | dragging = False, startPosition = Nothing } ! []
@@ -122,6 +140,50 @@ update msg model =
 
                 Nothing ->
                     model ! []
+
+        FetchFail _ ->
+            model ! []
+
+        FetchSucceed villas ->
+            { model | villas = villas } ! []
+
+
+fetchVillas : Model -> Cmd Msg
+fetchVillas model =
+    let
+        queryParams =
+            [ ( "min_x", toString model.origin.x )
+            , ( "min_y", toString model.origin.y )
+            , ( "max_x", toString (model.origin.x + 10) )
+            , ( "max_y", toString (model.origin.y + 10) )
+            ]
+
+        url =
+            Http.url villasEndpointUrl queryParams
+
+        task =
+            Http.get decodeVillas url
+    in
+        Task.perform FetchFail FetchSucceed task
+
+
+decodeVillas : Json.Decoder (Dict ( Int, Int ) Villa)
+decodeVillas =
+    let
+        listToDict list =
+            List.map (\v -> ( ( v.x, v.y ), v )) list
+                |> Dict.fromList
+    in
+        Json.map listToDict (list decodeVilla)
+
+
+decodeVilla : Json.Decoder Villa
+decodeVilla =
+    object4 Villa
+        ("id" := int)
+        ("name" := string)
+        ("x" := int)
+        ("y" := int)
 
 
 view : Model -> Html Msg
