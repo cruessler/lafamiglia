@@ -40,8 +40,8 @@ type alias Offset =
 
 
 type alias Dimensions =
-    { width : Int
-    , height : Int
+    { width : Float
+    , height : Float
     }
 
 
@@ -60,7 +60,7 @@ cellDimensions : Dimensions -> Dimensions
 cellDimensions dimensions =
     let
         width =
-            round ((toFloat dimensions.width) / 10.0)
+            dimensions.width / 10.0
     in
         { width = width
         , height = width
