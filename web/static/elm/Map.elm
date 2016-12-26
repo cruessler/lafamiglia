@@ -7,6 +7,7 @@ import Html.Attributes exposing (class, rel, href, style, attribute)
 import Html.Events exposing (onMouseLeave)
 import Http
 import Json.Decode as Json exposing (..)
+import Map.Position exposing (Position)
 import Mouse
 import Task
 import Villa exposing (Villa)
@@ -35,12 +36,6 @@ type alias Model =
     , startOffset : Offset
     , dimensions : Dimensions
     , cellDimensions : Dimensions
-    }
-
-
-type alias Position =
-    { x : Int
-    , y : Int
     }
 
 
