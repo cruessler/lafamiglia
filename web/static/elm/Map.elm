@@ -30,6 +30,7 @@ villasEndpointUrl =
 type alias Model =
     { villas : Dict ( Int, Int ) Villa
     , center : Position
+    , origin : Position
     , dragging : Bool
     , startPosition : Maybe Mouse.Position
     , offset : Offset
@@ -79,6 +80,7 @@ init flags =
         model =
             { villas = Dict.empty
             , center = flags.center
+            , origin = { x = 0, y = 0 }
             , dragging = False
             , startPosition = Nothing
             , offset = { x = 0, y = 0 }
@@ -135,8 +137,23 @@ update msg model =
                             { x = model.startOffset.x + translateOffset.x
                             , y = model.startOffset.y + translateOffset.y
                             }
+
+                        newOrigin =
+                            { x =
+                                (toFloat newOffset.x)
+                                    / model.cellDimensions.width
+                                    |> round
+                            , y =
+                                (toFloat newOffset.y)
+                                    / model.cellDimensions.height
+                                    |> round
+                            }
                     in
-                        { model | offset = newOffset } ! []
+                        { model
+                            | origin = newOrigin
+                            , offset = newOffset
+                        }
+                            ! []
 
                 Nothing ->
                     model ! []
