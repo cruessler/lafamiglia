@@ -94,7 +94,7 @@ div.y-axis-label {
 
 div.cell {
   border: 1px solid lighten($gray-light, 40%);
-  position: absolute;
+  position: relative;
   width: $map-cell-width;
   height: $map-cell-width;
   top: 0;
@@ -115,6 +115,15 @@ div.cell {
 
 #map {
   div.map {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  div.tile {
+    position: absolute;
+    width: 10 * $map-cell-width;
+    height: 10 * $map-cell-height;
+
     display: flex;
     flex-wrap: wrap;
   }

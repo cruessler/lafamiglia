@@ -8,6 +8,7 @@ import Html.Events exposing (onMouseLeave)
 import Http
 import Json.Decode as Json exposing (..)
 import Map.Position exposing (Position)
+import Map.Tile exposing (Tile)
 import Mouse
 import Task
 import Villa exposing (Villa)
@@ -28,7 +29,7 @@ villasEndpointUrl =
 
 
 type alias Model =
-    { villas : Dict ( Int, Int ) Villa
+    { tiles : List Tile
     , center : Position
     , origin : Position
     , dragging : Bool
@@ -78,7 +79,7 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         model =
-            { villas = Dict.empty
+            { tiles = [ Tile { x = 0, y = 0 } Dict.empty ]
             , center = flags.center
             , origin = { x = 0, y = 0 }
             , dragging = False
@@ -162,7 +163,11 @@ update msg model =
             model ! []
 
         FetchSucceed villas ->
-            { model | villas = villas } ! []
+            let
+                newTiles =
+                    [ { origin = { x = 0, y = 0 }, villas = villas } ]
+            in
+                { model | tiles = newTiles } ! []
 
 
 fetchVillas : Model -> Cmd Msg
@@ -206,8 +211,14 @@ decodeVilla =
 view : Model -> Html Msg
 view model =
     let
-        cells =
-            List.map (\i -> div [ class "cell" ] [ text (toString i) ]) [1..100]
+        offset : Tile -> Map.Tile.Offset
+        offset tile =
+            { x = (toFloat tile.origin.x) * model.cellDimensions.width
+            , y = (toFloat tile.origin.y) * model.cellDimensions.height
+            }
+
+        tiles =
+            List.map (\t -> Map.Tile.view (offset t) t) model.tiles
 
         mapStyle =
             [ ( "transform"
@@ -224,7 +235,7 @@ view model =
                 [ class "map-inner-viewport"
                 , onMouseLeave MouseLeave
                 ]
-                [ div [ class "map", style mapStyle ] cells
+                [ div [ class "map", style mapStyle ] tiles
                 ]
             ]
 
