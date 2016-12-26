@@ -1,5 +1,6 @@
 module Map.Tile exposing (Tile, Offset, view)
 
+import Map.Coordinates exposing (Coordinates)
 import Dict exposing (Dict)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class, style)
@@ -27,10 +28,6 @@ type alias Offset =
     { x : Float
     , y : Float
     }
-
-
-type alias Coordinates =
-    ( Int, Int )
 
 
 cell : Coordinates -> Tile -> Html msg
