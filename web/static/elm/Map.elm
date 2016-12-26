@@ -131,9 +131,14 @@ update msg model =
             case model.startPosition of
                 Just start ->
                     let
+                        translateOffset =
+                            { x = position.x - start.x
+                            , y = position.y - start.y
+                            }
+
                         newOffset =
-                            { x = model.startOffset.x + position.x - start.x
-                            , y = model.startOffset.y + position.y - start.y
+                            { x = model.startOffset.x + translateOffset.x
+                            , y = model.startOffset.y + translateOffset.y
                             }
                     in
                         { model | offset = newOffset } ! []
