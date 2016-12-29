@@ -7,6 +7,7 @@ import Html.Attributes exposing (class, rel, href, style, attribute)
 import Html.Events exposing (onMouseLeave)
 import Http
 import Json.Decode as Json exposing (..)
+import Map.Coordinates exposing (Coordinates)
 import Map.Position exposing (Position)
 import Map.Tile exposing (Tile)
 import Mouse
@@ -29,7 +30,7 @@ villasEndpointUrl =
 
 
 type alias Model =
-    { tiles : List Tile
+    { tiles : Dict Coordinates Tile
     , center : Position
     , origin : Position
     , dragging : Bool
@@ -78,8 +79,11 @@ cellDimensions dimensions =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
+        tiles =
+            [ ( ( 0, 0 ), Tile { x = 0, y = 0 } Dict.empty ) ] |> Dict.fromList
+
         model =
-            { tiles = [ Tile { x = 0, y = 0 } Dict.empty ]
+            { tiles = tiles
             , center = flags.center
             , origin = { x = 0, y = 0 }
             , dragging = False
@@ -164,8 +168,11 @@ update msg model =
 
         FetchSucceed villas ->
             let
+                newTile =
+                    Tile { x = 0, y = 0 } villas
+
                 newTiles =
-                    [ { origin = { x = 0, y = 0 }, villas = villas } ]
+                    model.tiles |> Dict.insert ( 0, 0 ) newTile
             in
                 { model | tiles = newTiles } ! []
 
@@ -218,7 +225,9 @@ view model =
             }
 
         tiles =
-            List.map (\t -> Map.Tile.view (offset t) t) model.tiles
+            model.tiles
+                |> Dict.values
+                |> List.map (\t -> Map.Tile.view (offset t) t)
 
         mapStyle =
             [ ( "transform"
