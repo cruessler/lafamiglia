@@ -94,9 +94,7 @@ init flags =
             , cellDimensions = cellDimensions flags.dimensions
             }
     in
-        ( model
-        , fetchVillas model
-        )
+        model ! fetchVillas model
 
 
 type Msg
@@ -105,7 +103,7 @@ type Msg
     | Move Mouse.Position
     | MouseLeave
     | FetchFail Http.Error
-    | FetchSucceed (Dict ( Int, Int ) Villa)
+    | FetchSucceed Coordinates (Dict Coordinates Villa)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -124,7 +122,7 @@ update msg model =
                 | dragging = False
                 , startPosition = Nothing
             }
-                ! [ fetchVillas model ]
+                ! fetchVillas model
 
         MouseLeave ->
             { model | dragging = False, startPosition = Nothing } ! []
@@ -166,25 +164,30 @@ update msg model =
         FetchFail _ ->
             model ! []
 
-        FetchSucceed villas ->
+        FetchSucceed coordinates villas ->
             let
                 newTile =
-                    Tile { x = 0, y = 0 } villas
+                    Tile { x = fst coordinates, y = snd coordinates } villas
 
                 newTiles =
-                    model.tiles |> Dict.insert ( 0, 0 ) newTile
+                    model.tiles |> Dict.insert coordinates newTile
             in
                 { model | tiles = newTiles } ! []
 
 
-fetchVillas : Model -> Cmd Msg
+fetchVillas : Model -> List (Cmd Msg)
 fetchVillas model =
+    model.tiles |> Dict.values |> List.map fetchVillas'
+
+
+fetchVillas' : Tile -> Cmd Msg
+fetchVillas' tile =
     let
         queryParams =
-            [ ( "min_x", toString model.origin.x )
-            , ( "min_y", toString model.origin.y )
-            , ( "max_x", toString (model.origin.x + 10) )
-            , ( "max_y", toString (model.origin.y + 10) )
+            [ ( "min_x", toString tile.origin.x )
+            , ( "min_y", toString tile.origin.y )
+            , ( "max_x", toString (tile.origin.x + 10) )
+            , ( "max_y", toString (tile.origin.y + 10) )
             ]
 
         url =
@@ -193,10 +196,10 @@ fetchVillas model =
         task =
             Http.get decodeVillas url
     in
-        Task.perform FetchFail FetchSucceed task
+        Task.perform FetchFail (FetchSucceed ( tile.origin.x, tile.origin.y )) task
 
 
-decodeVillas : Json.Decoder (Dict ( Int, Int ) Villa)
+decodeVillas : Json.Decoder (Dict Coordinates Villa)
 decodeVillas =
     let
         listToDict list =
