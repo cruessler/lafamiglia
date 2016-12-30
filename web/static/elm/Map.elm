@@ -37,7 +37,8 @@ type alias Model =
     , startPosition : Maybe Mouse.Position
     , offset : Offset
     , startOffset : Offset
-    , dimensions : Dimensions
+    , mapDimensions : Dimensions
+    , tileDimensions : Dimensions
     , cellDimensions : Dimensions
     }
 
@@ -56,7 +57,8 @@ type alias Dimensions =
 
 type alias Flags =
     { center : Position
-    , dimensions : Dimensions
+    , mapDimensions : Dimensions
+    , tileDimensions : Dimensions
     }
 
 
@@ -66,14 +68,10 @@ type alias Flags =
   Must correspond to `div.cell`’s percentage value in `_map.scss`.
 -}
 cellDimensions : Dimensions -> Dimensions
-cellDimensions dimensions =
-    let
-        width =
-            dimensions.width / 10.0
-    in
-        { width = width
-        , height = width
-        }
+cellDimensions tileDimensions =
+    { width = tileDimensions.width / 10.0
+    , height = tileDimensions.height / 10.0
+    }
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -90,8 +88,9 @@ init flags =
             , startPosition = Nothing
             , offset = { x = 0, y = 0 }
             , startOffset = { x = 0, y = 0 }
-            , dimensions = flags.dimensions
-            , cellDimensions = cellDimensions flags.dimensions
+            , mapDimensions = flags.mapDimensions
+            , tileDimensions = flags.tileDimensions
+            , cellDimensions = cellDimensions flags.tileDimensions
             }
     in
         model ! fetchVillas model

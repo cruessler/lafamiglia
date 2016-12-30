@@ -21,15 +21,33 @@ body {
 }
 </style>
 
-<div id="map"></div>
+<div id="map">
+  <div id="viewport-probe" class="map-viewport">
+    <div class="map-inner-viewport">
+      <div id="map-probe" class="map">
+        <div id="tile-probe" class="tile"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script type="text/javascript">
   setTimeout(() => {
     const node = document.getElementById("map")
-    const dimensions = { width: $(node).width(), height: $(node).height() }
+
+    const tileNode = document.getElementById("tile-probe")
+    const tileDimensions =
+      { width: $(tileNode).width(), height: $(tileNode).height() }
+
+    const mapNode = document.getElementById("map-probe")
+    const mapDimensions =
+      { width: $(mapNode).width(), height: $(mapNode).height() }
+
+    document.getElementById("viewport-probe").remove()
 
     Elm.Map.embed(node,
       { center: { x: <%= @center_x %>, y: <%= @center_y %> },
-        dimensions: dimensions })
+        mapDimensions: mapDimensions,
+        tileDimensions: tileDimensions })
   }, 0)
 </script>
