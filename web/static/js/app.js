@@ -2,12 +2,10 @@ import {Socket} from "deps/phoenix/web/static/js/phoenix"
 import "deps/phoenix_html/web/static/js/phoenix_html"
 
 import Countdown from "web/static/js/countdown"
-import InteractiveMap from "web/static/js/map"
 import PlayerSelector from "web/static/js/player_selector"
 import Conversation from "web/static/js/conversation"
 
 window.Countdown = Countdown
-window.InteractiveMap = InteractiveMap
 window.PlayerSelector = PlayerSelector
 window.Conversation = Conversation
 

@@ -20,13 +20,3 @@ body {
   overflow: scroll;
 }
 </style>
-
-<script>
-  window.csrfToken = "<%= get_csrf_token %>"
-</script>
-
-<%= react_component("InteractiveMap",
-  %{origin: Map.take(@current_villa, [:id, :name, :x, :y]),
-    unitNumbers: Unit.filter(@current_villa),
-    centerX: @center_x, centerY: @center_y,
-    playerId: @current_player.id}) %>
