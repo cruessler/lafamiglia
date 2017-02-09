@@ -61,12 +61,6 @@ div.map-inner-viewport:before {
 div.map {
   position: relative;
   height: 100%;
-
-  div.row {
-    clear: both;
-    position: relative;
-    margin: 0;
-  }
 }
 
 div.x-axis-labels {
