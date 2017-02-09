@@ -217,19 +217,21 @@ decodeVilla =
         ("y" := int)
 
 
+offset : Dimensions -> Tile -> Map.Tile.Offset
+offset cellDimensions tile =
+    { x = (toFloat tile.origin.x) * cellDimensions.width
+    , y = (toFloat tile.origin.y) * cellDimensions.height
+    }
+
+
 view : Model -> Html Msg
 view model =
     let
-        offset : Tile -> Map.Tile.Offset
-        offset tile =
-            { x = (toFloat tile.origin.x) * model.cellDimensions.width
-            , y = (toFloat tile.origin.y) * model.cellDimensions.height
-            }
-
         tiles =
             model.tiles
                 |> Dict.values
-                |> List.map (\t -> Map.Tile.view (offset t) t)
+                |> List.map
+                    (\t -> Map.Tile.view (offset model.cellDimensions t) t)
 
         mapStyle =
             [ ( "transform"
