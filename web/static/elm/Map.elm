@@ -89,8 +89,14 @@ init flags =
             , tileDimensions = flags.tileDimensions
             , cellDimensions = cellDimensions flags.tileDimensions
             }
+
+        tiles =
+            visibleTiles model
+
+        modelWithTiles =
+            { model | tiles = tiles }
     in
-        model ! fetchVillas model
+        modelWithTiles ! fetchVillas modelWithTiles
 
 
 type Msg
@@ -165,6 +171,14 @@ visibleTileOrigins model =
             xs
 
 
+visibleTiles : Model -> Dict Coordinates Tile
+visibleTiles model =
+    visibleTileOrigins model
+        |> List.map
+            (\origin -> ( origin, getOrCreateTile model.tiles origin ))
+        |> Dict.fromList
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -179,10 +193,7 @@ update msg model =
         MouseUp position ->
             let
                 newTiles =
-                    visibleTileOrigins model
-                        |> List.map
-                            (\origin -> ( origin, getOrCreateTile model.tiles origin ))
-                        |> Dict.fromList
+                    visibleTiles model
 
                 newModel =
                     { model
