@@ -77,11 +77,8 @@ cellDimensions tileDimensions =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
-        tiles =
-            [ ( ( 0, 0 ), Tile { x = 0, y = 0 } Dict.empty ) ] |> Dict.fromList
-
         model =
-            { tiles = tiles
+            { tiles = Dict.empty
             , center = flags.center
             , origin = { x = 0, y = 0 }
             , dragging = False
@@ -105,6 +102,69 @@ type Msg
     | FetchSucceed Coordinates (Dict Coordinates Villa)
 
 
+getOrCreateTile : Dict Coordinates Tile -> Coordinates -> Tile
+getOrCreateTile tiles coords =
+    tiles
+        |> Dict.get coords
+        |> Maybe.withDefault (Tile { x = fst coords, y = snd coords } Dict.empty)
+
+
+mapCoordinates : Model -> Coordinates -> Coordinates
+mapCoordinates model ( viewportX, viewportY ) =
+    let
+        x =
+            floor (toFloat (viewportX - model.offset.x) / model.cellDimensions.width)
+
+        y =
+            floor (toFloat (viewportY - model.offset.y) / model.cellDimensions.height)
+    in
+        ( x, y )
+
+
+tileOrigin : Int -> Int
+tileOrigin coordinate =
+    if coordinate < 0 then
+        ((coordinate // 10) - 1) * 10
+    else
+        (coordinate // 10) * 10
+
+
+range : Int -> Int -> Int -> List Int
+range start stop step =
+    [start..stop]
+        |> List.filter (\i -> (i - start) % step == 0)
+
+
+visibleTileOrigins : Model -> List Coordinates
+visibleTileOrigins model =
+    let
+        upperLeftCorner =
+            mapCoordinates model ( 0, 0 )
+
+        lowerRightCorner =
+            mapCoordinates
+                model
+                ( (floor model.mapDimensions.width)
+                , (floor model.mapDimensions.height)
+                )
+
+        xs =
+            range
+                (tileOrigin (fst upperLeftCorner))
+                (tileOrigin (fst lowerRightCorner))
+                10
+
+        ys =
+            range
+                (tileOrigin (snd upperLeftCorner))
+                (tileOrigin (snd lowerRightCorner))
+                10
+    in
+        List.concatMap
+            (\x -> List.map (\y -> ( y, x )) ys)
+            xs
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -117,11 +177,21 @@ update msg model =
                 ! []
 
         MouseUp position ->
-            { model
-                | dragging = False
-                , startPosition = Nothing
-            }
-                ! fetchVillas model
+            let
+                newTiles =
+                    visibleTileOrigins model
+                        |> List.map
+                            (\origin -> ( origin, getOrCreateTile model.tiles origin ))
+                        |> Dict.fromList
+
+                newModel =
+                    { model
+                        | dragging = False
+                        , startPosition = Nothing
+                        , tiles = newTiles
+                    }
+            in
+                newModel ! fetchVillas newModel
 
         MouseLeave ->
             { model | dragging = False, startPosition = Nothing } ! []
