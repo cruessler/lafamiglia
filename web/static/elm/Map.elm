@@ -127,6 +127,22 @@ mapCoordinates model ( viewportX, viewportY ) =
         ( x, y )
 
 
+viewportCoordinates : Model -> Coordinates -> Coordinates
+viewportCoordinates model ( mapX, mapY ) =
+    let
+        x =
+            (toFloat mapX)
+                * model.cellDimensions.width
+                |> round
+
+        y =
+            (toFloat mapY)
+                * model.cellDimensions.height
+                |> round
+    in
+        ( x, y )
+
+
 tileOrigin : Int -> Int
 tileOrigin coordinate =
     if coordinate < 0 then
@@ -177,6 +193,32 @@ visibleTiles model =
         |> List.map
             (\origin -> ( origin, getOrCreateTile model.tiles origin ))
         |> Dict.fromList
+
+
+visibleXAxisLabels : Model -> List Int
+visibleXAxisLabels model =
+    let
+        upperLeftX =
+            mapCoordinates model ( 0, 0 )
+                |> fst
+
+        width =
+            ceiling (model.mapDimensions.width / model.cellDimensions.width) + 1
+    in
+        range upperLeftX (upperLeftX + width) 1
+
+
+visibleYAxisLabels : Model -> List Int
+visibleYAxisLabels model =
+    let
+        upperLeftY =
+            mapCoordinates model ( 0, 0 )
+                |> snd
+
+        height =
+            ceiling (model.mapDimensions.height / model.cellDimensions.height) + 1
+    in
+        range upperLeftY (upperLeftY + height) 1
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -305,14 +347,60 @@ offset cellDimensions tile =
     }
 
 
+xAxisLabel : Model -> Int -> Html Msg
+xAxisLabel model x =
+    let
+        offset =
+            viewportCoordinates model ( x, 0 )
+    in
+        div
+            [ class "x-axis-label"
+            , style [ ( "left", toString (fst offset) ++ "px" ) ]
+            ]
+            [ text (toString x) ]
+
+
+yAxisLabel : Model -> Int -> Html Msg
+yAxisLabel model y =
+    let
+        offset =
+            viewportCoordinates model ( 0, y )
+    in
+        div
+            [ class "y-axis-label"
+            , style [ ( "top", toString (snd offset) ++ "px" ) ]
+            ]
+            [ text (toString y) ]
+
+
 view : Model -> Html Msg
 view model =
     let
+        xAxisLabels =
+            visibleXAxisLabels model
+                |> List.map (\x -> xAxisLabel model x)
+
+        yAxisLabels =
+            visibleYAxisLabels model
+                |> List.map (\y -> yAxisLabel model y)
+
         tiles =
             model.tiles
                 |> Dict.values
                 |> List.map
                     (\t -> Map.Tile.view (offset model.cellDimensions t) t)
+
+        xAxisStyle =
+            [ ( "transform"
+              , "translateX(" ++ (toString model.offset.x) ++ "px)"
+              )
+            ]
+
+        yAxisStyle =
+            [ ( "transform"
+              , "translateY(" ++ (toString model.offset.y) ++ "px)"
+              )
+            ]
 
         mapStyle =
             [ ( "transform"
@@ -326,6 +414,12 @@ view model =
     in
         div [ class "container-fluid map-viewport" ]
             [ div
+                [ class "x-axis-labels", style xAxisStyle ]
+                xAxisLabels
+            , div
+                [ class "y-axis-labels", style yAxisStyle ]
+                yAxisLabels
+            , div
                 [ class "map-inner-viewport"
                 , onMouseLeave MouseLeave
                 ]
