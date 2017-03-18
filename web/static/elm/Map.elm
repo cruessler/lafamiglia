@@ -115,6 +115,10 @@ getOrCreateTile tiles coords =
         |> Maybe.withDefault (Tile { x = fst coords, y = snd coords } Dict.empty)
 
 
+{-| Convert viewport coordinates to map coordinates.
+
+Viewport coordinates are relative to the origin of the screen.
+-}
 mapCoordinates : Model -> Coordinates -> Coordinates
 mapCoordinates model ( viewportX, viewportY ) =
     let
@@ -127,6 +131,10 @@ mapCoordinates model ( viewportX, viewportY ) =
         ( x, y )
 
 
+{-| Convert map coordinates to viewport coordinates.
+
+Viewport coordinates are relative to the origin of the screen.
+-}
 viewportCoordinates : Model -> Coordinates -> Coordinates
 viewportCoordinates model ( mapX, mapY ) =
     let
