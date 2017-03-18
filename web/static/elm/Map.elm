@@ -9,6 +9,7 @@ import Http
 import Json.Decode as Json exposing (..)
 import Map.Coordinates exposing (Coordinates)
 import Map.Position exposing (Position)
+import Map.StatusBar as StatusBar
 import Map.Tile exposing (Tile)
 import Mouse
 import Task
@@ -40,6 +41,7 @@ type alias Model =
     , mapDimensions : Dimensions
     , tileDimensions : Dimensions
     , cellDimensions : Dimensions
+    , hoveredVilla : Maybe Villa
     }
 
 
@@ -88,6 +90,7 @@ init flags =
             , mapDimensions = flags.mapDimensions
             , tileDimensions = flags.tileDimensions
             , cellDimensions = cellDimensions flags.tileDimensions
+            , hoveredVilla = Nothing
             }
 
         tiles =
@@ -433,6 +436,7 @@ view model =
                 ]
                 [ div [ class "map", style mapStyle ] tiles
                 ]
+            , StatusBar.view model.hoveredVilla
             ]
 
 
