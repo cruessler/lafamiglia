@@ -10,7 +10,7 @@ import Json.Decode as Json exposing (..)
 import Map.Coordinates exposing (Coordinates)
 import Map.Position exposing (Position)
 import Map.StatusBar as StatusBar
-import Map.Tile exposing (Tile)
+import Map.Tile as Tile exposing (Tile)
 import Mouse
 import Task
 import Villa exposing (Villa)
@@ -351,7 +351,7 @@ decodeVilla =
         ("y" := int)
 
 
-offset : Dimensions -> Tile -> Map.Tile.Offset
+offset : Dimensions -> Tile -> Tile.Offset
 offset cellDimensions tile =
     { x = (toFloat tile.origin.x) * cellDimensions.width
     , y = (toFloat tile.origin.y) * cellDimensions.height
@@ -399,7 +399,7 @@ view model =
             model.tiles
                 |> Dict.values
                 |> List.map
-                    (\t -> Map.Tile.view (offset model.cellDimensions t) t)
+                    (\t -> Tile.view (offset model.cellDimensions t) t)
 
         xAxisStyle =
             [ ( "transform"
