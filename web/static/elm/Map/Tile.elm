@@ -4,6 +4,7 @@ import Map.Coordinates exposing (Coordinates)
 import Dict exposing (Dict)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class, style)
+import Html.Events exposing (onMouseEnter, onMouseOut)
 import Map.Position exposing (Position)
 import Villa exposing (Villa)
 
@@ -30,19 +31,23 @@ type alias Offset =
     }
 
 
-cell : Coordinates -> Tile -> Html msg
-cell coordinates tile =
-    let
-        title =
-            Dict.get coordinates tile.villas
-                |> Maybe.map (\villa -> (toString villa.y) ++ "|" ++ (toString villa.x) ++ " " ++ villa.name)
-                |> Maybe.withDefault ""
-    in
-        div [ class "cell" ] [ text title ]
+cell : (Maybe Villa -> msg) -> Coordinates -> Tile -> Html msg
+cell toMsg coordinates tile =
+    case Dict.get coordinates tile.villas of
+        (Just v) as villa ->
+            div
+                [ class "cell"
+                , onMouseEnter (toMsg villa)
+                , onMouseOut (toMsg Nothing)
+                ]
+                [ text (Villa.format v) ]
+
+        Nothing ->
+            div [ class "cell" ] []
 
 
-view : Offset -> Tile -> Html msg
-view offset tile =
+view : (Maybe Villa -> msg) -> Offset -> Tile -> Html msg
+view toMsg offset tile =
     let
         xs =
             [tile.origin.x..(tile.origin.x + width - 1)]
@@ -52,7 +57,7 @@ view offset tile =
 
         cells =
             List.concatMap
-                (\x -> List.map (\y -> cell ( x, y ) tile) xs)
+                (\x -> List.map (\y -> cell toMsg ( x, y ) tile) xs)
                 ys
 
         tileStyle =

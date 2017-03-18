@@ -106,6 +106,7 @@ type Msg
     = MouseDown Mouse.Position
     | MouseUp Mouse.Position
     | Move Mouse.Position
+    | Hover (Maybe Villa)
     | MouseLeave
     | FetchFail Http.Error
     | FetchSucceed Coordinates (Dict Coordinates Villa)
@@ -294,6 +295,9 @@ update msg model =
                 Nothing ->
                     model ! []
 
+        Hover villa ->
+            { model | hoveredVilla = villa } ! []
+
         FetchFail _ ->
             model ! []
 
@@ -399,7 +403,7 @@ view model =
             model.tiles
                 |> Dict.values
                 |> List.map
-                    (\t -> Tile.view (offset model.cellDimensions t) t)
+                    (\t -> Tile.view Hover (offset model.cellDimensions t) t)
 
         xAxisStyle =
             [ ( "transform"
