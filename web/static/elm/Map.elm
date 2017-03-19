@@ -331,28 +331,9 @@ fetchVillas' tile =
             Http.url villasEndpointUrl queryParams
 
         task =
-            Http.get decodeVillas url
+            Http.get Villa.decodeVillas url
     in
         Task.perform FetchFail (FetchSucceed ( tile.origin.x, tile.origin.y )) task
-
-
-decodeVillas : Json.Decoder (Dict Coordinates Villa)
-decodeVillas =
-    let
-        listToDict list =
-            List.map (\v -> ( ( v.x, v.y ), v )) list
-                |> Dict.fromList
-    in
-        Json.map listToDict (list decodeVilla)
-
-
-decodeVilla : Json.Decoder Villa
-decodeVilla =
-    object4 Villa
-        ("id" := int)
-        ("name" := string)
-        ("x" := int)
-        ("y" := int)
 
 
 offset : Dimensions -> Tile -> Tile.Offset
