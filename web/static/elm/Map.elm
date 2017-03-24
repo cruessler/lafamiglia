@@ -384,7 +384,7 @@ view model =
             model.tiles
                 |> Dict.values
                 |> List.map
-                    (\t -> Tile.view Hover (offset model.cellDimensions t) t)
+                    (\t -> Tile.view tileConfig (offset model.cellDimensions t) t)
 
         xAxisStyle =
             [ ( "transform"
@@ -423,6 +423,13 @@ view model =
                 ]
             , StatusBar.view model.hoveredVilla
             ]
+
+
+tileConfig : Tile.Config Msg
+tileConfig =
+    Tile.config
+        { onHover = Hover
+        }
 
 
 subscriptions : Model -> Sub Msg

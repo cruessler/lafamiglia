@@ -1,4 +1,4 @@
-module Map.Tile exposing (Tile, Offset, view)
+module Map.Tile exposing (Tile, Offset, Config, config, view)
 
 import Map.Coordinates exposing (Coordinates)
 import Dict exposing (Dict)
@@ -31,14 +31,30 @@ type alias Offset =
     }
 
 
-cell : (Maybe Villa -> msg) -> Coordinates -> Tile -> Html msg
-cell toMsg coordinates tile =
+type Config msg
+    = Config
+        { onHover : Maybe Villa -> msg
+        }
+
+
+config :
+    { onHover : Maybe Villa -> msg
+    }
+    -> Config msg
+config { onHover } =
+    Config
+        { onHover = onHover
+        }
+
+
+cell : Config msg -> Coordinates -> Tile -> Html msg
+cell (Config { onHover }) coordinates tile =
     case Dict.get coordinates tile.villas of
         (Just v) as villa ->
             div
                 [ class "cell"
-                , Events.onMouseEnter (toMsg villa)
-                , Events.onMouseOut (toMsg Nothing)
+                , Events.onMouseEnter (onHover villa)
+                , Events.onMouseOut (onHover Nothing)
                 ]
                 [ text (Villa.format v) ]
 
@@ -46,8 +62,8 @@ cell toMsg coordinates tile =
             div [ class "cell" ] []
 
 
-view : (Maybe Villa -> msg) -> Offset -> Tile -> Html msg
-view toMsg offset tile =
+view : Config msg -> Offset -> Tile -> Html msg
+view config offset tile =
     let
         xs =
             [tile.origin.x..(tile.origin.x + width - 1)]
@@ -57,7 +73,7 @@ view toMsg offset tile =
 
         cells =
             List.concatMap
-                (\x -> List.map (\y -> cell toMsg ( x, y ) tile) xs)
+                (\x -> List.map (\y -> cell config ( x, y ) tile) xs)
                 ys
 
         tileStyle =
