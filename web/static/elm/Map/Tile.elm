@@ -34,32 +34,40 @@ type alias Offset =
 type Config msg
     = Config
         { onHover : Maybe Villa -> msg
+        , onClick : Maybe Villa -> msg
         }
 
 
 config :
     { onHover : Maybe Villa -> msg
+    , onClick : Maybe Villa -> msg
     }
     -> Config msg
-config { onHover } =
+config { onHover, onClick } =
     Config
         { onHover = onHover
+        , onClick = onClick
         }
 
 
 cell : Config msg -> Coordinates -> Tile -> Html msg
-cell (Config { onHover }) coordinates tile =
+cell (Config { onHover, onClick }) coordinates tile =
     case Dict.get coordinates tile.villas of
         (Just v) as villa ->
             div
                 [ class "cell"
                 , Events.onMouseEnter (onHover villa)
                 , Events.onMouseOut (onHover Nothing)
+                , Events.onClick (onClick villa)
                 ]
                 [ text (Villa.format v) ]
 
         Nothing ->
-            div [ class "cell" ] []
+            div
+                [ class "cell"
+                , Events.onClick (onClick Nothing)
+                ]
+                []
 
 
 view : Config msg -> Offset -> Tile -> Html msg

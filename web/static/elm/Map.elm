@@ -111,6 +111,7 @@ type Msg
     | Move Mouse.Position
     | Hover (Maybe Villa)
     | MouseLeave
+    | Click (Maybe Villa)
     | FetchFail Http.Error
     | FetchSucceed Coordinates (Dict Coordinates Villa)
 
@@ -301,6 +302,9 @@ update msg model =
         Hover villa ->
             { model | hoveredVilla = villa } ! []
 
+        Click villa ->
+            { model | clickedVilla = villa } ! []
+
         FetchFail _ ->
             model ! []
 
@@ -433,6 +437,7 @@ tileConfig : Tile.Config Msg
 tileConfig =
     Tile.config
         { onHover = Hover
+        , onClick = Click
         }
 
 
