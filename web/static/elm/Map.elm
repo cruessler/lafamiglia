@@ -8,6 +8,7 @@ import Html.Events as Events
 import Http
 import Json.Decode as Json exposing (..)
 import Map.Coordinates exposing (Coordinates)
+import Map.InfoBox as InfoBox
 import Map.Position exposing (Position)
 import Map.StatusBar as StatusBar
 import Map.Tile as Tile exposing (Tile)
@@ -42,6 +43,7 @@ type alias Model =
     , tileDimensions : Dimensions
     , cellDimensions : Dimensions
     , hoveredVilla : Maybe Villa
+    , clickedVilla : Maybe Villa
     }
 
 
@@ -91,6 +93,7 @@ init flags =
             , tileDimensions = flags.tileDimensions
             , cellDimensions = cellDimensions flags.tileDimensions
             , hoveredVilla = Nothing
+            , clickedVilla = Nothing
             }
 
         tiles =
@@ -422,6 +425,7 @@ view model =
                 [ div [ class "map", style mapStyle ] tiles
                 ]
             , StatusBar.view model.hoveredVilla
+            , InfoBox.view model.clickedVilla
             ]
 
 
