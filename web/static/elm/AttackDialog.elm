@@ -29,8 +29,16 @@ main =
         { init = init
         , update = update
         , view = view
-        , subscriptions = (\m -> Time.every Time.second Tick)
+        , subscriptions = subscriptions
         }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    if List.any (\s -> s.current > 0) model.sliders then
+        Time.every Time.second Tick
+    else
+        Sub.none
 
 
 attackEndpointUrl : Villa -> String
