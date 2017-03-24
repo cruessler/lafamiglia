@@ -4,7 +4,7 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.App as Html
 import Html.Attributes exposing (class, rel, href, style, attribute)
-import Html.Events exposing (onMouseLeave)
+import Html.Events as Events
 import Http
 import Json.Decode as Json exposing (..)
 import Map.Coordinates exposing (Coordinates)
@@ -417,7 +417,7 @@ view model =
                 yAxisLabels
             , div
                 [ class "map-inner-viewport"
-                , onMouseLeave MouseLeave
+                , Events.onMouseLeave MouseLeave
                 ]
                 [ div [ class "map", style mapStyle ] tiles
                 ]

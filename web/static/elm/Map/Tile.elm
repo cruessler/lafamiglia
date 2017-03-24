@@ -4,7 +4,7 @@ import Map.Coordinates exposing (Coordinates)
 import Dict exposing (Dict)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class, style)
-import Html.Events exposing (onMouseEnter, onMouseOut)
+import Html.Events as Events
 import Map.Position exposing (Position)
 import Villa exposing (Villa)
 
@@ -37,8 +37,8 @@ cell toMsg coordinates tile =
         (Just v) as villa ->
             div
                 [ class "cell"
-                , onMouseEnter (toMsg villa)
-                , onMouseOut (toMsg Nothing)
+                , Events.onMouseEnter (toMsg villa)
+                , Events.onMouseOut (toMsg Nothing)
                 ]
                 [ text (Villa.format v) ]
 
