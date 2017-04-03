@@ -12,8 +12,10 @@ import Map.InfoBox as InfoBox
 import Map.Position exposing (Position)
 import Map.StatusBar as StatusBar
 import Map.Tile as Tile exposing (Tile)
+import Mechanics.Units as Units
 import Mouse
 import Task
+import Unit
 import Villa exposing (Villa)
 
 
@@ -44,6 +46,9 @@ type alias Model =
     , cellDimensions : Dimensions
     , hoveredVilla : Maybe Villa
     , clickedVilla : Maybe Villa
+    , currentVilla : Villa
+    , unitNumbers : Dict Unit.Id Int
+    , csrfToken : String
     }
 
 
@@ -63,6 +68,9 @@ type alias Flags =
     { center : Position
     , mapDimensions : Dimensions
     , tileDimensions : Dimensions
+    , unitNumbers : Json.Value
+    , currentVilla : Villa
+    , csrfToken : String
     }
 
 
@@ -81,6 +89,12 @@ cellDimensions tileDimensions =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
+        unitNumbers =
+            flags.unitNumbers
+                |> Json.decodeValue Units.decodeUnitNumbers
+                |> Result.toMaybe
+                |> Maybe.withDefault Dict.empty
+
         model =
             { tiles = Dict.empty
             , center = flags.center
@@ -94,6 +108,9 @@ init flags =
             , cellDimensions = cellDimensions flags.tileDimensions
             , hoveredVilla = Nothing
             , clickedVilla = Nothing
+            , currentVilla = flags.currentVilla
+            , unitNumbers = unitNumbers
+            , csrfToken = flags.csrfToken
             }
 
         tiles =

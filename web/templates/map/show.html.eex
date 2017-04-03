@@ -48,6 +48,10 @@ body {
     Elm.Map.embed(node,
       { center: { x: <%= @center_x %>, y: <%= @center_y %> },
         mapDimensions: mapDimensions,
-        tileDimensions: tileDimensions })
+        tileDimensions: tileDimensions,
+        currentVilla: <%= {:safe, Map.take(@current_villa, [:id, :name, :x, :y]) |> Poison.encode!} %>,
+        unitNumbers: <%= {:safe, Unit.filter(@current_villa) |> Poison.encode!} %>,
+        csrfToken: "<%= get_csrf_token %>"
+      })
   }, 0)
 </script>
