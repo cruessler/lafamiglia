@@ -318,7 +318,7 @@ arrivalInfo (Config config) state target =
 
         arrival =
             duration
-                |> Maybe.map (\time -> Format.arrival state.now (state.now + time))
+                |> Maybe.map (Format.arrival state.now)
                 |> Maybe.withDefault ""
 
         timeToArrival =

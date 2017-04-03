@@ -6,28 +6,28 @@ import Time exposing (Time)
 
 
 arrival : Time -> Time -> String
-arrival now arrival =
+arrival start duration =
     let
-        dateNow =
-            Date.fromTime now
+        startDate =
+            Date.fromTime start
 
-        dateArrival =
-            Date.fromTime arrival
+        arrivalDate =
+            Date.fromTime (start + duration)
 
         formatString =
             if
-                Date.year dateNow
-                    == Date.year dateArrival
-                    && Date.month dateNow
-                    == Date.month dateArrival
-                    && Date.day dateNow
-                    == Date.day dateArrival
+                Date.year startDate
+                    == Date.year arrivalDate
+                    && Date.month startDate
+                    == Date.month arrivalDate
+                    && Date.day startDate
+                    == Date.day arrivalDate
             then
                 "%I:%M:%S %P"
             else
                 "%B %e, %I:%M:%S %P"
     in
-        format formatString dateArrival
+        format formatString arrivalDate
 
 
 duration : Time -> String
