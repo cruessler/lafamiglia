@@ -36,6 +36,19 @@ div.map-viewport {
       color: $gray-light;
     }
   }
+
+  div.feedback-box {
+    @include overlay-box;
+
+    position: absolute;
+    right: calc(#{$map-y-axis-labels-width} + 3%);
+    bottom: 2%;
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+  }
 }
 div.map-inner-viewport {
   position: relative;

@@ -4,6 +4,7 @@ import Api
 import Attack exposing (Attack)
 import AttackDialog
 import Dict exposing (Dict)
+import FeedbackBox
 import Html exposing (..)
 import Html.App as Html
 import Html.Attributes exposing (class, rel, href, style, attribute)
@@ -497,6 +498,7 @@ view model =
                 (attackDialogConfig model.currentVilla)
                 model.attackDialogState
                 { units = model.unitNumbers, errors = model.attackErrors }
+            , FeedbackBox.view model.messages
             ]
 
 
