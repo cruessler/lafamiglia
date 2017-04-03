@@ -492,7 +492,7 @@ view model =
                 [ div [ class "map", style mapStyle ] tiles
                 ]
             , StatusBar.view model.hoveredVilla
-            , InfoBox.view model.clickedVilla
+            , InfoBox.view OpenAttackDialog model.clickedVilla
             , AttackDialog.view
                 (attackDialogConfig model.currentVilla)
                 model.attackDialogState
