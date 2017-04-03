@@ -32,7 +32,7 @@ body {
 </div>
 
 <script type="text/javascript">
-  setTimeout(() => {
+  document.addEventListener("DOMContentLoaded", () => {
     const node = document.getElementById("map")
 
     const tileNode = document.getElementById("tile-probe")
@@ -53,5 +53,5 @@ body {
         unitNumbers: <%= {:safe, Unit.filter(@current_villa) |> Poison.encode!} %>,
         csrfToken: "<%= get_csrf_token %>"
       })
-  }, 0)
+  })
 </script>
