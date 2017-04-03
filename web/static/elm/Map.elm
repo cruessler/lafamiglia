@@ -12,6 +12,7 @@ import Html.Events as Events
 import Http
 import Json.Decode as Json exposing (..)
 import Map.Coordinates exposing (Coordinates)
+import Map.Geometry as Geometry exposing (Geometry)
 import Map.InfoBox as InfoBox
 import Map.Position exposing (Position)
 import Map.StatusBar as StatusBar
@@ -43,11 +44,9 @@ type alias Model =
     , origin : Position
     , dragging : Bool
     , startPosition : Maybe Mouse.Position
-    , offset : Offset
-    , startOffset : Offset
-    , mapDimensions : Dimensions
-    , tileDimensions : Dimensions
-    , cellDimensions : Dimensions
+    , offset : Geometry.Offset
+    , startOffset : Geometry.Offset
+    , geometry : Geometry
     , hoveredVilla : Maybe Villa
     , clickedVilla : Maybe Villa
     , currentVilla : Villa
@@ -59,37 +58,13 @@ type alias Model =
     }
 
 
-type alias Offset =
-    { x : Int
-    , y : Int
-    }
-
-
-type alias Dimensions =
-    { width : Float
-    , height : Float
-    }
-
-
 type alias Flags =
     { center : Position
-    , mapDimensions : Dimensions
-    , tileDimensions : Dimensions
+    , mapDimensions : Geometry.Dimensions
+    , tileDimensions : Geometry.Dimensions
     , unitNumbers : Json.Value
     , currentVilla : Villa
     , csrfToken : String
-    }
-
-
-{-|
-  Calculate the dimensions of a single map cell.
-
-  Must correspond to `div.cell`’s percentage value in `_map.scss`.
--}
-cellDimensions : Dimensions -> Dimensions
-cellDimensions tileDimensions =
-    { width = tileDimensions.width / 10.0
-    , height = tileDimensions.height / 10.0
     }
 
 
@@ -102,6 +77,9 @@ init flags =
                 |> Result.toMaybe
                 |> Maybe.withDefault Dict.empty
 
+        geometry =
+            Geometry.init flags.mapDimensions flags.tileDimensions
+
         model =
             { tiles = Dict.empty
             , center = flags.center
@@ -110,9 +88,7 @@ init flags =
             , startPosition = Nothing
             , offset = { x = 0, y = 0 }
             , startOffset = { x = 0, y = 0 }
-            , mapDimensions = flags.mapDimensions
-            , tileDimensions = flags.tileDimensions
-            , cellDimensions = cellDimensions flags.tileDimensions
+            , geometry = geometry
             , hoveredVilla = Nothing
             , clickedVilla = Nothing
             , currentVilla = flags.currentVilla
@@ -155,118 +131,12 @@ getOrCreateTile tiles coords =
         |> Maybe.withDefault (Tile { x = fst coords, y = snd coords } Dict.empty)
 
 
-{-| Convert viewport coordinates to map coordinates.
-
-Viewport coordinates are relative to the origin of the screen.
--}
-mapCoordinates : Model -> Coordinates -> Coordinates
-mapCoordinates model ( viewportX, viewportY ) =
-    let
-        x =
-            floor (toFloat (viewportX - model.offset.x) / model.cellDimensions.width)
-
-        y =
-            floor (toFloat (viewportY - model.offset.y) / model.cellDimensions.height)
-    in
-        ( x, y )
-
-
-{-| Convert map coordinates to viewport coordinates.
-
-Viewport coordinates are relative to the origin of the screen.
--}
-viewportCoordinates : Model -> Coordinates -> Coordinates
-viewportCoordinates model ( mapX, mapY ) =
-    let
-        x =
-            (toFloat mapX)
-                * model.cellDimensions.width
-                |> round
-
-        y =
-            (toFloat mapY)
-                * model.cellDimensions.height
-                |> round
-    in
-        ( x, y )
-
-
-tileOrigin : Int -> Int
-tileOrigin coordinate =
-    if coordinate < 0 then
-        ((coordinate // 10) - 1) * 10
-    else
-        (coordinate // 10) * 10
-
-
-range : Int -> Int -> Int -> List Int
-range start stop step =
-    [start..stop]
-        |> List.filter (\i -> (i - start) % step == 0)
-
-
-visibleTileOrigins : Model -> List Coordinates
-visibleTileOrigins model =
-    let
-        upperLeftCorner =
-            mapCoordinates model ( 0, 0 )
-
-        lowerRightCorner =
-            mapCoordinates
-                model
-                ( (floor model.mapDimensions.width)
-                , (floor model.mapDimensions.height)
-                )
-
-        xs =
-            range
-                (tileOrigin (fst upperLeftCorner))
-                (tileOrigin (fst lowerRightCorner))
-                10
-
-        ys =
-            range
-                (tileOrigin (snd upperLeftCorner))
-                (tileOrigin (snd lowerRightCorner))
-                10
-    in
-        List.concatMap
-            (\x -> List.map (\y -> ( y, x )) ys)
-            xs
-
-
 visibleTiles : Model -> Dict Coordinates Tile
 visibleTiles model =
-    visibleTileOrigins model
+    Geometry.visibleTileOrigins model.geometry model.offset
         |> List.map
             (\origin -> ( origin, getOrCreateTile model.tiles origin ))
         |> Dict.fromList
-
-
-visibleXAxisLabels : Model -> List Int
-visibleXAxisLabels model =
-    let
-        upperLeftX =
-            mapCoordinates model ( 0, 0 )
-                |> fst
-
-        width =
-            ceiling (model.mapDimensions.width / model.cellDimensions.width) + 1
-    in
-        range upperLeftX (upperLeftX + width) 1
-
-
-visibleYAxisLabels : Model -> List Int
-visibleYAxisLabels model =
-    let
-        upperLeftY =
-            mapCoordinates model ( 0, 0 )
-                |> snd
-
-        height =
-            ceiling (model.mapDimensions.height / model.cellDimensions.height) + 1
-    in
-        range upperLeftY (upperLeftY + height) 1
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -314,11 +184,11 @@ update msg model =
                         newOrigin =
                             { x =
                                 (toFloat newOffset.x)
-                                    / model.cellDimensions.width
+                                    / model.geometry.cellDimensions.width
                                     |> round
                             , y =
                                 (toFloat newOffset.y)
-                                    / model.cellDimensions.height
+                                    / model.geometry.cellDimensions.height
                                     |> round
                             }
                     in
@@ -407,7 +277,7 @@ fetchVillas' tile =
         Task.perform FetchFail (FetchSucceed ( tile.origin.x, tile.origin.y )) task
 
 
-offset : Dimensions -> Tile -> Tile.Offset
+offset : Geometry.Dimensions -> Tile -> Tile.Offset
 offset cellDimensions tile =
     { x = (toFloat tile.origin.x) * cellDimensions.width
     , y = (toFloat tile.origin.y) * cellDimensions.height
@@ -418,7 +288,7 @@ xAxisLabel : Model -> Int -> Html Msg
 xAxisLabel model x =
     let
         offset =
-            viewportCoordinates model ( x, 0 )
+            Geometry.viewportCoordinates model.geometry ( x, 0 )
     in
         div
             [ class "x-axis-label"
@@ -431,7 +301,7 @@ yAxisLabel : Model -> Int -> Html Msg
 yAxisLabel model y =
     let
         offset =
-            viewportCoordinates model ( 0, y )
+            Geometry.viewportCoordinates model.geometry ( 0, y )
     in
         div
             [ class "y-axis-label"
@@ -444,18 +314,21 @@ view : Model -> Html Msg
 view model =
     let
         xAxisLabels =
-            visibleXAxisLabels model
-                |> List.map (\x -> xAxisLabel model x)
+            Geometry.visibleXAxisLabels model.geometry model.offset
+                |> List.map (xAxisLabel model)
 
         yAxisLabels =
-            visibleYAxisLabels model
-                |> List.map (\y -> yAxisLabel model y)
+            Geometry.visibleYAxisLabels model.geometry model.offset
+                |> List.map (yAxisLabel model)
+
+        offset' =
+            offset model.geometry.cellDimensions
 
         tiles =
             model.tiles
                 |> Dict.values
                 |> List.map
-                    (\t -> Tile.view tileConfig (offset model.cellDimensions t) t)
+                    (\t -> Tile.view tileConfig (offset' t) t)
 
         xAxisStyle =
             [ ( "transform"
