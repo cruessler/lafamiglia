@@ -1,10 +1,18 @@
-module Unit exposing (Unit, duration)
+module Unit exposing (Id, Key, Unit, duration)
 
 import Time exposing (Time)
 
 
+type alias Id =
+    Int
+
+
+type alias Key =
+    String
+
+
 type alias Unit =
-    { id : Int
+    { id : Id
     , key : String
     , name : String
     , speed : Float
