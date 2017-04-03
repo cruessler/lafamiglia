@@ -53,14 +53,14 @@ config { onHover, onClick } =
 cell : Config msg -> Coordinates -> Tile -> Html msg
 cell (Config { onHover, onClick }) coordinates tile =
     case Dict.get coordinates tile.villas of
-        (Just v) as villa ->
+        (Just villa) as villa' ->
             div
                 [ class "cell"
-                , Events.onMouseEnter (onHover villa)
+                , Events.onMouseEnter (onHover villa')
                 , Events.onMouseOut (onHover Nothing)
-                , Events.onClick (onClick villa)
+                , Events.onClick (onClick villa')
                 ]
-                [ text (Villa.format v) ]
+                [ text (Villa.format villa) ]
 
         Nothing ->
             div
