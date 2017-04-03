@@ -1,5 +1,8 @@
 module Map exposing (main)
 
+import Api
+import Attack exposing (Attack)
+import AttackDialog
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.App as Html
@@ -48,6 +51,9 @@ type alias Model =
     , clickedVilla : Maybe Villa
     , currentVilla : Villa
     , unitNumbers : Dict Unit.Id Int
+    , attackDialogState : AttackDialog.State
+    , attackErrors : Attack.Errors
+    , messages : List String
     , csrfToken : String
     }
 
@@ -110,6 +116,9 @@ init flags =
             , clickedVilla = Nothing
             , currentVilla = flags.currentVilla
             , unitNumbers = unitNumbers
+            , attackDialogState = AttackDialog.initialState unitNumbers
+            , attackErrors = Attack.Errors [] Dict.empty
+            , messages = []
             , csrfToken = flags.csrfToken
             }
 
@@ -129,8 +138,13 @@ type Msg
     | Hover (Maybe Villa)
     | MouseLeave
     | Click (Maybe Villa)
+    | OpenAttackDialog Villa
+    | SendTroops Attack
+    | NewDialogState AttackDialog.State
     | FetchFail Http.Error
     | FetchSucceed Coordinates (Dict Coordinates Villa)
+    | AttackFail Http.Error
+    | AttackSucceed (Api.Response Attack.Errors Attack.Success)
 
 
 getOrCreateTile : Dict Coordinates Tile -> Coordinates -> Tile
@@ -322,6 +336,27 @@ update msg model =
         Click villa ->
             { model | clickedVilla = villa } ! []
 
+        OpenAttackDialog villa ->
+            let
+                newState =
+                    model.attackDialogState |> AttackDialog.open villa
+            in
+                { model | attackDialogState = newState } ! []
+
+        SendTroops attack ->
+            let
+                newState =
+                    model.attackDialogState |> AttackDialog.close
+            in
+                { model
+                    | attackDialogState = newState
+                    , messages = [ "Your order has been sent" ]
+                }
+                    ! [ Attack.postAttack (attackConfig model.csrfToken) attack ]
+
+        NewDialogState state ->
+            { model | attackDialogState = state } ! []
+
         FetchFail _ ->
             model ! []
 
@@ -334,6 +369,17 @@ update msg model =
                     model.tiles |> Dict.insert coordinates newTile
             in
                 { model | tiles = newTiles } ! []
+
+        AttackFail error ->
+            { model | messages = [ toString error ] } ! []
+
+        AttackSucceed response ->
+            case response of
+                Api.Success _ ->
+                    { model | messages = [ "Your troops are on their way" ] } ! []
+
+                Api.Error errors ->
+                    { model | messages = errors.forBase } ! []
 
 
 fetchVillas : Model -> List (Cmd Msg)
@@ -447,6 +493,10 @@ view model =
                 ]
             , StatusBar.view model.hoveredVilla
             , InfoBox.view model.clickedVilla
+            , AttackDialog.view
+                (attackDialogConfig model.currentVilla)
+                model.attackDialogState
+                { units = model.unitNumbers, errors = model.attackErrors }
             ]
 
 
@@ -458,9 +508,36 @@ tileConfig =
         }
 
 
+attackDialogConfig : Villa -> AttackDialog.Config () Msg
+attackDialogConfig origin =
+    AttackDialog.config
+        { onAttack = SendTroops
+        , onUpdate = NewDialogState
+        , origin = origin
+        }
+
+
+attackConfig : String -> Attack.Config Msg
+attackConfig csrfToken =
+    Attack.config
+        { csrfToken = csrfToken
+        , onSuccess = AttackSucceed
+        , onFail = AttackFail
+        }
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    if model.dragging then
-        Sub.batch [ Mouse.moves Move, Mouse.ups MouseUp ]
-    else
-        Mouse.downs MouseDown
+    let
+        subscriptions' =
+            if model.dragging then
+                Sub.batch [ Mouse.moves Move, Mouse.ups MouseUp ]
+            else
+                Mouse.downs MouseDown
+    in
+        Sub.batch
+            [ AttackDialog.subscriptions
+                (attackDialogConfig model.currentVilla)
+                model.attackDialogState
+            , subscriptions'
+            ]
