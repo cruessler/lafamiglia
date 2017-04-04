@@ -1,4 +1,14 @@
-module Attack exposing (Attack, Config, config, Errors, Success, postAttack)
+module Attack
+    exposing
+        ( Attack
+        , Id
+        , id
+        , Config
+        , config
+        , Result(..)
+        , Errors
+        , postAttack
+        )
 
 import Api
 import Dict exposing (Dict)
@@ -16,6 +26,27 @@ attackEndpointUrl origin =
     "/api/v1/villas/" ++ (toString origin.id) ++ "/attack_movements"
 
 
+type alias Id =
+    ( Villa.Id, Villa.Id )
+
+
+id : Result -> Id
+id result =
+    let
+        id' attack =
+            ( attack.origin.id, attack.target.id )
+    in
+        case result of
+            InProgress attack ->
+                id' attack
+
+            Success attack ->
+                id' attack
+
+            Failure attack _ ->
+                id' attack
+
+
 type alias Attack =
     { origin : Villa
     , target : Villa
@@ -29,22 +60,24 @@ type alias Errors =
     }
 
 
-type alias Success =
-    {}
+type Result
+    = InProgress Attack
+    | Success Attack
+    | Failure Attack Errors
 
 
 type Config msg
     = Config
         { csrfToken : String
-        , onSuccess : Api.Response Errors Success -> msg
-        , onFail : Http.Error -> msg
+        , onSuccess : Result -> msg
+        , onFail : Result -> msg
         }
 
 
 config :
     { csrfToken : String
-    , onFail : Http.Error -> msg
-    , onSuccess : Api.Response Errors Success -> msg
+    , onSuccess : Result -> msg
+    , onFail : Result -> msg
     }
     -> Config msg
 config { csrfToken, onSuccess, onFail } =
@@ -56,7 +89,7 @@ config { csrfToken, onSuccess, onFail } =
 
 
 postAttack : Config msg -> Attack -> Cmd msg
-postAttack (Config config) { origin, target, units } =
+postAttack (Config config) ({ origin, target, units } as attack) =
     let
         movement =
             (encodeUnits units) ++ [ ( "target_id", Encode.int target.id ) ]
@@ -77,8 +110,30 @@ postAttack (Config config) { origin, target, units } =
                 }
     in
         task
-            |> Api.fromJson decodeErrorResponse decodeSuccessfulResponse
+            |> Api.fromJson decodeErrorResponse (Decode.succeed ())
+            |> Task.mapError (mapErrorResponse attack)
+            |> Task.map (mapSuccessfulResponse attack)
             |> Task.perform config.onFail config.onSuccess
+
+
+{-| Always discards the error and returns a generic failure message.
+-}
+mapErrorResponse : Attack -> a -> Result
+mapErrorResponse attack _ =
+    Failure attack
+        (Errors [ "Your attack could not be sent" ] Dict.empty)
+
+
+{-| Converts an `Api.Response` into an `Attack.Result`.
+-}
+mapSuccessfulResponse : Attack -> Api.Response Errors a -> Result
+mapSuccessfulResponse attack response =
+    case response of
+        Api.Error errors ->
+            Failure attack errors
+
+        Api.Success _ ->
+            Success attack
 
 
 encodeUnits : Dict Unit.Id Int -> List ( String, Encode.Value )
@@ -90,11 +145,6 @@ encodeUnits =
         Dict.toList
             >> List.map
                 (\( k, v ) -> ( unitKey k, Encode.int v ))
-
-
-decodeSuccessfulResponse : Decode.Decoder Success
-decodeSuccessfulResponse =
-    Decode.succeed Success
 
 
 decodeErrorResponse : Decode.Decoder Errors

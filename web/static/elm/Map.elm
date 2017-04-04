@@ -12,6 +12,7 @@ import Html.Events as Events
 import Http
 import Json.Decode as Json exposing (..)
 import Map.Coordinates exposing (Coordinates)
+import Map.Feedback as Feedback
 import Map.Geometry as Geometry exposing (Geometry)
 import Map.InfoBox as InfoBox
 import Map.Position exposing (Position)
@@ -53,6 +54,7 @@ type alias Model =
     , unitNumbers : Dict Unit.Id Int
     , attackDialogState : AttackDialog.State
     , attackErrors : Attack.Errors
+    , attacks : Dict Attack.Id Attack.Result
     , messages : List String
     , csrfToken : String
     }
@@ -95,6 +97,7 @@ init flags =
             , unitNumbers = unitNumbers
             , attackDialogState = AttackDialog.initialState unitNumbers
             , attackErrors = Attack.Errors [] Dict.empty
+            , attacks = Dict.empty
             , messages = []
             , csrfToken = flags.csrfToken
             }
@@ -116,12 +119,13 @@ type Msg
     | MouseLeave
     | Click (Maybe Villa)
     | OpenAttackDialog Villa
+    | ReviewAttackDialog Villa Attack.Errors
     | SendTroops Attack
     | NewDialogState AttackDialog.State
     | FetchFail Http.Error
     | FetchSucceed Coordinates (Dict Coordinates Villa)
-    | AttackFail Http.Error
-    | AttackSucceed (Api.Response Attack.Errors Attack.Success)
+    | AttackFail Attack.Result
+    | AttackSucceed Attack.Result
 
 
 getOrCreateTile : Dict Coordinates Tile -> Coordinates -> Tile
@@ -214,6 +218,17 @@ update msg model =
             in
                 { model | attackDialogState = newState } ! []
 
+        ReviewAttackDialog villa errors ->
+            let
+                newState =
+                    model.attackDialogState |> AttackDialog.open villa
+            in
+                { model
+                    | attackDialogState = newState
+                    , attackErrors = errors
+                }
+                    ! []
+
         SendTroops attack ->
             let
                 newState =
@@ -241,16 +256,21 @@ update msg model =
             in
                 { model | tiles = newTiles } ! []
 
-        AttackFail error ->
-            { model | messages = [ toString error ] } ! []
+        AttackFail result ->
+            updateAttack result model ! []
 
-        AttackSucceed response ->
-            case response of
-                Api.Success _ ->
-                    { model | messages = [ "Your troops are on their way" ] } ! []
+        AttackSucceed result ->
+            updateAttack result model ! []
 
-                Api.Error errors ->
-                    { model | messages = errors.forBase } ! []
+
+updateAttack : Attack.Result -> Model -> Model
+updateAttack result model =
+    let
+        newAttacks =
+            model.attacks
+                |> Dict.insert (Attack.id result) result
+    in
+        { model | attacks = newAttacks }
 
 
 fetchVillas : Model -> List (Cmd Msg)
@@ -371,7 +391,8 @@ view model =
                 (attackDialogConfig model.currentVilla)
                 model.attackDialogState
                 { units = model.unitNumbers, errors = model.attackErrors }
-            , FeedbackBox.view model.messages
+            , FeedbackBox.view
+                (Feedback.forResults ReviewAttackDialog model.attacks)
             ]
 
 
