@@ -348,8 +348,13 @@ arrivalInfo (Config config) state target =
 modalBody : Config data msg -> State -> Villa -> Data -> Html msg
 modalBody config state target data =
     let
+        messages =
+            ul [ class "alert alert-info" ]
+                (List.map (\m -> li [] [ text m ]) data.errors.forBase)
+
         children =
             [ h3 [] [ text "Overview" ]
+            , messages
             , overview state data
             , arrivalInfo config state target
             , h3 [] [ text "Choose the units to send" ]
