@@ -1,12 +1,16 @@
-module Villa exposing (Villa, format, decodeVillas)
+module Villa exposing (Villa, Id, format, decodeVillas)
 
 import Map.Coordinates exposing (Coordinates)
 import Dict exposing (Dict)
 import Json.Decode as Decode exposing (Decoder, (:=))
 
 
+type alias Id =
+    Int
+
+
 type alias Villa =
-    { id : Int
+    { id : Id
     , name : String
     , x : Int
     , y : Int
