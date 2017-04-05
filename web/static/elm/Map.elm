@@ -55,7 +55,6 @@ type alias Model =
     , attackDialogState : AttackDialog.State
     , resultInReview : Maybe Attack.Result
     , attacks : Dict Attack.Id Attack.Result
-    , messages : List String
     , csrfToken : String
     }
 
@@ -98,7 +97,6 @@ init flags =
             , attackDialogState = AttackDialog.initialState unitNumbers
             , resultInReview = Nothing
             , attacks = Dict.empty
-            , messages = []
             , csrfToken = flags.csrfToken
             }
 
@@ -234,10 +232,7 @@ update msg model =
                 newState =
                     model.attackDialogState |> AttackDialog.close
             in
-                { model
-                    | attackDialogState = newState
-                    , messages = [ "Your order has been sent" ]
-                }
+                { model | attackDialogState = newState }
                     ! [ Attack.postAttack (attackConfig model.csrfToken) attack ]
 
         NewDialogState state ->
