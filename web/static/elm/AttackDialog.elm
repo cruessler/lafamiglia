@@ -70,7 +70,12 @@ type DialogState
 
 initialState : Dict Unit.Id Int -> State
 initialState units =
-    State Closed 0 (Dict.map (\_ _ -> 0) units)
+    State Closed 0 (initialUnits units)
+
+
+initialUnits : Dict Unit.Id Int -> Dict Unit.Id Int
+initialUnits units =
+    Dict.map (\_ _ -> 0) units
 
 
 close : State -> State
@@ -80,7 +85,10 @@ close state =
 
 open : Villa -> State -> State
 open villa state =
-    { state | dialogState = Open villa }
+    { state
+        | dialogState = Open villa
+        , selectedUnits = initialUnits state.selectedUnits
+    }
 
 
 review : Attack.Result -> State -> State

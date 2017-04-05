@@ -27,15 +27,20 @@ singleFeedback :
 singleFeedback onReview _ result =
     case result of
         Attack.InProgress attack ->
-            [ text "Your attack is on the way" ]
+            [ Html.h4 [] [ text <| Attack.format attack ]
+            , text "Your attack is on the way"
+            ]
 
         Attack.Success attack ->
-            [ text "Your attack is on the way (confirmed)" ]
+            [ Html.h4 [] [ text <| Attack.format attack ]
+            , text "Your attack is on the way (confirmed)"
+            ]
 
         Attack.Failure attack errors ->
-            [ span [] [ text "Your attack could not be sent" ]
+            [ Html.h4 [] [ text <| Attack.format attack ]
+            , span [] [ text "Your attack could not be sent" ]
             , a
-                [ class "btn btn-primary btn-sm"
+                [ class "btn btn-primary btn-sm pull-right"
                 , Events.onClick (onReview result)
                 ]
                 [ text "Review" ]

@@ -8,6 +8,7 @@ module Attack
         , Result(..)
         , Errors
         , errors
+        , format
         , postAttack
         )
 
@@ -46,6 +47,11 @@ id result =
 
             Failure attack _ ->
                 id' attack
+
+
+format : Attack -> String
+format attack =
+    (Villa.format attack.origin) ++ " → " ++ (Villa.format attack.target)
 
 
 errors : Result -> Errors
