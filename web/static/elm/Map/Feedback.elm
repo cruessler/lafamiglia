@@ -11,7 +11,7 @@ import Villa exposing (Villa)
 forResults :
     (Villa -> Attack.Errors -> msg)
     -> Dict Attack.Id Attack.Result
-    -> List (Html msg)
+    -> List (List (Html msg))
 forResults onReview results =
     if Dict.isEmpty results then
         []
@@ -23,21 +23,20 @@ singleFeedback :
     (Villa -> Attack.Errors -> msg)
     -> Attack.Id
     -> Attack.Result
-    -> Html msg
+    -> List (Html msg)
 singleFeedback onReview _ result =
     case result of
         Attack.InProgress attack ->
-            li [] [ text "Your attack is on the way" ]
+            [ text "Your attack is on the way" ]
 
         Attack.Success attack ->
-            li [] [ text "Your attack is on the way (confirmed)" ]
+            [ text "Your attack is on the way (confirmed)" ]
 
         Attack.Failure attack errors ->
-            li []
-                [ span [] [ text "Your attack could not be sent" ]
-                , a
-                    [ class "btn btn-primary btn-sm"
-                    , Events.onClick (onReview attack.target errors)
-                    ]
-                    [ text "Review" ]
+            [ span [] [ text "Your attack could not be sent" ]
+            , a
+                [ class "btn btn-primary btn-sm"
+                , Events.onClick (onReview attack.target errors)
                 ]
+                [ text "Review" ]
+            ]
