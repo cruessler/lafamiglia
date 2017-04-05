@@ -7,6 +7,7 @@ module Attack
         , config
         , Result(..)
         , Errors
+        , errors
         , postAttack
         )
 
@@ -45,6 +46,16 @@ id result =
 
             Failure attack _ ->
                 id' attack
+
+
+errors : Result -> Errors
+errors result =
+    case result of
+        Failure _ errors ->
+            errors
+
+        _ ->
+            Errors [] Dict.empty
 
 
 type alias Attack =

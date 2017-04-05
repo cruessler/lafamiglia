@@ -53,7 +53,7 @@ type alias Model =
     , currentVilla : Villa
     , unitNumbers : Dict Unit.Id Int
     , attackDialogState : AttackDialog.State
-    , attackErrors : Attack.Errors
+    , resultInReview : Maybe Attack.Result
     , attacks : Dict Attack.Id Attack.Result
     , messages : List String
     , csrfToken : String
@@ -96,7 +96,7 @@ init flags =
             , currentVilla = flags.currentVilla
             , unitNumbers = unitNumbers
             , attackDialogState = AttackDialog.initialState unitNumbers
-            , attackErrors = Attack.Errors [] Dict.empty
+            , resultInReview = Nothing
             , attacks = Dict.empty
             , messages = []
             , csrfToken = flags.csrfToken
@@ -119,7 +119,7 @@ type Msg
     | MouseLeave
     | Click (Maybe Villa)
     | OpenAttackDialog Villa
-    | ReviewAttackDialog Villa Attack.Errors
+    | ReviewAttackDialog Attack.Result
     | SendTroops Attack
     | NewDialogState AttackDialog.State
     | FetchFail Http.Error
@@ -218,14 +218,14 @@ update msg model =
             in
                 { model | attackDialogState = newState } ! []
 
-        ReviewAttackDialog villa errors ->
+        ReviewAttackDialog result ->
             let
                 newState =
-                    model.attackDialogState |> AttackDialog.open villa
+                    model.attackDialogState |> AttackDialog.review result
             in
                 { model
                     | attackDialogState = newState
-                    , attackErrors = errors
+                    , resultInReview = Just result
                 }
                     ! []
 
@@ -371,6 +371,11 @@ view model =
                     ++ "px)"
               )
             ]
+
+        errors =
+            model.resultInReview
+                |> Maybe.map Attack.errors
+                |> Maybe.withDefault (Attack.Errors [] Dict.empty)
     in
         div [ class "container-fluid map-viewport" ]
             [ div
@@ -390,7 +395,7 @@ view model =
             , AttackDialog.view
                 (attackDialogConfig model.currentVilla)
                 model.attackDialogState
-                { units = model.unitNumbers, errors = model.attackErrors }
+                { units = model.unitNumbers, errors = errors }
             , FeedbackBox.view
                 (Feedback.forResults ReviewAttackDialog model.attacks)
             ]

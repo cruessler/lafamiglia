@@ -4,6 +4,7 @@ module AttackDialog
         , initialState
         , open
         , close
+        , review
         , isOpen
         , Config
         , config
@@ -80,6 +81,19 @@ close state =
 open : Villa -> State -> State
 open villa state =
     { state | dialogState = Open villa }
+
+
+review : Attack.Result -> State -> State
+review result state =
+    case result of
+        Attack.Failure attack errors ->
+            { state
+                | dialogState = Open attack.target
+                , selectedUnits = attack.units
+            }
+
+        _ ->
+            state
 
 
 isOpen : State -> Bool

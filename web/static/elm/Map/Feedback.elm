@@ -9,7 +9,7 @@ import Villa exposing (Villa)
 
 
 forResults :
-    (Villa -> Attack.Errors -> msg)
+    (Attack.Result -> msg)
     -> Dict Attack.Id Attack.Result
     -> List (List (Html msg))
 forResults onReview results =
@@ -20,7 +20,7 @@ forResults onReview results =
 
 
 singleFeedback :
-    (Villa -> Attack.Errors -> msg)
+    (Attack.Result -> msg)
     -> Attack.Id
     -> Attack.Result
     -> List (Html msg)
@@ -36,7 +36,7 @@ singleFeedback onReview _ result =
             [ span [] [ text "Your attack could not be sent" ]
             , a
                 [ class "btn btn-primary btn-sm"
-                , Events.onClick (onReview attack.target errors)
+                , Events.onClick (onReview result)
                 ]
                 [ text "Review" ]
             ]
