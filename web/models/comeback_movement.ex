@@ -44,7 +44,7 @@ defmodule LaFamiglia.ComebackMovement do
   """
   def from_combat(attack, result) do
     duration_of_return = duration(attack.origin, attack.target, units(result.attacker_after_combat))
-    new_arrives_at = LaFamiglia.DateTime.from_now(duration_of_return)
+    new_arrives_at = LaFamiglia.DateTime.from_now(microseconds: duration_of_return)
 
     params =
       result.attacker_after_combat
@@ -66,13 +66,13 @@ defmodule LaFamiglia.ComebackMovement do
     attack = Repo.preload(attack, [:origin, :target])
 
     time_remaining =
-      Timex.diff(attack.arrives_at, LaFamiglia.DateTime.now, :microseconds) / 1_000_000
+      Timex.diff(attack.arrives_at, LaFamiglia.DateTime.now, :microseconds)
 
     duration_of_return =
       duration(attack.origin, attack.target, units(attack)) - time_remaining
 
     new_arrives_at =
-      LaFamiglia.DateTime.from_now(duration_of_return)
+      LaFamiglia.DateTime.from_now(microseconds: duration_of_return)
 
     # The new ComebackMovement is identical to `attack` except for `arrives_at`.
     %ComebackMovement{}
@@ -88,8 +88,11 @@ defmodule LaFamiglia.ComebackMovement do
   It is used when an occupation succeeds and the occupying units return.
   """
   def from_occupation(occupation) do
-    duration_of_return = duration(occupation.origin, occupation.target, units(occupation))
-    arrives_at = LaFamiglia.DateTime.from_now(duration_of_return)
+    duration_of_return =
+      duration(occupation.origin, occupation.target, units(occupation))
+
+    arrives_at =
+      LaFamiglia.DateTime.from_now(microseconds: duration_of_return)
 
     %ComebackMovement{}
     |> changeset(Unit.filter(occupation))

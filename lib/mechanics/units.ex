@@ -1,4 +1,8 @@
 defmodule LaFamiglia.Mechanics.Units do
+  @moduledoc """
+  All build times are specified in microseconds.
+  """
+
   alias LaFamiglia.Unit
 
   def units do
@@ -6,7 +10,7 @@ defmodule LaFamiglia.Mechanics.Units do
       %Unit{
         id: 1,
         key: :unit_1,
-        build_time: 10,
+        build_time: 10_000_000,
         costs: %{
           resource_1: 1,
           resource_2: 0,
@@ -21,7 +25,7 @@ defmodule LaFamiglia.Mechanics.Units do
       %Unit{
         id: 2,
         key: :unit_2,
-        build_time: 43400,
+        build_time: 43_400_000_000,
         costs: %{
           resource_1: 50,
           resource_2: 50,

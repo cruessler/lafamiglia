@@ -234,8 +234,8 @@ defmodule LaFamiglia.Villa do
   def gain_resources_until(%Changeset{} = changeset, time) do
     resources_gained_until = get_field(changeset, :resources_gained_until)
 
-    case Timex.diff(time, resources_gained_until, :microseconds) / 1_000_000 do
-      0.0 ->
+    case Timex.diff(time, resources_gained_until, :microseconds) do
+      0 ->
         changeset
       time_diff ->
         changeset
@@ -284,11 +284,15 @@ defmodule LaFamiglia.Villa do
     put_change(changeset, :supply, get_field(changeset, :supply) - supply)
   end
 
+  @doc
+  """
+  `time_diff` is given in microseconds.
+  """
   def resource_gains(%Changeset{} = changeset, time_diff),
     do: resource_gains(apply_changes(changeset), time_diff)
   def resource_gains(%Villa{} = villa, time_diff) do
     for {k, v} <- Mechanics.resource_gains(villa), into: %{},
-      do: {k, v * time_diff / 3600 * @game_speed}
+      do: {k, (v / 3_600 / 1_000_000) * time_diff * @game_speed}
   end
 
   def add_units(%Changeset{} = changeset, units) do

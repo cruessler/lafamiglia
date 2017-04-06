@@ -11,7 +11,7 @@ defmodule LaFamiglia.UnitQueueItem do
   schema "unit_queue_items" do
     field :unit_id, :integer
     field :number, :integer
-    field :build_time, :float
+    field :build_time, :integer
     field :completed_at, :utc_datetime
 
     belongs_to :villa, Villa
@@ -32,7 +32,7 @@ defmodule LaFamiglia.UnitQueueItem do
 
   defp start_time(item) do
     item.completed_at
-    |> Timex.subtract(Timex.Duration.from_seconds(item.build_time))
+    |> Timex.shift(microseconds: -item.build_time)
   end
 
   @doc """
@@ -51,11 +51,9 @@ defmodule LaFamiglia.UnitQueueItem do
     build_time = Unit.get(item.unit_id) |> Unit.build_time()
 
     start_number =
-      trunc(Timex.diff(time_begin, start_time, :microseconds) /
-        (build_time * 1_000_000))
+      trunc(Timex.diff(time_begin, start_time, :microseconds) / build_time)
     end_number =
-      trunc(Timex.diff(time_end, start_time, :microseconds) /
-        (build_time * 1_000_000))
+      trunc(Timex.diff(time_end, start_time, :microseconds) / build_time)
 
     end_number - start_number
   end
@@ -68,12 +66,12 @@ defmodule LaFamiglia.UnitQueueItem do
     build_time = Unit.build_time(unit, number)
     completed_at =
       completed_at(unit_queue_items)
-      |> Timex.shift(microseconds: trunc(build_time * 1_000_000))
+      |> Timex.shift(microseconds: build_time)
 
     new_item = Ecto.build_assoc(villa, :unit_queue_items,
                                 unit_id: unit.id,
                                 number: number,
-                                build_time: build_time / 1,
+                                build_time: build_time,
                                 completed_at: completed_at)
 
     changeset

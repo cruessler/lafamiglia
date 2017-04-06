@@ -22,12 +22,12 @@ defmodule LaFamiglia.Movement do
 
   @doc """
   This function returns the time the given units need to go from `origin` to
-  `target` in seconds.
+  `target` in microseconds.
 
   The speed of a unit is given in coordinates per hour. A unit with a speed of 1
   will take 1 hour to go from 0|0 to 0|1.
   """
   def duration(origin, target, units) do
-    distance_between(origin, target) / speed(units)
+    trunc(distance_between(origin, target) / speed(units)) * 1_000_000
   end
 end

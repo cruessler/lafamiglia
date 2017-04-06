@@ -14,9 +14,9 @@ defmodule LaFamiglia.DateTimeTest do
   end
 
   test "from_now" do
-    time = DateTime.from_now(0.7)
+    time = DateTime.from_now(milliseconds: 700)
 
-    %{microsecond: {microseconds, 6}} = time
+    %{microsecond: {microseconds, _}} = time
 
     assert is_integer(microseconds)
   end

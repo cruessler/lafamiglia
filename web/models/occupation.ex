@@ -19,12 +19,12 @@ defmodule LaFamiglia.Occupation do
     timestamps
   end
 
-  @duration_of_occupation 86_400 / Application.get_env(:la_famiglia, :game_speed)
+  @duration_of_occupation trunc(86_400 * 1_000_000 / Application.get_env(:la_famiglia, :game_speed))
 
   def from_combat(combat) do
     %{attack: attack, result: result} = combat
 
-    succeeds_at = LaFamiglia.DateTime.from_now(@duration_of_occupation)
+    succeeds_at = LaFamiglia.DateTime.from_now(microseconds: @duration_of_occupation)
 
     changeset =
       %Occupation{}

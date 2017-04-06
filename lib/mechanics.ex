@@ -1,4 +1,8 @@
 defmodule LaFamiglia.Mechanics do
+  @moduledoc """
+  All resource gains are specified in resource/hour.
+  """
+
   def resource_gains(villa) do
     %{resource_1: 30 + :math.pow(villa.building_3, 2.5),
       resource_2: 30 + :math.pow(villa.building_4, 2.5),

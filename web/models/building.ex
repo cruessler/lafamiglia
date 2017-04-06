@@ -42,6 +42,6 @@ defmodule LaFamiglia.Building do
   end
 
   def build_time(building, level) do
-    building.build_time.(level) / @game_speed
+    trunc(building.build_time.(level) / @game_speed)
   end
 end

@@ -17,7 +17,10 @@ defmodule LaFamiglia.EventHandler.QueueTest do
       |> change
       |> Villa.process_virtually_until(first.completed_at)
 
-    assert get_field(changeset, :resources_gained_until) == first.completed_at
+    assert \
+      DateTime.compare(
+        get_field(changeset, :resources_gained_until), first.completed_at)
+      == :eq
   end
 
   test "should update `units_recruited_until` when recruit event is handled" do

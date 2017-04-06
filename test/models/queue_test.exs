@@ -4,12 +4,12 @@ defmodule LaFamiglia.QueueTest do
   alias LaFamiglia.Factory
   alias LaFamiglia.Queue
 
-  @shift_by 1
+  @shift_by 1_000_000
 
   test "shift_later_items" do
     [first|[item]] = queue = Factory.building_queue
 
-    [shifted_item] = Queue.shift_later_items(queue, first, @shift_by * 1_000_000)
+    [shifted_item] = Queue.shift_later_items(queue, first, @shift_by)
 
     assert shifted_item.completed_at.second == item.completed_at.second - 1
   end

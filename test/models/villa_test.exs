@@ -43,15 +43,19 @@ defmodule LaFamiglia.VillaTest do
   end
 
   test "gain_resources_until" do
-    villa = build(:villa, %{resource_1: 0, resource_2: 0, resource_3: 0})
+    villa =
+      build(:villa,
+        %{resource_1: 0, resource_2: 0, resource_3: 0, storage_capacity: 1000})
 
     changeset =
       change(villa)
-      |> Villa.gain_resources_until(LaFamiglia.DateTime.from_now(10))
+      |> Villa.gain_resources_until(LaFamiglia.DateTime.from_now(seconds: 10))
 
     resources = Resource.filter(changeset)
 
-    changeset = Villa.gain_resources_until(changeset, LaFamiglia.DateTime.from_now(20))
+    changeset =
+      changeset
+      |> Villa.gain_resources_until(LaFamiglia.DateTime.from_now(seconds: 20))
 
     new_resources = Resource.filter(changeset)
 
@@ -66,17 +70,21 @@ defmodule LaFamiglia.VillaTest do
     unit   = Unit.get(first.unit_id)
     number = Unit.number(villa, unit)
 
+    until = LaFamiglia.DateTime.from_now(microseconds: first.build_time)
+
     changeset =
       villa
       |> change
-      |> Villa.process_units_virtually_until(LaFamiglia.DateTime.from_now(first.build_time))
+      |> Villa.process_units_virtually_until(until)
 
     assert Unit.number(changeset, unit) == number + first.number
     assert Unit.virtual_number(changeset, unit) == number + first.number + second.number
 
+    until = LaFamiglia.DateTime.from_now(microseconds: first.build_time)
+
     changeset =
       changeset
-      |> Villa.process_units_virtually_until(LaFamiglia.DateTime.from_now(first.build_time))
+      |> Villa.process_units_virtually_until(until)
 
     assert Unit.number(changeset, unit) == number + first.number
     assert Unit.virtual_number(changeset, unit) == number + first.number + second.number

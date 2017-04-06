@@ -14,8 +14,9 @@ defmodule LaFamiglia.DateTime do
     end
   end
 
-  def from_now(seconds) do
-    Timex.shift(now, microseconds: trunc(seconds * 1_000_000))
+  @spec from_now(Timex.shift_options) :: Timex.Types.valid_datetime | {:error, term}
+  def from_now(options) do
+    Timex.shift(now, options)
   end
 
   def clock!(time \\ DateTime.utc_now) do

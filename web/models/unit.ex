@@ -59,5 +59,5 @@ defmodule LaFamiglia.Unit do
     do: for {k, _} <- map, into: %{}, do: {k, round(Map.get(map, k) * percentage)}
 
   def build_time(unit, number \\ 1),
-    do: number * unit.build_time / @game_speed
+    do: trunc(number * unit.build_time / @game_speed)
 end

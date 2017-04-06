@@ -60,8 +60,8 @@ defmodule LaFamiglia.Factory do
     ]
 
     completed_at = [
-      LaFamiglia.DateTime.from_now(Enum.at(build_times, 0)),
-      LaFamiglia.DateTime.from_now(Enum.at(build_times, 0) + Enum.at(build_times, 1))
+      LaFamiglia.DateTime.from_now(microseconds: Enum.at(build_times, 0)),
+      LaFamiglia.DateTime.from_now(microseconds: Enum.at(build_times, 0) + Enum.at(build_times, 1))
     ]
 
     for {t, c} <- Enum.zip(build_times, completed_at) do
@@ -79,8 +79,10 @@ defmodule LaFamiglia.Factory do
 
   def with_unit_queue(villa) do
     items = [
-      build(:unit_queue_item, %{completed_at: LaFamiglia.DateTime.from_now(@build_time)}),
-      build(:unit_queue_item, %{completed_at: LaFamiglia.DateTime.from_now(2 * @build_time)})
+      build(:unit_queue_item,
+        %{completed_at: LaFamiglia.DateTime.from_now(microseconds: @build_time)}),
+      build(:unit_queue_item,
+        %{completed_at: LaFamiglia.DateTime.from_now(microseconds: 2 * @build_time)})
     ]
 
     %{villa | unit_queue_items: items}
@@ -95,7 +97,7 @@ defmodule LaFamiglia.Factory do
   end
 
   def conversation_factory do
-    sent_at = LaFamiglia.DateTime.from_now(-10)
+    sent_at = LaFamiglia.DateTime.from_now(seconds: -10)
 
     participants = build_list(3, :player, %{unread_conversations: 0})
 
@@ -117,7 +119,7 @@ defmodule LaFamiglia.Factory do
     %LaFamiglia.AttackMovement{
       origin: build(:villa),
       target: build(:villa, %{unit_queue_items: []}),
-      arrives_at: LaFamiglia.DateTime.from_now(10),
+      arrives_at: LaFamiglia.DateTime.from_now(seconds: 10),
       unit_1: 100,
       unit_2: 0
     }
@@ -129,7 +131,7 @@ defmodule LaFamiglia.Factory do
       target: build(:villa, %{is_occupied: true}),
       unit_1: 100,
       unit_2: 2,
-      succeeds_at: LaFamiglia.DateTime.from_now(10)
+      succeeds_at: LaFamiglia.DateTime.from_now(seconds: 10)
     }
   end
 
@@ -137,7 +139,7 @@ defmodule LaFamiglia.Factory do
     %LaFamiglia.ComebackMovement{
       origin: build(:villa),
       target: build(:villa),
-      arrives_at: LaFamiglia.DateTime.from_now(10),
+      arrives_at: LaFamiglia.DateTime.from_now(seconds: 10),
       unit_1: 100,
       unit_2: 0,
       resource_1: 50,

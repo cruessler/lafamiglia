@@ -98,7 +98,7 @@ defmodule LaFamiglia.AttackMovement do
 
     duration = duration(origin, target, units(changes))
 
-    arrives_at = LaFamiglia.DateTime.from_now(duration)
+    arrives_at = LaFamiglia.DateTime.from_now(microseconds: duration)
     put_change(changeset, :arrives_at, arrives_at)
   end
 end
