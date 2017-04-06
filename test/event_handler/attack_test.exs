@@ -30,7 +30,7 @@ defmodule LaFamiglia.EventHandler.AttackTest do
 
     comeback = from(c in ComebackMovement, preload: :origin) |> Repo.one
     assert comeback.origin.id == attack.origin.id
-    assert Ecto.DateTime.compare(comeback.arrives_at, attack.arrives_at) == :gt
+    assert DateTime.compare(comeback.arrives_at, attack.arrives_at) == :gt
     assert comeback.resource_1 > 0
     assert comeback.resource_1 == report.combat_report.resources_plundered.resource_1
   end

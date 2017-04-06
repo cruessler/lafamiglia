@@ -10,7 +10,7 @@ defmodule LaFamiglia.AttackMovementTest do
 
     assert get_field(changeset, :origin) == attack.origin
     assert get_field(changeset, :unit_1) == attack.unit_1
-    assert Ecto.DateTime.compare(get_field(changeset, :arrives_at), attack.arrives_at) == :gt
+    assert DateTime.compare(get_field(changeset, :arrives_at), attack.arrives_at) == :gt
   end
 
   test "arrives_at is in the future" do
@@ -22,7 +22,7 @@ defmodule LaFamiglia.AttackMovementTest do
       |> AttackMovement.create(target, %{unit_1: 1, unit_2: 0})
       |> get_change(:arrives_at)
 
-    assert Ecto.DateTime.compare(arrives_at, LaFamiglia.DateTime.now) == :gt
+    assert DateTime.compare(arrives_at, LaFamiglia.DateTime.now) == :gt
   end
 
   test "is invalid without units" do

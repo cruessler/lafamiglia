@@ -72,7 +72,7 @@ defmodule LaFamiglia.Conversation do
   defp unread_conversations([first|rest], last_message_sent_at, acc) do
     read_until = get_field(first, :read_until)
 
-    case Ecto.DateTime.compare(read_until, last_message_sent_at) do
+    case DateTime.compare(read_until, last_message_sent_at) do
       :lt -> unread_conversations(rest, acc + 1)
       _ -> unread_conversations(rest, acc)
     end

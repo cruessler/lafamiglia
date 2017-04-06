@@ -31,8 +31,8 @@ defmodule Mix.Tasks.LaFamiglia.Postcompile do
             {:ok, info_target} ->
               target_mtime = Ecto.DateTime.from_erl(info_target.mtime)
 
-              Ecto.DateTime.compare(source_mtime, target_mtime) == :gt ||
-              Ecto.DateTime.compare(template_mtime, target_mtime) == :gt
+              DateTime.compare(source_mtime, target_mtime) == :gt ||
+              DateTime.compare(template_mtime, target_mtime) == :gt
 
             _ -> true
           end

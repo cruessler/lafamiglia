@@ -70,7 +70,7 @@ defmodule LaFamiglia.DateTime do
   end
 
   def max(time1, time2) do
-    case Ecto.DateTime.compare(time1, time2) do
+    case DateTime.compare(time1, time2) do
       :gt -> time1
       _   -> time2
     end
