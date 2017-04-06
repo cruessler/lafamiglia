@@ -11,7 +11,7 @@ defmodule LaFamiglia.Conversation do
   alias __MODULE__
 
   schema "conversations" do
-    field :last_message_sent_at, Ecto.DateTime
+    field :last_message_sent_at, :utc_datetime
     field :new_messages, :boolean, virtual: true
 
     has_many :messages, Message

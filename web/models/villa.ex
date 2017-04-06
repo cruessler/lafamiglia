@@ -43,8 +43,8 @@ defmodule LaFamiglia.Villa do
     field :supply, :integer
     field :max_supply, :integer
 
-    field :resources_gained_until, Ecto.DateTime
-    field :units_recruited_until, Ecto.DateTime
+    field :resources_gained_until, :utc_datetime
+    field :units_recruited_until, :utc_datetime
 
     # `on_replace: :nilify` is needed for the association to be replacable via
     # `put_assoc` (which happens when an occupation succeeds).

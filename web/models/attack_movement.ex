@@ -18,7 +18,7 @@ defmodule LaFamiglia.AttackMovement do
     field :unit_1, :integer
     field :unit_2, :integer
 
-    field :arrives_at, Ecto.DateTime
+    field :arrives_at, :utc_datetime
 
     timestamps
   end

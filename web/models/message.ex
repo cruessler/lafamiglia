@@ -12,7 +12,7 @@ defmodule LaFamiglia.Message do
     belongs_to :conversation, Conversation
 
     field :text, :string
-    field :sent_at, Ecto.DateTime
+    field :sent_at, :utc_datetime
 
     field :receivers, {:array, :map}, virtual: true
 

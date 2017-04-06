@@ -8,7 +8,7 @@ defmodule LaFamiglia.ConversationStatus do
     belongs_to :player, Player
     belongs_to :conversation, Conversation
 
-    field :read_until, Ecto.DateTime
+    field :read_until, :utc_datetime
 
     timestamps
   end

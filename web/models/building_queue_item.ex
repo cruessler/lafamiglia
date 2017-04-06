@@ -13,7 +13,7 @@ defmodule LaFamiglia.BuildingQueueItem do
   schema "building_queue_items" do
     field :building_id, :integer
     field :build_time, :float
-    field :completed_at, Ecto.DateTime
+    field :completed_at, :utc_datetime
 
     belongs_to :villa, Villa
 

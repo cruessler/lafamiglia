@@ -19,7 +19,7 @@ defmodule LaFamiglia.Report do
     has_one :combat_report, CombatReport
     has_one :conquest_report, ConquestReport
 
-    field :delivered_at, Ecto.DateTime
+    field :delivered_at, :utc_datetime
 
     timestamps
   end

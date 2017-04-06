@@ -22,7 +22,7 @@ defmodule LaFamiglia.ComebackMovement do
     field :resource_2, :integer, default: 0
     field :resource_3, :integer, default: 0
 
-    field :arrives_at, Ecto.DateTime
+    field :arrives_at, :utc_datetime
 
     timestamps
   end
