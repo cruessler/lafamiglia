@@ -10,5 +10,7 @@ defmodule LaFamiglia.AfterCombatTest do
       %{resource_1: 450, resource_2: 50, resource_3: 0}
     assert AfterCombat.plunder(%{resource_1: 1000, resource_2: 1000, resource_3: 500}, 750) ==
       %{resource_1: 250, resource_2: 250, resource_3: 250}
+    assert AfterCombat.plunder(%{resource_1: 0.9, resource_2: 0.9, resource_3: 0.9}, 3) ==
+      %{resource_1: 0, resource_2: 0, resource_3: 0}
   end
 end

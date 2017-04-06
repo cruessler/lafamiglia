@@ -8,7 +8,7 @@ defmodule LaFamiglia.Combat.AfterCombat do
   It returns a map whose values are integers.
   """
   def plunder(resources_remaining, load_remaining) do
-    remaining_total = for({_, n} <- resources_remaining, do: n) |> Enum.sum
+    remaining_total = for({_, n} <- resources_remaining, do: trunc(n)) |> Enum.sum
 
     if remaining_total >= 1 && load_remaining > 0 do
       plunderable_per_resource = max(min(load_remaining, remaining_total) / Resource.count, 1)
