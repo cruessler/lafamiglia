@@ -28,8 +28,10 @@ defmodule LaFamiglia.Mixfile do
 
   defp applications(:dev),  do: applications(:test)
   defp applications(:test), do: applications(:all)
-  defp applications(_),     do: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                                 :phoenix_ecto, :postgrex, :comeonin, :ex_machina]
+  defp applications(_) do
+    [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
+     :phoenix_ecto, :postgrex, :comeonin, :ex_machina, :tzdata]
+  end
 
 
   # Specifies your project dependencies
@@ -39,7 +41,8 @@ defmodule LaFamiglia.Mixfile do
     [{:phoenix, "~> 1.2"},
      {:phoenix_pubsub, "~> 1.0"},
      {:phoenix_ecto, "~> 3.0"},
-     {:postgrex, "~> 0.11.0"},
+     {:ecto, "~> 2.1"},
+     {:postgrex, "~> 0.13"},
      {:poison, "~> 2.0", override: true},
      {:phoenix_html, "~> 2.5"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
@@ -49,7 +52,9 @@ defmodule LaFamiglia.Mixfile do
      # https://github.com/thoughtbot/ex_machina/
      {:ex_machina, "~> 1.0"},
      {:distillery, "~> 0.9"},
-     {:gettext, "~> 0.9"}]
+     {:gettext, "~> 0.10"},
+     {:timex, "~> 3.1"}
+    ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
