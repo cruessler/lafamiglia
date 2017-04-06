@@ -31,7 +31,8 @@ defmodule LaFamiglia.UnitQueueItem do
   end
 
   defp start_time(item) do
-    LaFamiglia.DateTime.add_seconds(item.completed_at, -item.build_time)
+    item.completed_at
+    |> Timex.subtract(Timex.Duration.from_seconds(item.build_time))
   end
 
   @doc """
@@ -49,8 +50,12 @@ defmodule LaFamiglia.UnitQueueItem do
     time_begin = LaFamiglia.DateTime.max(start_time, time_begin)
     build_time = Unit.get(item.unit_id) |> Unit.build_time()
 
-    start_number = trunc(LaFamiglia.DateTime.time_diff(start_time, time_begin) / build_time)
-    end_number = trunc(LaFamiglia.DateTime.time_diff(start_time, time_end) / build_time)
+    start_number =
+      trunc(Timex.diff(time_begin, start_time, :microseconds) /
+        (build_time * 1_000_000))
+    end_number =
+      trunc(Timex.diff(time_end, start_time, :microseconds) /
+        (build_time * 1_000_000))
 
     end_number - start_number
   end
@@ -63,7 +68,7 @@ defmodule LaFamiglia.UnitQueueItem do
     build_time = Unit.build_time(unit, number)
     completed_at =
       completed_at(unit_queue_items)
-      |> LaFamiglia.DateTime.add_seconds(build_time)
+      |> Timex.shift(microseconds: trunc(build_time * 1_000_000))
 
     new_item = Ecto.build_assoc(villa, :unit_queue_items,
                                 unit_id: unit.id,

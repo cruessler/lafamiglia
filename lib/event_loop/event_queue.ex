@@ -114,8 +114,7 @@ defmodule LaFamiglia.EventQueue do
     max(milliseconds_until(happens_at), 0)
   end
 
-  defp milliseconds_until(%Ecto.DateTime{} = time) do
-    diff_seconds = LaFamiglia.DateTime.time_diff(Ecto.DateTime.utc(:usec), time)
-    trunc(diff_seconds * 1_000)
+  defp milliseconds_until(%DateTime{} = time) do
+    Timex.diff(DateTime.utc_now, time, :milliseconds)
   end
 end

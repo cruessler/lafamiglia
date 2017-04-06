@@ -50,7 +50,7 @@ defmodule LaFamiglia.BuildingQueueItem do
     building = Building.get(item.building_id)
 
     previous_level = Building.virtual_level(villa, building) - 1
-    refund_ratio   = time_diff / item.build_time
+    refund_ratio   = (time_diff / 1_000_000) / item.build_time
 
     building.costs.(previous_level)
     |> Map.new(fn({k, v}) -> {k, v * refund_ratio} end)
@@ -71,7 +71,7 @@ defmodule LaFamiglia.BuildingQueueItem do
     build_time   = Building.build_time(building, level)
     completed_at =
       completed_at(villa.building_queue_items)
-      |> LaFamiglia.DateTime.add_seconds(build_time)
+      |> Timex.shift(microseconds: trunc(build_time * 1_000_000))
 
     new_item = Ecto.build_assoc(villa, :building_queue_items,
                                 building_id: building.id,

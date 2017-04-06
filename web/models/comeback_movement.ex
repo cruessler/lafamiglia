@@ -65,9 +65,14 @@ defmodule LaFamiglia.ComebackMovement do
   def from_attack(attack) do
     attack = Repo.preload(attack, [:origin, :target])
 
-    time_remaining = LaFamiglia.DateTime.time_diff(attack.arrives_at, LaFamiglia.DateTime.now)
-    duration_of_return = duration(attack.origin, attack.target, units(attack)) - time_remaining
-    new_arrives_at = LaFamiglia.DateTime.from_now(duration_of_return)
+    time_remaining =
+      Timex.diff(attack.arrives_at, LaFamiglia.DateTime.now, :microseconds) / 1_000_000
+
+    duration_of_return =
+      duration(attack.origin, attack.target, units(attack)) - time_remaining
+
+    new_arrives_at =
+      LaFamiglia.DateTime.from_now(duration_of_return)
 
     # The new ComebackMovement is identical to `attack` except for `arrives_at`.
     %ComebackMovement{}

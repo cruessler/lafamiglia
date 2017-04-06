@@ -234,8 +234,8 @@ defmodule LaFamiglia.Villa do
   def gain_resources_until(%Changeset{} = changeset, time) do
     resources_gained_until = get_field(changeset, :resources_gained_until)
 
-    case LaFamiglia.DateTime.time_diff(resources_gained_until, time) do
-      0 ->
+    case Timex.diff(time, resources_gained_until, :microseconds) / 1_000_000 do
+      0.0 ->
         changeset
       time_diff ->
         changeset
