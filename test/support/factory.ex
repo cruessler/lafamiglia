@@ -50,6 +50,10 @@ defmodule LaFamiglia.Factory do
   end
 
   def with_building_queue(villa) do
+    %{villa | building_queue_items: building_queue}
+  end
+
+  def building_queue do
     build_times = [
       Building.build_time(Building.get(1), 1),
       Building.build_time(Building.get(1), 2)
@@ -60,12 +64,9 @@ defmodule LaFamiglia.Factory do
       LaFamiglia.DateTime.from_now(Enum.at(build_times, 0) + Enum.at(build_times, 1))
     ]
 
-    items =
-      for {t, c} <- Enum.zip(build_times, completed_at) do
-        build(:building_queue_item, %{build_time: t, completed_at: c})
-      end
-
-    %{villa | building_queue_items: items}
+    for {t, c} <- Enum.zip(build_times, completed_at) do
+      build(:building_queue_item, %{build_time: t, completed_at: c})
+    end
   end
 
   def building_queue_item_factory() do

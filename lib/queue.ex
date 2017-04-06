@@ -13,9 +13,9 @@ defmodule LaFamiglia.Queue do
     end
   end
 
-  def shift_items([], _), do: []
-  def shift_items([first|rest], time_diff),
-    do: [shift_item(first, time_diff)|shift_items(rest, time_diff)]
+  def shift_items(items, time_diff) do
+    for item <- items, do: shift_item(item, time_diff)
+  end
 
   defp shift_item(item, time_diff) do
     new_completed_at = LaFamiglia.DateTime.add_seconds(item.completed_at, -time_diff)
