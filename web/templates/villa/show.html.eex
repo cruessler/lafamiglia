@@ -23,7 +23,7 @@
       <div>Level: <%= show_level(@current_villa, b) %></div>
       <div>Points: <%= @current_villa |> Map.get(b.key) |> b.points.() |> round %></div>
       <div>Costs: <%= @current_villa |> Building.virtual_level(b) |> b.costs.() |> resources %></div>
-      <div>Build time: <%= Building.build_time(b, Building.virtual_level(@current_villa, b)) |> round %></div>
+      <div>Build time: <%= build_time(@current_villa, b) %></div>
       <div><%= link_to_build_start(@conn, @current_villa, b) %></div>
 
       <%= building_queue_items_for(@conn, @current_villa.building_queue_items, b) %>
@@ -42,7 +42,7 @@
       <div>Number: <%= show_number(@current_villa, u) %></div>
       <div>Costs: <%= resources(u.costs) %></div>
       <div>Supply: <%= u.supply %></div>
-      <div>Build time: <%= Unit.build_time(u) |> round %></div>
+      <div>Training time: <%= training_time(u) %></div>
       <div>
         <%= for n <- [ 1, 5, 20, 100 ] do %>
           <%= link_to_recruit_start(@conn, @current_villa, u, n) %>

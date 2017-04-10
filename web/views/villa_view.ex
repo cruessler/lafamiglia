@@ -4,6 +4,16 @@ defmodule LaFamiglia.VillaView do
   alias LaFamiglia.BuildingQueueItemView
   alias LaFamiglia.UnitQueueItemView
 
+  def build_time(villa, building) do
+    virtual_level = Building.virtual_level(villa, building)
+
+    Building.build_time(building, virtual_level) / 1_000_000 |> round
+  end
+
+  def training_time(unit) do
+    Unit.build_time(unit) / 1_000_000 |> round
+  end
+
   def link_to_build_start(conn, villa, building) do
     level = Building.virtual_level(villa, building)
 
