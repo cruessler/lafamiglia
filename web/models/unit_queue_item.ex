@@ -48,12 +48,12 @@ defmodule LaFamiglia.UnitQueueItem do
   def units_recruited_between(item, time_begin, time_end) do
     start_time = start_time(item)
     time_begin = LaFamiglia.DateTime.max(start_time, time_begin)
-    build_time = Unit.get(item.unit_id) |> Unit.build_time()
+    training_time = Unit.get(item.unit_id) |> Unit.training_time()
 
     start_number =
-      trunc(Timex.diff(time_begin, start_time, :microseconds) / build_time)
+      trunc(Timex.diff(time_begin, start_time, :microseconds) / training_time)
     end_number =
-      trunc(Timex.diff(time_end, start_time, :microseconds) / build_time)
+      trunc(Timex.diff(time_end, start_time, :microseconds) / training_time)
 
     end_number - start_number
   end
@@ -63,15 +63,15 @@ defmodule LaFamiglia.UnitQueueItem do
 
     costs      = Map.new(unit.costs, fn({k, v}) -> {k, v * number} end)
     supply     = unit.supply * number
-    build_time = Unit.build_time(unit, number)
+    training_time = Unit.training_time(unit, number)
     completed_at =
       completed_at(unit_queue_items)
-      |> Timex.shift(microseconds: build_time)
+      |> Timex.shift(microseconds: training_time)
 
     new_item = Ecto.build_assoc(villa, :unit_queue_items,
                                 unit_id: unit.id,
                                 number: number,
-                                build_time: build_time,
+                                build_time: training_time,
                                 completed_at: completed_at)
 
     changeset

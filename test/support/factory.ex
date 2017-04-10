@@ -75,14 +75,14 @@ defmodule LaFamiglia.Factory do
     }
   end
 
-  @build_time Unit.build_time(Unit.get(1), 10)
+  @training_time Unit.training_time(Unit.get(1), 10)
 
   def with_unit_queue(villa) do
     items = [
       build(:unit_queue_item,
-        %{completed_at: LaFamiglia.DateTime.from_now(microseconds: @build_time)}),
+        %{completed_at: LaFamiglia.DateTime.from_now(microseconds: @training_time)}),
       build(:unit_queue_item,
-        %{completed_at: LaFamiglia.DateTime.from_now(microseconds: 2 * @build_time)})
+        %{completed_at: LaFamiglia.DateTime.from_now(microseconds: 2 * @training_time)})
     ]
 
     %{villa | unit_queue_items: items}
@@ -92,7 +92,7 @@ defmodule LaFamiglia.Factory do
     %LaFamiglia.UnitQueueItem{
       unit_id: 1,
       number: 10,
-      build_time: @build_time
+      build_time: @training_time
     }
   end
 

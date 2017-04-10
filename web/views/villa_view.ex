@@ -11,7 +11,7 @@ defmodule LaFamiglia.VillaView do
   end
 
   def training_time(unit) do
-    Unit.build_time(unit) / 1_000_000 |> round
+    Unit.training_time(unit) / 1_000_000 |> round
   end
 
   def link_to_build_start(conn, villa, building) do

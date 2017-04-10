@@ -39,7 +39,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
     total_number = Unit.virtual_number(changeset, unit)
 
     for i <- 1..10 do
-      process_until = LaFamiglia.DateTime.from_now(microseconds: Unit.build_time(unit, i))
+      process_until = LaFamiglia.DateTime.from_now(microseconds: Unit.training_time(unit, i))
 
       changeset = Villa.process_units_virtually_until(changeset, process_until)
 
@@ -52,7 +52,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
     yesterday =
       LaFamiglia.DateTime.from_now(seconds: -86400)
     until =
-      LaFamiglia.DateTime.from_now(microseconds: trunc(Unit.build_time(unit) * 0.9))
+      LaFamiglia.DateTime.from_now(microseconds: trunc(Unit.training_time(unit) * 0.9))
 
     changeset =
       build(:villa)
@@ -64,7 +64,7 @@ defmodule LaFamiglia.UnitQueueItemTest do
     assert Unit.number(changeset, unit) == 0
     assert Unit.virtual_number(changeset, unit) == 1
 
-    until = LaFamiglia.DateTime.from_now(microseconds: trunc(Unit.build_time(unit) * 1.1))
+    until = LaFamiglia.DateTime.from_now(microseconds: trunc(Unit.training_time(unit) * 1.1))
 
     changeset =
       changeset
