@@ -54,7 +54,8 @@ type alias Model =
     , unitNumbers : Dict Unit.Id Int
     , attackDialogState : AttackDialog.State
     , resultInReview : Maybe Attack.Result
-    , attacks : Dict Attack.Id Attack.Result
+    , nextId : Int
+    , attacks : Dict Int Attack.Result
     , csrfToken : String
     }
 
@@ -96,6 +97,7 @@ init flags =
             , unitNumbers = unitNumbers
             , attackDialogState = AttackDialog.initialState unitNumbers
             , resultInReview = Nothing
+            , nextId = 0
             , attacks = Dict.empty
             , csrfToken = flags.csrfToken
             }
@@ -122,8 +124,8 @@ type Msg
     | NewDialogState AttackDialog.State
     | FetchFail Http.Error
     | FetchSucceed Coordinates (Dict Coordinates Villa)
-    | AttackFail Attack.Result
-    | AttackSucceed Attack.Result
+    | AttackFail Int Attack.Result
+    | AttackSucceed Int Attack.Result
 
 
 getOrCreateTile : Dict Coordinates Tile -> Coordinates -> Tile
@@ -231,9 +233,15 @@ update msg model =
             let
                 newState =
                     model.attackDialogState |> AttackDialog.close
+
+                nextId =
+                    model.nextId + 1
             in
-                { model | attackDialogState = newState }
-                    ! [ Attack.postAttack (attackConfig model.csrfToken) attack ]
+                { model
+                    | attackDialogState = newState
+                    , nextId = nextId
+                }
+                    ! [ Attack.postAttack (attackConfig model.nextId model.csrfToken) attack ]
 
         NewDialogState state ->
             { model | attackDialogState = state } ! []
@@ -251,19 +259,19 @@ update msg model =
             in
                 { model | tiles = newTiles } ! []
 
-        AttackFail result ->
-            updateAttack result model ! []
+        AttackFail id result ->
+            updateAttack id result model ! []
 
-        AttackSucceed result ->
-            updateAttack result model ! []
+        AttackSucceed id result ->
+            updateAttack id result model ! []
 
 
-updateAttack : Attack.Result -> Model -> Model
-updateAttack result model =
+updateAttack : Int -> Attack.Result -> Model -> Model
+updateAttack id result model =
     let
         newAttacks =
             model.attacks
-                |> Dict.insert (Attack.id result) result
+                |> Dict.insert id result
     in
         { model | attacks = newAttacks }
 
@@ -413,12 +421,12 @@ attackDialogConfig origin =
         }
 
 
-attackConfig : String -> Attack.Config Msg
-attackConfig csrfToken =
+attackConfig : Int -> String -> Attack.Config Msg
+attackConfig id csrfToken =
     Attack.config
         { csrfToken = csrfToken
-        , onSuccess = AttackSucceed
-        , onFail = AttackFail
+        , onSuccess = AttackSucceed id
+        , onFail = AttackFail id
         }
 
 

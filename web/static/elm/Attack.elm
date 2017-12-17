@@ -1,8 +1,6 @@
 module Attack
     exposing
         ( Attack
-        , Id
-        , id
         , Config
         , config
         , Result(..)
@@ -26,27 +24,6 @@ import Mechanics.Units as Units
 attackEndpointUrl : Villa -> String
 attackEndpointUrl origin =
     "/api/v1/villas/" ++ (toString origin.id) ++ "/attack_movements"
-
-
-type alias Id =
-    ( Villa.Id, Villa.Id )
-
-
-id : Result -> Id
-id result =
-    let
-        id' attack =
-            ( attack.origin.id, attack.target.id )
-    in
-        case result of
-            InProgress attack ->
-                id' attack
-
-            Success attack ->
-                id' attack
-
-            Failure attack _ ->
-                id' attack
 
 
 format : Attack -> String

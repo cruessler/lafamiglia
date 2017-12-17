@@ -10,7 +10,7 @@ import Villa exposing (Villa)
 
 forResults :
     (Attack.Result -> msg)
-    -> Dict Attack.Id Attack.Result
+    -> Dict Int Attack.Result
     -> List (List (Html msg))
 forResults onReview results =
     if Dict.isEmpty results then
@@ -21,7 +21,7 @@ forResults onReview results =
 
 singleFeedback :
     (Attack.Result -> msg)
-    -> Attack.Id
+    -> Int
     -> Attack.Result
     -> List (Html msg)
 singleFeedback onReview _ result =
