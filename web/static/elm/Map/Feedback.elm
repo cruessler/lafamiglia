@@ -26,17 +26,12 @@ singleFeedback :
     -> List (Html msg)
 singleFeedback onReview _ result =
     case result of
-        Attack.InProgress attack ->
+        Ok { attack } ->
             [ Html.h4 [] [ text <| Attack.format attack ]
             , text "Your attack is on the way"
             ]
 
-        Attack.Success attack ->
-            [ Html.h4 [] [ text <| Attack.format attack ]
-            , text "Your attack is on the way (confirmed)"
-            ]
-
-        Attack.Failure attack errors ->
+        Err { attack } ->
             [ Html.h4 [] [ text <| Attack.format attack ]
             , span [] [ text "Your attack could not be sent" ]
             , a

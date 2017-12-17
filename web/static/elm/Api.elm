@@ -1,91 +1,92 @@
-module Api exposing (Response(..), fromJson)
+module Api
+    exposing
+        ( Config
+        , config
+        , get
+        , post
+        , patch
+        )
 
-{-|
-
-@docs Response
-
-@docs fromJson
+{-| @docs get, post, patch, send
 -}
 
 import Http
-import Json.Decode as Json
+import Json.Decode as Decode
+import Json.Encode as Encode
 import Task exposing (Task, succeed, fail)
 
 
-{-| Represents an API response.
+type alias Config =
+    { csrfToken : String }
+
+
+type alias Request a =
+    { url : String
+    , params : Encode.Value
+    , decoder : Decode.Decoder a
+    }
+
+
+type Method
+    = Get
+    | Post
+    | Patch
+
+
+config : String -> Config
+config csrfToken =
+    Config csrfToken
+
+
+toString : Method -> String
+toString method =
+    case method of
+        Get ->
+            "GET"
+
+        Post ->
+            "POST"
+
+        Patch ->
+            "PATCH"
+
+
+{-| Create a task for sending a GET request to a url.
 -}
-type Response a b
-    = Error a
-    | Success b
+get : Config -> Request a -> Http.Request a
+get =
+    send Get
 
 
-{-| Turn a `Http.Response` into a `Reponse a b`.
-
-Responses with status code 2xx get decoded by `successDecoder` while responses
-with status code 400 get decoded by `failDecoder`.
-
-This accounts for the fact that a JSON API might return a payload on error to
-provide further information.
+{-| Create a task for sending a POST request to a url.
 -}
-fromJson :
-    Json.Decoder a
-    -> Json.Decoder b
-    -> Task Http.RawError Http.Response
-    -> Task Http.Error (Response a b)
-fromJson failDecoder successDecoder response =
-    let
-        failDecode str =
-            case Json.decodeString failDecoder str of
-                Ok v ->
-                    succeed (Error v)
-
-                Err msg ->
-                    fail (Http.UnexpectedPayload msg)
-
-        successDecode str =
-            case Json.decodeString successDecoder str of
-                Ok v ->
-                    succeed (Success v)
-
-                Err msg ->
-                    fail (Http.UnexpectedPayload msg)
-    in
-        Task.mapError promoteError response
-            `Task.andThen` handleResponse failDecode successDecode
+post : Config -> Request a -> Http.Request a
+post =
+    send Post
 
 
-{-| The same as `Http.promoteError` which can’t be used here since it’s
-private.
+{-| Create a task for sending a PATCH request to a url.
 -}
-promoteError : Http.RawError -> Http.Error
-promoteError rawError =
-    case rawError of
-        Http.RawTimeout ->
-            Http.Timeout
-
-        Http.RawNetworkError ->
-            Http.NetworkError
+patch : Config -> Request a -> Http.Request a
+patch =
+    send Patch
 
 
-handleResponse :
-    (String -> Task Http.Error a)
-    -> (String -> Task Http.Error a)
-    -> Http.Response
-    -> Task Http.Error a
-handleResponse failHandle successHandle response =
-    if 200 <= response.status && response.status < 300 then
-        case response.value of
-            Http.Text str ->
-                successHandle str
+{-| Create a task for sending a request to a url.
 
-            _ ->
-                fail (Http.UnexpectedPayload "Response body is a blob, expecting a string.")
-    else if response.status == 400 then
-        case response.value of
-            Http.Text str ->
-                failHandle str
+The API token is sent in an "Authorization" header.
 
-            _ ->
-                fail (Http.UnexpectedPayload "Response body is a blob, expecting a string.")
-    else
-        fail (Http.BadResponse response.status response.statusText)
+-}
+send : Method -> Config -> Request a -> Http.Request a
+send method config { url, params, decoder } =
+    Http.request
+        { method = toString method
+        , headers =
+            [ Http.header "X-CSRF-Token" config.csrfToken
+            ]
+        , url = url
+        , body = Http.jsonBody params
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = False
+        }

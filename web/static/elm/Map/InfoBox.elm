@@ -1,7 +1,7 @@
 module Map.InfoBox exposing (view)
 
 import Html exposing (Html, h4, div, a, text)
-import Html.Attributes exposing (class, href, type')
+import Html.Attributes exposing (class, href, type_)
 import Html.Events as Events
 import Villa exposing (Villa)
 
@@ -12,8 +12,8 @@ reportsHref villa =
 
 
 view : (Villa -> msg) -> Maybe Villa -> Html msg
-view onClick villa' =
-    case villa' of
+view onClick villa_ =
+    case villa_ of
         Just villa ->
             div [ class "info-box" ]
                 [ h4 []

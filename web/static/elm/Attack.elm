@@ -3,11 +3,11 @@ module Attack
         ( Attack
         , Config
         , config
-        , Result(..)
+        , Result
         , Errors
         , errors
         , format
-        , postAttack
+        , post
         )
 
 import Api
@@ -31,14 +31,18 @@ format attack =
     (Villa.format attack.origin) ++ " → " ++ (Villa.format attack.target)
 
 
-errors : Result -> Errors
+errors : Result -> Maybe Errors
 errors result =
     case result of
-        Failure _ errors ->
-            errors
+        Err errors ->
+            Just errors
 
         _ ->
-            Errors [] Dict.empty
+            Nothing
+
+
+type alias Result =
+    Result.Result Errors Success
 
 
 type alias Attack =
@@ -48,16 +52,15 @@ type alias Attack =
     }
 
 
+type alias Success =
+    { attack : Attack }
+
+
 type alias Errors =
-    { forBase : List String
+    { attack : Attack
+    , forBase : List String
     , forUnits : Dict Unit.Id String
     }
-
-
-type Result
-    = InProgress Attack
-    | Success Attack
-    | Failure Attack Errors
 
 
 type Config msg
@@ -82,52 +85,43 @@ config { csrfToken, onSuccess, onFail } =
         }
 
 
-postAttack : Config msg -> Attack -> Cmd msg
-postAttack (Config config) ({ origin, target, units } as attack) =
+post :
+    Api.Config
+    -> Attack
+    -> Task Errors Success
+post apiConfig ({ origin, target, units } as attack) =
     let
         movement =
             (encodeUnits units) ++ [ ( "target_id", Encode.int target.id ) ]
 
         params =
             Encode.object [ ( "attack_movement", Encode.object movement ) ]
-                |> Encode.encode 0
 
-        task =
-            Http.send Http.defaultSettings
-                { verb = "POST"
-                , headers =
-                    [ ( "Content-Type", "application/json" )
-                    , ( "X-CSRF-Token", config.csrfToken )
-                    ]
-                , url = attackEndpointUrl origin
-                , body = Http.string params
-                }
+        errors =
+            Errors attack [ "Your attack could not be sent" ] Dict.empty
     in
-        task
-            |> Api.fromJson decodeErrorResponse (Decode.succeed ())
+        Api.post apiConfig
+            { url = attackEndpointUrl origin
+            , params = params
+            , decoder = Decode.succeed <| Success attack
+            }
+            |> Http.toTask
             |> Task.mapError (mapErrorResponse attack)
-            |> Task.map (mapSuccessfulResponse attack)
-            |> Task.perform config.onFail config.onSuccess
 
 
-{-| Always discards the error and returns a generic failure message.
--}
-mapErrorResponse : Attack -> a -> Result
-mapErrorResponse attack _ =
-    Failure attack
-        (Errors [ "Your attack could not be sent" ] Dict.empty)
+mapErrorResponse : Attack -> Http.Error -> Errors
+mapErrorResponse attack error =
+    let
+        genericError =
+            Errors attack [ "Your attack could not be sent" ] Dict.empty
+    in
+        case error of
+            Http.BadStatus response ->
+                Decode.decodeString (decodeErrorResponse attack) response.body
+                    |> Result.withDefault genericError
 
-
-{-| Converts an `Api.Response` into an `Attack.Result`.
--}
-mapSuccessfulResponse : Attack -> Api.Response Errors a -> Result
-mapSuccessfulResponse attack response =
-    case response of
-        Api.Error errors ->
-            Failure attack errors
-
-        Api.Success _ ->
-            Success attack
+            _ ->
+                genericError
 
 
 encodeUnits : Dict Unit.Id Int -> List ( String, Encode.Value )
@@ -141,10 +135,10 @@ encodeUnits =
                 (\( k, v ) -> ( unitKey k, Encode.int v ))
 
 
-decodeErrorResponse : Decode.Decoder Errors
-decodeErrorResponse =
-    Decode.object2
-        Errors
+decodeErrorResponse : Attack -> Decode.Decoder Errors
+decodeErrorResponse attack =
+    Decode.map2
+        (Errors attack)
         decodeErrorsForBase
         (Decode.succeed Dict.empty)
 

@@ -6,11 +6,11 @@ import AttackDialog
 import Dict exposing (Dict)
 import FeedbackBox
 import Html exposing (..)
-import Html.App as Html
 import Html.Attributes exposing (class, rel, href, style, attribute)
 import Html.Events as Events
 import Http
 import Json.Decode as Json exposing (..)
+import Json.Encode as Encode
 import Map.Coordinates exposing (Coordinates)
 import Map.Feedback as Feedback
 import Map.Geometry as Geometry exposing (Geometry)
@@ -122,17 +122,16 @@ type Msg
     | ReviewAttackDialog Attack.Result
     | SendTroops Attack
     | NewDialogState AttackDialog.State
-    | FetchFail Http.Error
-    | FetchSucceed Coordinates (Dict Coordinates Villa)
-    | AttackFail Int Attack.Result
-    | AttackSucceed Int Attack.Result
+    | FetchVillas Coordinates (Result Http.Error (Dict Coordinates Villa))
+    | PostAttack Int Attack.Result
 
 
 getOrCreateTile : Dict Coordinates Tile -> Coordinates -> Tile
 getOrCreateTile tiles coords =
     tiles
         |> Dict.get coords
-        |> Maybe.withDefault (Tile { x = fst coords, y = snd coords } Dict.empty)
+        |> Maybe.withDefault
+            (Tile { x = Tuple.first coords, y = Tuple.second coords } Dict.empty)
 
 
 visibleTiles : Model -> Dict Coordinates Tile
@@ -241,50 +240,51 @@ update msg model =
                     | attackDialogState = newState
                     , nextId = nextId
                 }
-                    ! [ Attack.postAttack (attackConfig model.nextId model.csrfToken) attack ]
+                    ! [ Attack.post { csrfToken = model.csrfToken } attack
+                            |> Task.attempt (PostAttack model.nextId)
+                      ]
 
         NewDialogState state ->
             { model | attackDialogState = state } ! []
 
-        FetchFail _ ->
-            model ! []
-
-        FetchSucceed coordinates villas ->
+        FetchVillas coordinates (Ok villas) ->
             let
                 newTile =
-                    Tile { x = fst coordinates, y = snd coordinates } villas
+                    Tile { x = Tuple.first coordinates, y = Tuple.second coordinates } villas
 
                 newTiles =
                     model.tiles |> Dict.insert coordinates newTile
             in
                 { model | tiles = newTiles } ! []
 
-        AttackFail id result ->
-            updateAttack id result model ! []
+        FetchVillas _ _ ->
+            model ! []
 
-        AttackSucceed id result ->
-            updateAttack id result model ! []
-
-
-updateAttack : Int -> Attack.Result -> Model -> Model
-updateAttack id result model =
-    let
-        newAttacks =
-            model.attacks
-                |> Dict.insert id result
-    in
-        { model | attacks = newAttacks }
+        PostAttack id result ->
+            let
+                newAttacks =
+                    model.attacks
+                        |> Dict.insert id result
+            in
+                { model | attacks = newAttacks } ! []
 
 
 fetchVillas : Model -> List (Cmd Msg)
 fetchVillas model =
-    model.tiles |> Dict.values |> List.map fetchVillas'
+    model.tiles |> Dict.values |> List.map fetchVillas_
 
 
-fetchVillas' : Tile -> Cmd Msg
-fetchVillas' tile =
+toQuery : List ( String, String ) -> String
+toQuery =
+    List.map
+        (\( s1, s2 ) -> Http.encodeUri s1 ++ "=" ++ Http.encodeUri s2)
+        >> String.join "&"
+
+
+fetchVillas_ : Tile -> Cmd Msg
+fetchVillas_ tile =
     let
-        queryParams =
+        params =
             [ ( "min_x", toString tile.origin.x )
             , ( "min_y", toString tile.origin.y )
             , ( "max_x", toString (tile.origin.x + 10) )
@@ -292,12 +292,15 @@ fetchVillas' tile =
             ]
 
         url =
-            Http.url villasEndpointUrl queryParams
-
-        task =
-            Http.get Villa.decodeVillas url
+            villasEndpointUrl ++ "?" ++ (toQuery params)
     in
-        Task.perform FetchFail (FetchSucceed ( tile.origin.x, tile.origin.y )) task
+        Api.get
+            { csrfToken = "" }
+            { url = url
+            , params = Encode.null
+            , decoder = Villa.decodeVillas
+            }
+            |> Http.send (FetchVillas ( tile.origin.x, tile.origin.y ))
 
 
 offset : Geometry.Dimensions -> Tile -> Tile.Offset
@@ -315,7 +318,7 @@ xAxisLabel model x =
     in
         div
             [ class "x-axis-label"
-            , style [ ( "left", toString (fst offset) ++ "px" ) ]
+            , style [ ( "left", toString (Tuple.first offset) ++ "px" ) ]
             ]
             [ text (toString x) ]
 
@@ -328,7 +331,7 @@ yAxisLabel model y =
     in
         div
             [ class "y-axis-label"
-            , style [ ( "top", toString (snd offset) ++ "px" ) ]
+            , style [ ( "top", toString (Tuple.second offset) ++ "px" ) ]
             ]
             [ text (toString y) ]
 
@@ -344,14 +347,14 @@ view model =
             Geometry.visibleYAxisLabels model.geometry model.offset
                 |> List.map (yAxisLabel model)
 
-        offset' =
+        offset_ =
             offset model.geometry.cellDimensions
 
         tiles =
             model.tiles
                 |> Dict.values
                 |> List.map
-                    (\t -> Tile.view tileConfig (offset' t) t)
+                    (\t -> Tile.view tileConfig (offset_ t) t)
 
         xAxisStyle =
             [ ( "transform"
@@ -377,8 +380,7 @@ view model =
 
         errors =
             model.resultInReview
-                |> Maybe.map Attack.errors
-                |> Maybe.withDefault (Attack.Errors [] Dict.empty)
+                |> Maybe.andThen Attack.errors
     in
         div [ class "container-fluid map-viewport" ]
             [ div
@@ -421,19 +423,10 @@ attackDialogConfig origin =
         }
 
 
-attackConfig : Int -> String -> Attack.Config Msg
-attackConfig id csrfToken =
-    Attack.config
-        { csrfToken = csrfToken
-        , onSuccess = AttackSucceed id
-        , onFail = AttackFail id
-        }
-
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
     let
-        subscriptions' =
+        subscriptions_ =
             if model.dragging then
                 Sub.batch [ Mouse.moves Move, Mouse.ups MouseUp ]
             else
@@ -443,5 +436,5 @@ subscriptions model =
             [ AttackDialog.subscriptions
                 (attackDialogConfig model.currentVilla)
                 model.attackDialogState
-            , subscriptions'
+            , subscriptions_
             ]

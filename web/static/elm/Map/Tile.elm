@@ -53,12 +53,12 @@ config { onHover, onClick } =
 cell : Config msg -> Coordinates -> Tile -> Html msg
 cell (Config { onHover, onClick }) coordinates tile =
     case Dict.get coordinates tile.villas of
-        (Just villa) as villa' ->
+        (Just villa) as villa_ ->
             div
                 [ class "cell"
-                , Events.onMouseEnter (onHover villa')
+                , Events.onMouseEnter (onHover villa_)
                 , Events.onMouseOut (onHover Nothing)
-                , Events.onClick (onClick villa')
+                , Events.onClick (onClick villa_)
                 ]
                 [ text (Villa.format villa) ]
 
@@ -74,10 +74,10 @@ view : Config msg -> Offset -> Tile -> Html msg
 view config offset tile =
     let
         xs =
-            [tile.origin.x..(tile.origin.x + width - 1)]
+            List.range tile.origin.x (tile.origin.x + width - 1)
 
         ys =
-            [tile.origin.y..(tile.origin.y + height - 1)]
+            List.range tile.origin.y (tile.origin.y + height - 1)
 
         cells =
             List.concatMap

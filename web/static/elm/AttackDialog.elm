@@ -15,16 +15,16 @@ module AttackDialog
 {-| This module provides an attack dialog.
 
 It is implemented using a Bootstrap modal dialog.
+
 -}
 
 import Attack exposing (Attack)
 import Html exposing (..)
-import Html.App as Html
 import Html.Attributes as Attributes exposing (class, classList, rel, href, style, attribute)
 import Html.Events as Events
 import Http
 import Task exposing (Task)
-import Json.Decode as Decode exposing ((:=))
+import Json.Decode as Decode exposing (field)
 import Json.Encode as Encode
 import Dict exposing (Dict)
 import String
@@ -59,7 +59,7 @@ type alias State =
 
 type alias Data =
     { units : Dict Unit.Id Int
-    , errors : Attack.Errors
+    , errors : Maybe Attack.Errors
     }
 
 
@@ -94,7 +94,7 @@ open villa state =
 review : Attack.Result -> State -> State
 review result state =
     case result of
-        Attack.Failure attack errors ->
+        Err { attack } ->
             { state
                 | dialogState = Open attack.target
                 , selectedUnits = attack.units
@@ -140,7 +140,7 @@ modalHeader target =
 range : Decode.Decoder msg -> Int -> Int -> Html msg
 range decoder current max =
     input
-        [ Attributes.type' "range"
+        [ Attributes.type_ "range"
         , Attributes.min "0"
         , Attributes.max (toString max)
         , Attributes.value (toString current)
@@ -161,12 +161,12 @@ sliderLink :
     -> Int
     -> String
     -> Html msg
-sliderLink onUpdate value text' =
+sliderLink onUpdate value text_ =
     a
         [ class "adjacent-link btn btn-default btn-xs"
         , Events.onClick (onUpdate value)
         ]
-        [ text text' ]
+        [ text text_ ]
 
 
 sliderLinks :
@@ -174,16 +174,16 @@ sliderLinks :
     -> Int
     -> Int
     -> List (Html msg)
-sliderLinks onUpdate current max' =
+sliderLinks onUpdate current max_ =
     let
         steps =
-            [0..4]
+            List.range 0 4
 
         numSteps =
             List.length steps - 1
 
         step =
-            toFloat max' / toFloat numSteps
+            toFloat max_ / toFloat numSteps
 
         {- This helper expects `acc` to be sorted. -}
         uniq : Int -> List Int -> List Int
@@ -215,7 +215,7 @@ sliderLinks onUpdate current max' =
         increaseLink by =
             let
                 value =
-                    min (current + by) max'
+                    min (current + by) max_
             in
                 sliderLink onUpdate value ("+" ++ (toString by))
 
@@ -371,8 +371,13 @@ modalBody : Config data msg -> State -> Villa -> Data -> Html msg
 modalBody config state target data =
     let
         messages =
-            ul [ class "alert alert-info" ]
-                (List.map (\m -> li [] [ text m ]) data.errors.forBase)
+            data.errors
+                |> Maybe.map
+                    (\errors ->
+                        ul [ class "alert alert-info" ]
+                            (List.map (\m -> li [] [ text m ]) errors.forBase)
+                    )
+                |> Maybe.withDefault (ul [] [])
 
         children =
             [ h3 [] [ text "Overview" ]

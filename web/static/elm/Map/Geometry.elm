@@ -39,10 +39,10 @@ init mapDimensions tileDimensions =
         (cellDimensions tileDimensions)
 
 
-{-|
-  Calculate the dimensions of a single map cell.
+{-| Calculate the dimensions of a single map cell.
 
-  Must correspond to `div.cell`’s percentage value in `_map.scss`.
+Must correspond to `div.cell`’s percentage value in `_map.scss`.
+
 -}
 cellDimensions : Dimensions -> Dimensions
 cellDimensions tileDimensions =
@@ -54,6 +54,7 @@ cellDimensions tileDimensions =
 {-| Convert viewport coordinates to map coordinates.
 
 Viewport coordinates are relative to the origin of the screen.
+
 -}
 mapCoordinates : Geometry -> Coordinates -> Coordinates
 mapCoordinates geometry ( viewportX, viewportY ) =
@@ -74,6 +75,7 @@ mapCoordinates geometry ( viewportX, viewportY ) =
 {-| Convert map coordinates to viewport coordinates.
 
 Viewport coordinates are relative to the origin of the screen.
+
 -}
 viewportCoordinates : Geometry -> Coordinates -> Coordinates
 viewportCoordinates geometry ( mapX, mapY ) =
@@ -101,7 +103,7 @@ tileOrigin coordinate =
 
 range : Int -> Int -> Int -> List Int
 range start stop step =
-    [start..stop]
+    List.range start stop
         |> List.filter (\i -> (i - start) % step == 0)
 
 
@@ -120,14 +122,14 @@ visibleTileOrigins geometry offset =
 
         xs =
             range
-                (tileOrigin (fst upperLeftCorner))
-                (tileOrigin (fst lowerRightCorner))
+                (tileOrigin (Tuple.first upperLeftCorner))
+                (tileOrigin (Tuple.first lowerRightCorner))
                 10
 
         ys =
             range
-                (tileOrigin (snd upperLeftCorner))
-                (tileOrigin (snd lowerRightCorner))
+                (tileOrigin (Tuple.second upperLeftCorner))
+                (tileOrigin (Tuple.second lowerRightCorner))
                 10
     in
         List.concatMap
@@ -140,7 +142,7 @@ visibleXAxisLabels geometry offset =
     let
         upperLeftX =
             mapCoordinates geometry ( 0 - offset.x, 0 - offset.y )
-                |> fst
+                |> Tuple.first
 
         width =
             ceiling (geometry.mapDimensions.width / geometry.cellDimensions.width) + 1
@@ -153,7 +155,7 @@ visibleYAxisLabels geometry offset =
     let
         upperLeftY =
             mapCoordinates geometry ( 0 - offset.x, 0 - offset.y )
-                |> snd
+                |> Tuple.second
 
         height =
             ceiling (geometry.mapDimensions.height / geometry.cellDimensions.height) + 1

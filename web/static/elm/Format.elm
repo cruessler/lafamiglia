@@ -37,6 +37,6 @@ duration duration =
             Time.inMinutes duration |> floor |> toString
 
         seconds =
-            (Time.inSeconds duration |> floor) `rem` 60 |> toString
+            rem (Time.inSeconds duration |> floor) 60 |> toString
     in
         minutes ++ " minutes, " ++ seconds ++ " seconds"
