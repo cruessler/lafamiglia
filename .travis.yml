@@ -14,5 +14,6 @@ addons:
   postgresql: '9.6'
 
 before_script:
+  - cp config/config.travis.exs config/config.exs
   - cp config/test.travis.exs config/test.exs
   - psql -c 'create database travis_ci_test;' -U postgres
