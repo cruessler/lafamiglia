@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cruessler/lafamiglia.svg?branch=master)](https://travis-ci.org/cruessler/lafamiglia)
+
 # La Famiglia
 
 La Famiglia is a multiplayer browser game focusing on:
