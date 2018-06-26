@@ -161,8 +161,31 @@ defmodule LaFamiglia.Factory do
     }
   end
 
+  def units do
+    %LaFamiglia.Report.Schema.Units{
+      unit_1: 10,
+      unit_2: 0
+    }
+  end
+
+  def resources do
+    %LaFamiglia.Report.Schema.Resources{
+      resource_1: 0,
+      resource_2: 0,
+      resource_3: 0
+    }
+  end
+
   def combat_report_factory do
-    build(:report, combat_report: %LaFamiglia.CombatReport{})
+    build(:report, combat_report: %LaFamiglia.CombatReport{
+      attacker_before_combat: units,
+      attacker_losses: units,
+      defender_before_combat: units,
+      defender_losses: units,
+      resources_plundered: resources,
+      results_in_occupation: false,
+      attacker_wins: true
+    })
   end
 
   def conquest_report_factory do

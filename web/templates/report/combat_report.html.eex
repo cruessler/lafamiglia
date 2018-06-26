@@ -20,14 +20,14 @@
 
 <table class="table table-striped units">
   <tr>
-    <%= for k <- LaFamiglia.Resource.all do %>
-      <th><%= k %></th>
-    <% end %>
+    <th><%= :resource_1 %></th>
+    <th><%= :resource_2 %></th>
+    <th><%= :resource_3 %></th>
   </tr>
   <tr>
-    <%= for k <- LaFamiglia.Resource.all do %>
-      <td><%= @report.combat_report.resources_plundered[k] || "0" %></td>
-    <% end %>
+    <td><%= @report.combat_report.resources_plundered.resource_1 || "0" %></td>
+    <td><%= @report.combat_report.resources_plundered.resource_2 || "0" %></td>
+    <td><%= @report.combat_report.resources_plundered.resource_3 || "0" %></td>
   </tr>
 </table>
 

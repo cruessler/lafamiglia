@@ -1,20 +1,17 @@
 <table class="table table-striped units">
   <tr>
     <th></th>
-    <%= for u <- LaFamiglia.Unit.all do %>
-      <th><%= u.key %></th>
-    <% end %>
+    <th><%= :unit_1 %></th>
+    <th><%= :unit_2 %></th>
   </tr>
   <tr>
     <td>Units</td>
-    <%= for u <- LaFamiglia.Unit.all do %>
-      <td><%= @units[u.key] %></td>
-    <% end %>
+    <td><%= @units.unit_1 %></td>
+    <td><%= @units.unit_2 %></td>
   </tr>
   <tr>
     <td>Losses</td>
-    <%= for u <- LaFamiglia.Unit.all do %>
-      <td><%= @losses[u.key] %></td>
-    <% end %>
+    <td><%= @losses.unit_1 %></td>
+    <td><%= @losses.unit_2 %></td>
   </tr>
 </table>
