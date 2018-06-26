@@ -48,6 +48,7 @@ exports.config = {
   // Configure your plugins
   plugins: {
     babel: {
+      presets: ['env', 'react'],
       // Do not use ES6 compiler in vendor code
       ignore: [/^(web\/static\/vendor)/]
     },
