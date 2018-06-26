@@ -9,7 +9,7 @@
     "css-brunch": ">= 1.0 < 1.8",
     "elm-brunch": "^0.7.0",
     "javascript-brunch": ">= 1.0 < 1.8",
-    "sass-brunch": "^1.8.10",
+    "sass-brunch": "^2.10.4",
     "uglify-js-brunch": "^2.10.0"
   }
 }
