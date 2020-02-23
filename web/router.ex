@@ -38,10 +38,6 @@ defmodule LaFamiglia.Router do
     scope "/" do
       pipe_through :ingame
 
-      scope "/players" do
-        get "/search/:query", PlayerController, :search
-      end
-
       resources "/players", PlayerController, only: [ :index ]
 
       resources "/villas", VillaController, only: [ :index, :show ] do
@@ -76,6 +72,10 @@ defmodule LaFamiglia.Router do
 
     scope "/" do
       pipe_through :ingame
+
+      scope "/players" do
+        get "/search/:query", PlayerController, :search
+      end
 
       resources "/villas", VillaController, only: [] do
         resources "/attack_movements", AttackMovementController, only: [ :create ]

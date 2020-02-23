@@ -10,7 +10,7 @@ class PlayerSelector extends React.Component {
     this.bloodhound = new Bloodhound({
       datumTokenizer: Bloodhound.tokenizers.obj.whitespace("name"),
       queryTokenizer: Bloodhound.tokenizers.whitespace,
-      remote: { url: "/players/search/%QUERY",
+      remote: { url: "/api/v1/players/search/%QUERY",
                 // For typeahead 0.10.
                 ajax: {
                   beforeSend: (xhr, settings) => {
