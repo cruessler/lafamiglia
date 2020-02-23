@@ -38,6 +38,4 @@ erl_crash.dump
 /assets/elm/elm-stuff
 /assets/vendor
 
-/assets/elm/Mechanics/*.elm
-
 *.swp
