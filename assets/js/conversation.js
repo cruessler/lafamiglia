@@ -1,3 +1,5 @@
+import React from 'react';
+
 class Conversation extends React.Component {
   classNameForMessageHeader(message) {
     return `sender-header ${this.classNameForMessage(message)}`

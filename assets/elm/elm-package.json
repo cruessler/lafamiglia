@@ -4,7 +4,7 @@
     "repository": "https://github.com/cruessler/lafamiglia.git",
     "license": "MIT",
     "source-directories": [
-        "web/static/elm"
+        "."
     ],
     "exposed-modules": [],
     "dependencies": {

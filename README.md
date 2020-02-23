@@ -59,9 +59,7 @@ Prerequisites: Erlang 18, Elixir 1.2, PostgreSQL 9.4.
 - `MIX_ENV=prod mix ecto.create`
 - `MIX_ENV=prod mix ecto.migrate`
 - `npm install`
-- `bower install`
-- `./node_modules/brunch/bin/brunch build --production` (Make sure you have
-  `elm-make` available in your `$PATH`.)
+- `npm run deploy`
 - `MIX_ENV=prod mix phoenix.digest`
 - `PORT=$PORT MIX_ENV=prod mix la_famiglia.server`
 
@@ -74,8 +72,7 @@ Prerequisites: Erlang 18, Elixir 1.2, PostgreSQL 9.4.
 - `MIX_ENV=prod mix la_famiglia.postcompile`
 - `MIX_ENV=prod mix ecto.migrate` if necessary
 - `npm install` if necessary
-- `bower install` if necessary
-- `./node_modules/brunch/bin/brunch build --production`
+- `npm run deploy`
 - `MIX_ENV=prod mix phoenix.digest`
 - Restart the server.
 

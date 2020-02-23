@@ -1,5 +1,6 @@
-@import "bootstrap-sass-official/assets/stylesheets/bootstrap";
-@import "bootstrap-sass-official/assets/stylesheets/bootstrap/theme";
+$icon-font-path: "../node_modules/bootstrap-sass/assets/fonts/bootstrap/";
+@import "~bootstrap-sass/assets/stylesheets/bootstrap";
+@import "~bootstrap-sass/assets/stylesheets/bootstrap/theme";
 
 $body-bg: #EEE;
 

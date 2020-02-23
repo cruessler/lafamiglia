@@ -1,3 +1,6 @@
+import React from 'react';
+import Typeahead from 'typeahead.js';
+
 class PlayerSelector extends React.Component {
   constructor(props) {
     super(props)

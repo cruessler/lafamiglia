@@ -7,8 +7,7 @@
 erl_crash.dump
 
 # Static artifacts
-/bower_components
-/node_modules
+/assets/node_modules
 
 # Since we are building assets from web/static,
 # we ignore priv/static. You may want to comment
@@ -36,9 +35,9 @@ erl_crash.dump
 # edelivery artifacts
 /rel/la_famiglia/
 
-/elm-stuff
-/web/static/vendor
+/assets/elm/elm-stuff
+/assets/vendor
 
-web/static/elm/Mechanics/*.elm
+/assets/elm/Mechanics/*.elm
 
 *.swp

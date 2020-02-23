@@ -21,7 +21,7 @@ body {
 }
 </style>
 
-<div id="map">
+<div id="map" data-flags="<%= @flags %>">
   <div id="viewport-probe" class="map-viewport">
     <div class="map-inner-viewport">
       <div id="map-probe" class="map">
@@ -30,28 +30,3 @@ body {
     </div>
   </div>
 </div>
-
-<script type="text/javascript">
-  document.addEventListener("DOMContentLoaded", () => {
-    const node = document.getElementById("map")
-
-    const tileNode = document.getElementById("tile-probe")
-    const tileDimensions =
-      { width: $(tileNode).width(), height: $(tileNode).height() }
-
-    const mapNode = document.getElementById("map-probe")
-    const mapDimensions =
-      { width: $(mapNode).width(), height: $(mapNode).height() }
-
-    document.getElementById("viewport-probe").remove()
-
-    Elm.Map.embed(node,
-      { center: { x: <%= @center_x %>, y: <%= @center_y %> },
-        mapDimensions: mapDimensions,
-        tileDimensions: tileDimensions,
-        currentVilla: <%= {:safe, Map.take(@current_villa, [:id, :name, :x, :y]) |> Poison.encode!} %>,
-        unitNumbers: <%= {:safe, Unit.filter(@current_villa) |> Poison.encode!} %>,
-        csrfToken: "<%= get_csrf_token %>"
-      })
-  })
-</script>
