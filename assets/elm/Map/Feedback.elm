@@ -2,7 +2,7 @@ module Map.Feedback exposing (forResults)
 
 import Attack
 import Dict exposing (Dict)
-import Html exposing (Html, li, span, a, text)
+import Html exposing (Html, a, li, span, text)
 import Html.Attributes exposing (class)
 import Html.Events as Events
 import Villa exposing (Villa)
@@ -15,6 +15,7 @@ forResults :
 forResults onReview results =
     if Dict.isEmpty results then
         []
+
     else
         Dict.map (singleFeedback onReview) results |> Dict.values
 

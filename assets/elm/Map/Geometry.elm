@@ -1,14 +1,13 @@
-module Map.Geometry
-    exposing
-        ( Geometry
-        , Dimensions
-        , Offset
-        , init
-        , viewportCoordinates
-        , visibleTileOrigins
-        , visibleXAxisLabels
-        , visibleYAxisLabels
-        )
+module Map.Geometry exposing
+    ( Dimensions
+    , Geometry
+    , Offset
+    , init
+    , viewportCoordinates
+    , visibleTileOrigins
+    , visibleXAxisLabels
+    , visibleYAxisLabels
+    )
 
 import Map.Coordinates exposing (Coordinates)
 
@@ -60,16 +59,16 @@ mapCoordinates : Geometry -> Coordinates -> Coordinates
 mapCoordinates geometry ( viewportX, viewportY ) =
     let
         x =
-            (toFloat viewportX)
+            toFloat viewportX
                 / geometry.cellDimensions.width
                 |> floor
 
         y =
-            (toFloat viewportY)
+            toFloat viewportY
                 / geometry.cellDimensions.height
                 |> floor
     in
-        ( x, y )
+    ( x, y )
 
 
 {-| Convert map coordinates to viewport coordinates.
@@ -81,22 +80,23 @@ viewportCoordinates : Geometry -> Coordinates -> Coordinates
 viewportCoordinates geometry ( mapX, mapY ) =
     let
         x =
-            (toFloat mapX)
+            toFloat mapX
                 * geometry.cellDimensions.width
                 |> round
 
         y =
-            (toFloat mapY)
+            toFloat mapY
                 * geometry.cellDimensions.height
                 |> round
     in
-        ( x, y )
+    ( x, y )
 
 
 tileOrigin : Int -> Int
 tileOrigin coordinate =
     if coordinate < 0 then
         ((coordinate // 10) - 1) * 10
+
     else
         (coordinate // 10) * 10
 
@@ -104,7 +104,7 @@ tileOrigin coordinate =
 range : Int -> Int -> Int -> List Int
 range start stop step =
     List.range start stop
-        |> List.filter (\i -> (i - start) % step == 0)
+        |> List.filter (\i -> modBy step (i - start) == 0)
 
 
 visibleTileOrigins : Geometry -> Offset -> List Coordinates
@@ -116,8 +116,8 @@ visibleTileOrigins geometry offset =
         lowerRightCorner =
             mapCoordinates
                 geometry
-                ( (floor geometry.mapDimensions.width) - offset.x
-                , (floor geometry.mapDimensions.height) - offset.y
+                ( floor geometry.mapDimensions.width - offset.x
+                , floor geometry.mapDimensions.height - offset.y
                 )
 
         xs =
@@ -132,9 +132,9 @@ visibleTileOrigins geometry offset =
                 (tileOrigin (Tuple.second lowerRightCorner))
                 10
     in
-        List.concatMap
-            (\x -> List.map (\y -> ( y, x )) ys)
-            xs
+    List.concatMap
+        (\x -> List.map (\y -> ( y, x )) ys)
+        xs
 
 
 visibleXAxisLabels : Geometry -> Offset -> List Int
@@ -147,7 +147,7 @@ visibleXAxisLabels geometry offset =
         width =
             ceiling (geometry.mapDimensions.width / geometry.cellDimensions.width) + 1
     in
-        range upperLeftX (upperLeftX + width) 1
+    range upperLeftX (upperLeftX + width) 1
 
 
 visibleYAxisLabels : Geometry -> Offset -> List Int
@@ -160,4 +160,4 @@ visibleYAxisLabels geometry offset =
         height =
             ceiling (geometry.mapDimensions.height / geometry.cellDimensions.height) + 1
     in
-        range upperLeftY (upperLeftY + height) 1
+    range upperLeftY (upperLeftY + height) 1

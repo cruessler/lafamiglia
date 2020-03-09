@@ -1,6 +1,6 @@
 module Map.InfoBox exposing (view)
 
-import Html exposing (Html, h4, div, a, text)
+import Html exposing (Html, a, div, h4, text)
 import Html.Attributes exposing (class, href, type_)
 import Html.Events as Events
 import Villa exposing (Villa)
@@ -8,7 +8,7 @@ import Villa exposing (Villa)
 
 reportsHref : Villa -> Html.Attribute msg
 reportsHref villa =
-    href <| "/villas/" ++ (toString villa.id) ++ "/reports"
+    href <| "/villas/" ++ String.fromInt villa.id ++ "/reports"
 
 
 view : (Villa -> msg) -> Maybe Villa -> Html msg

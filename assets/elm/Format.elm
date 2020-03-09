@@ -1,42 +1,66 @@
 module Format exposing (arrival, duration)
 
-import Date
-import Date.Format exposing (format)
-import Time exposing (Time)
+import DateFormat as F
+import Duration exposing (Duration)
+import Time
 
 
-arrival : Time -> Time -> String
-arrival start duration =
+
+{- This module currently only works with UTC, not with local time. This is due
+   to changes in Elm 0.19, and will be changed in a later commit.
+-}
+
+
+formatSameDayArrival : Time.Posix -> String
+formatSameDayArrival =
+    F.format
+        [ F.hourMilitaryFixed
+        , F.text ":"
+        , F.minuteFixed
+        , F.text ":"
+        , F.secondFixed
+        , F.text " "
+        , F.amPmUppercase
+        ]
+        Time.utc
+
+
+formatNonSameDayArrival : Time.Posix -> String
+formatNonSameDayArrival =
+    F.format
+        [ F.monthNameFull
+        , F.text " "
+        , F.dayOfMonthSuffix
+        , F.text ", "
+        , F.hourMilitaryFixed
+        , F.text ":"
+        , F.minuteFixed
+        , F.text ":"
+        , F.secondFixed
+        , F.text " "
+        , F.amPmUppercase
+        ]
+        Time.utc
+
+
+arrival : Time.Posix -> Duration -> String
+arrival start duration_ =
+    formatNonSameDayArrival <|
+        Time.millisToPosix <|
+            Time.posixToMillis start
+                + Duration.toMillis duration_
+
+
+duration : Duration -> String
+duration duration_ =
     let
-        startDate =
-            Date.fromTime start
+        millis =
+            Duration.toMillis duration_
 
-        arrivalDate =
-            Date.fromTime (start + duration)
-
-        formatString =
-            if
-                Date.year startDate
-                    == Date.year arrivalDate
-                    && Date.month startDate
-                    == Date.month arrivalDate
-                    && Date.day startDate
-                    == Date.day arrivalDate
-            then
-                "%I:%M:%S %P"
-            else
-                "%B %e, %I:%M:%S %P"
-    in
-        format formatString arrivalDate
-
-
-duration : Time -> String
-duration duration =
-    let
         minutes =
-            Time.inMinutes duration |> floor |> toString
+            Duration.toMinutes duration_ |> String.fromInt
 
         seconds =
-            rem (Time.inSeconds duration |> floor) 60 |> toString
+            remainderBy 60 (Duration.toSeconds duration_) |> String.fromInt
     in
-        minutes ++ " minutes, " ++ seconds ++ " seconds"
+    minutes ++ " minutes, " ++ seconds ++ " seconds"

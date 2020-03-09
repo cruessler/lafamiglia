@@ -1,8 +1,8 @@
 module Mechanics.Units exposing (all, byId, byKey, decodeUnitNumbers)
 
 import Dict exposing (Dict)
-import Unit exposing (Unit)
 import Json.Decode as Decode
+import Unit exposing (Unit)
 
 
 all =
@@ -36,5 +36,5 @@ decodeUnitNumbers =
         transformDict =
             Dict.toList >> List.map parseKey >> Dict.fromList
     in
-        Decode.dict Decode.int
-            |> Decode.map transformDict
+    Decode.dict Decode.int
+        |> Decode.map transformDict

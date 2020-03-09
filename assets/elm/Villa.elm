@@ -1,8 +1,8 @@
-module Villa exposing (Villa, Id, format, decodeVillas)
+module Villa exposing (Id, Villa, decodeVillas, format)
 
-import Map.Coordinates exposing (Coordinates)
 import Dict exposing (Dict)
 import Json.Decode as Decode exposing (Decoder, field)
+import Map.Coordinates exposing (Coordinates)
 
 
 type alias Id =
@@ -25,8 +25,8 @@ decodeVillas =
                 |> List.map (\v -> ( ( v.x, v.y ), v ))
                 |> Dict.fromList
     in
-        Decode.list decodeVilla
-            |> Decode.map toDict
+    Decode.list decodeVilla
+        |> Decode.map toDict
 
 
 decodeVilla : Decoder Villa
@@ -40,4 +40,4 @@ decodeVilla =
 
 format : Villa -> String
 format villa =
-    villa.name ++ " (" ++ (toString villa.x) ++ "|" ++ (toString villa.y) ++ ")"
+    villa.name ++ " (" ++ String.fromInt villa.x ++ "|" ++ String.fromInt villa.y ++ ")"

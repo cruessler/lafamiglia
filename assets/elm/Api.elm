@@ -1,19 +1,18 @@
-module Api
-    exposing
-        ( Config
-        , config
-        , get
-        , post
-        , patch
-        )
+module Api exposing
+    ( get, post, patch
+    , Config, config
+    )
 
-{-| @docs get, post, patch, send
+{-|
+
+@docs get, post, patch, send
+
 -}
 
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Task exposing (Task, succeed, fail)
+import Task exposing (Task, fail, succeed)
 
 
 type alias Config =
@@ -78,11 +77,11 @@ The API token is sent in an "Authorization" header.
 
 -}
 send : Method -> Config -> Request a -> Http.Request a
-send method config { url, params, decoder } =
+send method config_ { url, params, decoder } =
     Http.request
         { method = toString method
         , headers =
-            [ Http.header "X-CSRF-Token" config.csrfToken
+            [ Http.header "X-CSRF-Token" config_.csrfToken
             ]
         , url = url
         , body = Http.jsonBody params

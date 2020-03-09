@@ -1,10 +1,10 @@
-module Map.Tile exposing (Tile, Offset, Config, config, view)
+module Map.Tile exposing (Config, Offset, Tile, config, view)
 
-import Map.Coordinates exposing (Coordinates)
 import Dict exposing (Dict)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class, style)
 import Html.Events as Events
+import Map.Coordinates exposing (Coordinates)
 import Map.Position exposing (Position)
 import Villa exposing (Villa)
 
@@ -71,7 +71,7 @@ cell (Config { onHover, onClick }) coordinates tile =
 
 
 view : Config msg -> Offset -> Tile -> Html msg
-view config offset tile =
+view config_ offset tile =
     let
         xs =
             List.range tile.origin.x (tile.origin.x + width - 1)
@@ -81,12 +81,12 @@ view config offset tile =
 
         cells =
             List.concatMap
-                (\x -> List.map (\y -> cell config ( x, y ) tile) xs)
+                (\x -> List.map (\y -> cell config_ ( x, y ) tile) xs)
                 ys
 
         tileStyle =
-            [ ( "top", (toString offset.x) ++ "px" )
-            , ( "left", (toString offset.y) ++ "px" )
+            [ style "top" <| String.fromFloat offset.x ++ "px"
+            , style "left" <| String.fromFloat offset.y ++ "px"
             ]
     in
-        div [ class "tile", style tileStyle ] cells
+    div (class "tile" :: tileStyle) cells

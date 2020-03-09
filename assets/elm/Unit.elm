@@ -1,6 +1,6 @@
 module Unit exposing (Id, Key, Unit, duration)
 
-import Time exposing (Time)
+import Duration exposing (Duration)
 
 
 type alias Id =
@@ -19,15 +19,15 @@ type alias Unit =
     }
 
 
-duration : List Unit -> Float -> Maybe Time
+duration : List Unit -> Float -> Maybe Duration
 duration units distance =
     let
         slowestSpeed =
             List.minimum <| List.map .speed units
     in
-        case slowestSpeed of
-            Just speed ->
-                Just ((distance / speed) * Time.second)
+    case slowestSpeed of
+        Just speed ->
+            Just <| Duration.fromMillis (floor (distance / speed) * 1000)
 
-            Nothing ->
-                Nothing
+        Nothing ->
+            Nothing

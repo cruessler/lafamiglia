@@ -18,4 +18,4 @@ distance origin target =
         y2 =
             toFloat target.y
     in
-        sqrt ((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
+    sqrt ((x1 - x2) ^ 2 + (y1 - y2) ^ 2)

@@ -7,7 +7,7 @@ import css from '../css/app.scss';
 // watched paths. Those paths can be configured as
 // endpoints in "webpack.config.js".
 
-import { Map as InteractiveMap } from '../elm/Map.elm';
+import { Elm } from '../elm/Map.elm';
 
 import 'jquery-ujs';
 import 'bootstrap-sass/assets/javascripts/bootstrap';
@@ -67,11 +67,12 @@ class App {
 
       const flags = JSON.parse(node.dataset.flags)
 
-      InteractiveMap.embed(node,
-        { mapDimensions: mapDimensions,
+      Elm.Map.init({ node,
+        flags: { mapDimensions: mapDimensions,
           tileDimensions: tileDimensions,
           ...flags
-        })
+        }
+      })
     }
   }
 }

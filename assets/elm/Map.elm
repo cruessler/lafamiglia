@@ -3,10 +3,12 @@ module Map exposing (main)
 import Api
 import Attack exposing (Attack)
 import AttackDialog
+import Browser
+import Browser.Events
 import Dict exposing (Dict)
 import FeedbackBox
 import Html exposing (..)
-import Html.Attributes exposing (class, rel, href, style, attribute)
+import Html.Attributes exposing (attribute, class, href, id, rel, style)
 import Html.Events as Events
 import Http
 import Json.Decode as Json exposing (..)
@@ -19,14 +21,14 @@ import Map.Position exposing (Position)
 import Map.StatusBar as StatusBar
 import Map.Tile as Tile exposing (Tile)
 import Mechanics.Units as Units
-import Mouse
 import Task
 import Unit
+import Url.Builder as Url
 import Villa exposing (Villa)
 
 
 main =
-    Html.programWithFlags
+    Browser.element
         { init = init
         , update = update
         , view = view
@@ -34,9 +36,9 @@ main =
         }
 
 
-villasEndpointUrl : String
+villasEndpointUrl : List String
 villasEndpointUrl =
-    "/api/v1/map"
+    [ "api", "v1", "map" ]
 
 
 type alias Model =
@@ -44,7 +46,7 @@ type alias Model =
     , center : Position
     , origin : Position
     , dragging : Bool
-    , startPosition : Maybe Mouse.Position
+    , startPosition : Maybe Position
     , offset : Geometry.Offset
     , startOffset : Geometry.Offset
     , geometry : Geometry
@@ -108,13 +110,15 @@ init flags =
         modelWithTiles =
             { model | tiles = tiles }
     in
-        modelWithTiles ! fetchVillas modelWithTiles
+    ( modelWithTiles
+    , Cmd.batch (fetchVillas modelWithTiles)
+    )
 
 
 type Msg
-    = MouseDown Mouse.Position
-    | MouseUp Mouse.Position
-    | Move Mouse.Position
+    = MouseDown Position
+    | MouseUp Position
+    | Move Position
     | Hover (Maybe Villa)
     | MouseLeave
     | Click (Maybe Villa)
@@ -146,12 +150,13 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         MouseDown position ->
-            { model
+            ( { model
                 | dragging = True
                 , startPosition = Just position
                 , startOffset = model.offset
-            }
-                ! []
+              }
+            , Cmd.none
+            )
 
         MouseUp position ->
             let
@@ -165,10 +170,14 @@ update msg model =
                         , tiles = newTiles
                     }
             in
-                newModel ! fetchVillas newModel
+            ( newModel
+            , Cmd.batch (fetchVillas newModel)
+            )
 
         MouseLeave ->
-            { model | dragging = False, startPosition = Nothing } ! []
+            ( { model | dragging = False, startPosition = Nothing }
+            , Cmd.none
+            )
 
         Move position ->
             case model.startPosition of
@@ -186,47 +195,57 @@ update msg model =
 
                         newOrigin =
                             { x =
-                                (toFloat newOffset.x)
+                                toFloat newOffset.x
                                     / model.geometry.cellDimensions.width
                                     |> round
                             , y =
-                                (toFloat newOffset.y)
+                                toFloat newOffset.y
                                     / model.geometry.cellDimensions.height
                                     |> round
                             }
                     in
-                        { model
-                            | origin = newOrigin
-                            , offset = newOffset
-                        }
-                            ! []
+                    ( { model
+                        | origin = newOrigin
+                        , offset = newOffset
+                      }
+                    , Cmd.none
+                    )
 
                 Nothing ->
-                    model ! []
+                    ( model
+                    , Cmd.none
+                    )
 
         Hover villa ->
-            { model | hoveredVilla = villa } ! []
+            ( { model | hoveredVilla = villa }
+            , Cmd.none
+            )
 
         Click villa ->
-            { model | clickedVilla = villa } ! []
+            ( { model | clickedVilla = villa }
+            , Cmd.none
+            )
 
         OpenAttackDialog villa ->
             let
                 newState =
                     model.attackDialogState |> AttackDialog.open villa
             in
-                { model | attackDialogState = newState } ! []
+            ( { model | attackDialogState = newState }
+            , Cmd.none
+            )
 
         ReviewAttackDialog result ->
             let
                 newState =
                     model.attackDialogState |> AttackDialog.review result
             in
-                { model
-                    | attackDialogState = newState
-                    , resultInReview = Just result
-                }
-                    ! []
+            ( { model
+                | attackDialogState = newState
+                , resultInReview = Just result
+              }
+            , Cmd.none
+            )
 
         SendTroops attack ->
             let
@@ -236,16 +255,18 @@ update msg model =
                 nextId =
                     model.nextId + 1
             in
-                { model
-                    | attackDialogState = newState
-                    , nextId = nextId
-                }
-                    ! [ Attack.post { csrfToken = model.csrfToken } attack
-                            |> Task.attempt (PostAttack model.nextId)
-                      ]
+            ( { model
+                | attackDialogState = newState
+                , nextId = nextId
+              }
+            , Attack.post { csrfToken = model.csrfToken } attack
+                |> Task.attempt (PostAttack model.nextId)
+            )
 
         NewDialogState state ->
-            { model | attackDialogState = state } ! []
+            ( { model | attackDialogState = state }
+            , Cmd.none
+            )
 
         FetchVillas coordinates (Ok villas) ->
             let
@@ -255,10 +276,14 @@ update msg model =
                 newTiles =
                     model.tiles |> Dict.insert coordinates newTile
             in
-                { model | tiles = newTiles } ! []
+            ( { model | tiles = newTiles }
+            , Cmd.none
+            )
 
         FetchVillas _ _ ->
-            model ! []
+            ( model
+            , Cmd.none
+            )
 
         PostAttack id result ->
             let
@@ -266,7 +291,9 @@ update msg model =
                     model.attacks
                         |> Dict.insert id result
             in
-                { model | attacks = newAttacks } ! []
+            ( { model | attacks = newAttacks }
+            , Cmd.none
+            )
 
 
 fetchVillas : Model -> List (Cmd Msg)
@@ -274,66 +301,59 @@ fetchVillas model =
     model.tiles |> Dict.values |> List.map fetchVillas_
 
 
-toQuery : List ( String, String ) -> String
-toQuery =
-    List.map
-        (\( s1, s2 ) -> Http.encodeUri s1 ++ "=" ++ Http.encodeUri s2)
-        >> String.join "&"
-
-
 fetchVillas_ : Tile -> Cmd Msg
 fetchVillas_ tile =
     let
         params =
-            [ ( "min_x", toString tile.origin.x )
-            , ( "min_y", toString tile.origin.y )
-            , ( "max_x", toString (tile.origin.x + 10) )
-            , ( "max_y", toString (tile.origin.y + 10) )
+            [ Url.int "min_x" tile.origin.x
+            , Url.int "min_y" tile.origin.y
+            , Url.int "max_x" (tile.origin.x + 10)
+            , Url.int "max_y" (tile.origin.y + 10)
             ]
 
         url =
-            villasEndpointUrl ++ "?" ++ (toQuery params)
+            Url.absolute villasEndpointUrl params
     in
-        Api.get
-            { csrfToken = "" }
-            { url = url
-            , params = Encode.null
-            , decoder = Villa.decodeVillas
-            }
-            |> Http.send (FetchVillas ( tile.origin.x, tile.origin.y ))
+    Api.get
+        { csrfToken = "" }
+        { url = url
+        , params = Encode.null
+        , decoder = Villa.decodeVillas
+        }
+        |> Http.send (FetchVillas ( tile.origin.x, tile.origin.y ))
 
 
 offset : Geometry.Dimensions -> Tile -> Tile.Offset
 offset cellDimensions tile =
-    { x = (toFloat tile.origin.x) * cellDimensions.width
-    , y = (toFloat tile.origin.y) * cellDimensions.height
+    { x = toFloat tile.origin.x * cellDimensions.width
+    , y = toFloat tile.origin.y * cellDimensions.height
     }
 
 
 xAxisLabel : Model -> Int -> Html Msg
 xAxisLabel model x =
     let
-        offset =
+        offset_ =
             Geometry.viewportCoordinates model.geometry ( x, 0 )
     in
-        div
-            [ class "x-axis-label"
-            , style [ ( "left", toString (Tuple.first offset) ++ "px" ) ]
-            ]
-            [ text (toString x) ]
+    div
+        [ class "x-axis-label"
+        , style "left" (String.fromInt (Tuple.first offset_) ++ "px")
+        ]
+        [ text (String.fromInt x) ]
 
 
 yAxisLabel : Model -> Int -> Html Msg
 yAxisLabel model y =
     let
-        offset =
+        offset_ =
             Geometry.viewportCoordinates model.geometry ( 0, y )
     in
-        div
-            [ class "y-axis-label"
-            , style [ ( "top", toString (Tuple.second offset) ++ "px" ) ]
-            ]
-            [ text (toString y) ]
+    div
+        [ class "y-axis-label"
+        , style "top" (String.fromInt (Tuple.second offset_) ++ "px")
+        ]
+        [ text (String.fromInt y) ]
 
 
 view : Model -> Html Msg
@@ -357,53 +377,46 @@ view model =
                     (\t -> Tile.view tileConfig (offset_ t) t)
 
         xAxisStyle =
-            [ ( "transform"
-              , "translateX(" ++ (toString model.offset.x) ++ "px)"
-              )
-            ]
+            style "transform" ("translateX(" ++ String.fromInt model.offset.x ++ "px)")
 
         yAxisStyle =
-            [ ( "transform"
-              , "translateY(" ++ (toString model.offset.y) ++ "px)"
-              )
-            ]
+            style "transform" ("translateY(" ++ String.fromInt model.offset.y ++ "px)")
 
         mapStyle =
-            [ ( "transform"
-              , "translate("
-                    ++ (toString model.offset.x)
+            style "transform"
+                ("translate("
+                    ++ String.fromInt model.offset.x
                     ++ "px, "
-                    ++ (toString model.offset.y)
+                    ++ String.fromInt model.offset.y
                     ++ "px)"
-              )
-            ]
+                )
 
         errors =
             model.resultInReview
                 |> Maybe.andThen Attack.errors
     in
-        div [ class "container-fluid map-viewport" ]
-            [ div
-                [ class "x-axis-labels", style xAxisStyle ]
-                xAxisLabels
-            , div
-                [ class "y-axis-labels", style yAxisStyle ]
-                yAxisLabels
-            , div
-                [ class "map-inner-viewport"
-                , Events.onMouseLeave MouseLeave
-                ]
-                [ div [ class "map", style mapStyle ] tiles
-                ]
-            , StatusBar.view model.hoveredVilla
-            , InfoBox.view OpenAttackDialog model.clickedVilla
-            , AttackDialog.view
-                (attackDialogConfig model.currentVilla)
-                model.attackDialogState
-                { units = model.unitNumbers, errors = errors }
-            , FeedbackBox.view
-                (Feedback.forResults ReviewAttackDialog model.attacks)
+    div [ id "map", class "container-fluid map-viewport" ]
+        [ div
+            [ class "x-axis-labels", xAxisStyle ]
+            xAxisLabels
+        , div
+            [ class "y-axis-labels", yAxisStyle ]
+            yAxisLabels
+        , div
+            [ class "map-inner-viewport"
+            , Events.onMouseLeave MouseLeave
             ]
+            [ div [ class "map", mapStyle ] tiles
+            ]
+        , StatusBar.view model.hoveredVilla
+        , InfoBox.view OpenAttackDialog model.clickedVilla
+        , AttackDialog.view
+            (attackDialogConfig model.currentVilla)
+            model.attackDialogState
+            { units = model.unitNumbers, errors = errors }
+        , FeedbackBox.view
+            (Feedback.forResults ReviewAttackDialog model.attacks)
+        ]
 
 
 tileConfig : Tile.Config Msg
@@ -423,18 +436,29 @@ attackDialogConfig origin =
         }
 
 
+decodePosition : Json.Decoder Position
+decodePosition =
+    Json.map2 Position
+        (Json.field "pageX" Json.int)
+        (Json.field "pageY" Json.int)
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
     let
         subscriptions_ =
             if model.dragging then
-                Sub.batch [ Mouse.moves Move, Mouse.ups MouseUp ]
+                Sub.batch
+                    [ Browser.Events.onMouseMove <| Json.map Move decodePosition
+                    , Browser.Events.onMouseUp <| Json.map MouseUp decodePosition
+                    ]
+
             else
-                Mouse.downs MouseDown
+                Browser.Events.onMouseDown <| Json.map MouseDown decodePosition
     in
-        Sub.batch
-            [ AttackDialog.subscriptions
-                (attackDialogConfig model.currentVilla)
-                model.attackDialogState
-            , subscriptions_
-            ]
+    Sub.batch
+        [ AttackDialog.subscriptions
+            (attackDialogConfig model.currentVilla)
+            model.attackDialogState
+        , subscriptions_
+        ]
