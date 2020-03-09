@@ -5,7 +5,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const elmRoot = path.resolve(__dirname, 'elm')
+const elmRoot = path.resolve(__dirname, 'elm');
 
 module.exports = (env, options) => ({
   optimization: {
@@ -27,9 +27,9 @@ module.exports = (env, options) => ({
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/react'],
-          },
-        },
+            presets: ['@babel/react']
+          }
+        }
       },
       {
         test: /\.css$/,
@@ -54,10 +54,10 @@ module.exports = (env, options) => ({
           {
             loader: 'file-loader',
             options: {
-              name: 'fonts/bootstrap/[name].[ext]',
-            },
-          },
-        ],
+              name: 'fonts/bootstrap/[name].[ext]'
+            }
+          }
+        ]
       }
     ],
     noParse: [/\.elm$/]
@@ -68,7 +68,7 @@ module.exports = (env, options) => ({
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
-      'window.jQuery': 'jquery',
-    }),
+      'window.jQuery': 'jquery'
+    })
   ]
 });
