@@ -37,7 +37,7 @@ module.exports = (env, options) => ({
       },
       {
         test: /\.scss$/,
-        use: ['css-loader', 'sass-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
       },
       {
         test: /\.elm$/,
@@ -54,7 +54,7 @@ module.exports = (env, options) => ({
           {
             loader: 'file-loader',
             options: {
-              name: 'fonts/bootstrap/[name].[ext]'
+              name: '/css/fonts/bootstrap/[name].[ext]'
             }
           }
         ]
@@ -63,7 +63,7 @@ module.exports = (env, options) => ({
     noParse: [/\.elm$/]
   },
   plugins: [
-    new MiniCssExtractPlugin({ filename: 'app.css' }),
+    new MiniCssExtractPlugin({ filename: 'css/app.css' }),
     new CopyWebpackPlugin([{ from: 'images', to: 'images' }]),
     new webpack.ProvidePlugin({
       $: 'jquery',
