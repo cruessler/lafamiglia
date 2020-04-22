@@ -70,5 +70,8 @@ module.exports = (env, options) => ({
       jQuery: 'jquery',
       'window.jQuery': 'jquery'
     })
-  ]
+  ],
+  watchOptions: {
+    aggregateTimeout: 1000
+  }
 });
