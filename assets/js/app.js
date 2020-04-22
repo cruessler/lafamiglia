@@ -7,7 +7,8 @@ import css from '../css/app.scss';
 // watched paths. Those paths can be configured as
 // endpoints in "webpack.config.js".
 
-import { Elm } from '../elm/Map.elm';
+import { Elm as ElmMap } from '../elm/Map.elm';
+import { Elm as ElmPlayerSelector } from '../elm/PlayerSelector.elm';
 
 import 'jquery-ujs';
 import 'bootstrap-sass/assets/javascripts/bootstrap';
@@ -16,11 +17,9 @@ import React from 'react';
 import ReactDom from 'react-dom';
 
 import Countdown from './countdown';
-import PlayerSelector from './player_selector';
 import Conversation from './conversation';
 
 window.Countdown = Countdown;
-window.PlayerSelector = PlayerSelector;
 window.Conversation = Conversation;
 
 class App {
@@ -39,14 +38,16 @@ class App {
   }
 
   static mountElmModules() {
+    const Elm = { PlayerSelector: ElmPlayerSelector.PlayerSelector };
+
     const nodes = $('[data-elm-module]').toArray();
 
     for (const node of nodes) {
       const elmModule = Elm[$(node).data('elm-module')];
-      const params = $(node).data('elm-params') || {};
+      const flags = $(node).data('elm-flags') || {};
 
       if (elmModule != undefined) {
-        elmModule.embed(node, params);
+        elmModule.init({ node, flags });
       }
     }
   }
@@ -71,7 +72,7 @@ class App {
 
       const flags = JSON.parse(node.dataset.flags);
 
-      Elm.Map.init({
+      ElmMap.Map.init({
         node,
         flags: {
           mapDimensions: mapDimensions,

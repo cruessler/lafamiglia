@@ -21,8 +21,8 @@ defmodule LaFamiglia.AppView do
   def unread_conversations_badge(_), do: ""
 
   def player_select(%{name: name}, field) do
-    react_component "PlayerSelector", %{name: "#{name}[#{field}]"},
-                                      [class: "player-select"]
+     elm_module "PlayerSelector", %{name: "#{name}[#{field}]"},
+                                 [class: "player-select"]
   end
 
   def react_component(class, props \\ %{}, attrs \\ []) do
@@ -38,7 +38,7 @@ defmodule LaFamiglia.AppView do
     {tag, attrs} = Keyword.pop(attrs, :tag, :div)
     data_attributes =
       [ "data-elm-module": module,
-        "data-elm-params": html_escape(Poison.encode!(params)) ]
+        "data-elm-flags": html_escape(Poison.encode!(params)) ]
 
     content_tag(tag, "", Dict.merge(attrs, data_attributes))
   end
