@@ -254,13 +254,18 @@ update msg model =
 
                 nextId =
                     model.nextId + 1
+
+                config =
+                    Attack.config
+                        { csrfToken = model.csrfToken
+                        , onSuccess = PostAttack model.nextId
+                        }
             in
             ( { model
                 | attackDialogState = newState
                 , nextId = nextId
               }
-            , Attack.post { csrfToken = model.csrfToken } attack
-                |> Task.attempt (PostAttack model.nextId)
+            , Attack.post config attack
             )
 
         NewDialogState state ->
@@ -318,9 +323,11 @@ fetchVillas_ tile =
         { csrfToken = "" }
         { url = url
         , params = Encode.null
-        , decoder = Villa.decodeVillas
+        , expect =
+            Http.expectJson
+                (FetchVillas ( tile.origin.x, tile.origin.y ))
+                Villa.decodeVillas
         }
-        |> Http.send (FetchVillas ( tile.origin.x, tile.origin.y ))
 
 
 offset : Geometry.Dimensions -> Tile -> Tile.Offset

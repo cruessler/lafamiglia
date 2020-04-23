@@ -12,10 +12,9 @@ module Attack exposing
 import Api
 import Dict exposing (Dict)
 import Http
-import Json.Decode as Decode
-import Json.Encode as Encode
+import Json.Decode as D
+import Json.Encode as E
 import Mechanics.Units as Units
-import Task exposing (Task)
 import Unit
 import Villa exposing (Villa)
 
@@ -66,61 +65,63 @@ type Config msg
     = Config
         { csrfToken : String
         , onSuccess : Result -> msg
-        , onFail : Result -> msg
         }
 
 
 config :
     { csrfToken : String
     , onSuccess : Result -> msg
-    , onFail : Result -> msg
     }
     -> Config msg
-config { csrfToken, onSuccess, onFail } =
+config { csrfToken, onSuccess } =
     Config
         { csrfToken = csrfToken
         , onSuccess = onSuccess
-        , onFail = onFail
         }
 
 
-post :
-    Api.Config
-    -> Attack
-    -> Task Errors Success
-post apiConfig ({ origin, target, units } as attack) =
+post : Config msg -> Attack -> Cmd msg
+post (Config config_) ({ origin, target, units } as attack) =
     let
         movement =
-            encodeUnits units ++ [ ( "target_id", Encode.int target.id ) ]
+            encodeUnits units ++ [ ( "target_id", E.int target.id ) ]
 
         params =
-            Encode.object [ ( "attack_movement", Encode.object movement ) ]
+            E.object [ ( "attack_movement", E.object movement ) ]
     in
-    Api.post apiConfig
+    Api.post
+        { csrfToken = config_.csrfToken }
         { url = attackEndpointUrl origin
         , params = params
-        , decoder = Decode.succeed <| Success attack
+        , expect = expectJson config_.onSuccess attack
         }
-        |> Http.toTask
-        |> Task.mapError (mapErrorResponse attack)
 
 
-mapErrorResponse : Attack -> Http.Error -> Errors
-mapErrorResponse attack error =
+expectJson : (Result.Result Errors Success -> msg) -> Attack -> Http.Expect msg
+expectJson toMsg attack =
+    Http.expectStringResponse toMsg (mapErrorResponse attack)
+
+
+mapErrorResponse : Attack -> Http.Response String -> Result.Result Errors Success
+mapErrorResponse attack response =
     let
         genericError =
             Errors attack [ "Your attack could not be sent" ] Dict.empty
     in
-    case error of
-        Http.BadStatus response ->
-            Decode.decodeString (decodeErrorResponse attack) response.body
+    case response of
+        Http.GoodStatus_ _ _ ->
+            Ok <| Success attack
+
+        Http.BadStatus_ _ body ->
+            D.decodeString (decodeErrorResponse attack) body
                 |> Result.withDefault genericError
+                |> Err
 
         _ ->
-            genericError
+            Err genericError
 
 
-encodeUnits : Dict Unit.Id Int -> List ( String, Encode.Value )
+encodeUnits : Dict Unit.Id Int -> List ( String, E.Value )
 encodeUnits =
     let
         unitKey =
@@ -128,19 +129,19 @@ encodeUnits =
     in
     Dict.toList
         >> List.map
-            (\( k, v ) -> ( unitKey k, Encode.int v ))
+            (\( k, v ) -> ( unitKey k, E.int v ))
 
 
-decodeErrorResponse : Attack -> Decode.Decoder Errors
+decodeErrorResponse : Attack -> D.Decoder Errors
 decodeErrorResponse attack =
-    Decode.map2
+    D.map2
         (Errors attack)
         decodeErrorsForBase
-        (Decode.succeed Dict.empty)
+        (D.succeed Dict.empty)
 
 
-decodeErrorsForBase : Decode.Decoder (List String)
+decodeErrorsForBase : D.Decoder (List String)
 decodeErrorsForBase =
-    Decode.at
+    D.at
         [ "errors", "unit_count" ]
-        (Decode.list Decode.string)
+        (D.list D.string)
