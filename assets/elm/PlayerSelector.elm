@@ -5,7 +5,9 @@ import Dict exposing (Dict)
 import Html as H exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Http
 import Json.Decode as D
+import Json.Encode as E
 
 
 type alias Flags =
@@ -37,6 +39,7 @@ type Msg
     | RemovePlayer Int
     | OpenMenu
     | CloseMenu
+    | FetchSuggestions (Result Http.Error (List Player))
     | NoOp
 
 
@@ -177,11 +180,35 @@ view ({ name, selectedPlayers } as model) =
         ]
 
 
+decodePlayer : D.Decoder Player
+decodePlayer =
+    D.map2 Player
+        (D.field "id" D.int)
+        (D.field "name" D.string)
+
+
+decodePlayers : D.Decoder (List Player)
+decodePlayers =
+    D.list decodePlayer
+
+
+fetchSuggestions : String -> Cmd Msg
+fetchSuggestions name =
+    let
+        url =
+            "/api/v1/players/search/" ++ name
+    in
+    Http.get
+        { url = url
+        , expect = Http.expectJson FetchSuggestions decodePlayers
+        }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         SetName newName ->
-            ( { model | name = newName }, Cmd.none )
+            ( { model | name = newName }, fetchSuggestions newName )
 
         AddPlayer player ->
             let
@@ -202,6 +229,12 @@ update msg model =
 
         CloseMenu ->
             ( { model | state = Closed }, Cmd.none )
+
+        FetchSuggestions (Ok matchingPlayers) ->
+            ( { model | matchingPlayers = matchingPlayers }, Cmd.none )
+
+        FetchSuggestions _ ->
+            ( model, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
