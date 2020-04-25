@@ -1,5 +1,6 @@
 module PlayerSelector exposing (main)
 
+import Array exposing (Array)
 import Browser
 import Dict exposing (Dict)
 import Html as H exposing (Html)
@@ -27,19 +28,23 @@ type State
 
 type alias Model =
     { name : String
-    , matchingPlayers : List Player
+    , matchingPlayers : Array Player
     , selectedPlayers : Dict Int Player
     , state : State
+    , selectedIndex : Maybe Int
     }
 
 
 type Msg
     = SetName String
+    | SelectNext
+    | SelectPrevious
     | AddPlayer Player
+    | AddSelectedPlayer
     | RemovePlayer Int
     | OpenMenu
     | CloseMenu
-    | FetchSuggestions (Result Http.Error (List Player))
+    | FetchSuggestions (Result Http.Error (Array Player))
     | NoOp
 
 
@@ -56,9 +61,10 @@ main =
 init : Flags -> ( Model, Cmd Msg )
 init _ =
     ( { name = ""
-      , matchingPlayers = []
+      , matchingPlayers = Array.fromList []
       , selectedPlayers = Dict.empty
       , state = Closed
+      , selectedIndex = Nothing
       }
     , Cmd.none
     )
@@ -91,11 +97,12 @@ onMouseDown msg =
     E.preventDefaultOn "mousedown" (D.succeed ( msg, True ))
 
 
-viewSuggestion : Player -> Html Msg
-viewSuggestion player =
+viewSuggestion : Maybe Int -> Int -> Player -> Html Msg
+viewSuggestion selectedIndex index player =
     H.a
         [ A.href "#"
         , A.class "tt-suggestion tt-selectable"
+        , A.classList [ ( "tt-cursor", selectedIndex == Just index ) ]
 
         -- By default, `onMouseDown` causes the active element to lose focus.
         -- In this case, this would cause a blur in the <input> which would
@@ -110,10 +117,15 @@ viewSuggestion player =
 viewMenu : Model -> Html Msg
 viewMenu model =
     if model.state == Open then
+        let
+            matchingPlayers =
+                Array.indexedMap (viewSuggestion model.selectedIndex) model.matchingPlayers
+                    |> Array.toList
+        in
         H.div [ A.class "tt-menu" ]
             [ H.div [ A.class "tt-dataset tt-dataset-players" ] <|
                 H.h4 [] [ H.text "Players" ]
-                    :: List.map viewSuggestion model.matchingPlayers
+                    :: matchingPlayers
             ]
 
     else
@@ -144,6 +156,27 @@ viewPlayer player =
 
 viewInput : Model -> Html Msg
 viewInput model =
+    let
+        onKeyDown : (String -> ( Msg, Bool )) -> H.Attribute Msg
+        onKeyDown toMsg =
+            E.preventDefaultOn "keydown"
+                (D.map toMsg (D.at [ "key" ] D.string))
+
+        translateKey : String -> ( Msg, Bool )
+        translateKey key =
+            case key of
+                "ArrowDown" ->
+                    ( SelectNext, True )
+
+                "ArrowUp" ->
+                    ( SelectPrevious, True )
+
+                "Enter" ->
+                    ( AddSelectedPlayer, True )
+
+                _ ->
+                    ( NoOp, False )
+    in
     H.span [ A.class "twitter-typeahead" ]
         [ H.input
             [ A.type_ "text"
@@ -159,6 +192,7 @@ viewInput model =
             , E.onInput SetName
             , E.onFocus OpenMenu
             , E.onBlur CloseMenu
+            , onKeyDown translateKey
             ]
             []
         , viewMenu model
@@ -187,9 +221,9 @@ decodePlayer =
         (D.field "name" D.string)
 
 
-decodePlayers : D.Decoder (List Player)
+decodePlayers : D.Decoder (Array Player)
 decodePlayers =
-    D.list decodePlayer
+    D.list decodePlayer |> D.map Array.fromList
 
 
 fetchSuggestions : String -> Cmd Msg
@@ -210,12 +244,52 @@ update msg model =
         SetName newName ->
             ( { model | name = newName }, fetchSuggestions newName )
 
+        SelectNext ->
+            let
+                newSelectedIndex =
+                    case model.selectedIndex of
+                        Nothing ->
+                            Just 0
+
+                        Just selectedIndex ->
+                            Just <| remainderBy (Array.length model.matchingPlayers) (selectedIndex + 1)
+            in
+            ( { model | selectedIndex = newSelectedIndex }, Cmd.none )
+
+        SelectPrevious ->
+            let
+                numberOfMatchingPlayers =
+                    Array.length model.matchingPlayers
+
+                newSelectedIndex =
+                    case model.selectedIndex of
+                        Nothing ->
+                            Just <| numberOfMatchingPlayers - 1
+
+                        Just selectedIndex ->
+                            Just <|
+                                remainderBy numberOfMatchingPlayers
+                                    (selectedIndex + numberOfMatchingPlayers - 1)
+            in
+            ( { model | selectedIndex = newSelectedIndex }, Cmd.none )
+
         AddPlayer player ->
             let
                 newSelectedPlayers =
                     Dict.insert player.id player model.selectedPlayers
             in
             ( { model | selectedPlayers = newSelectedPlayers }, Cmd.none )
+
+        AddSelectedPlayer ->
+            let
+                newModel =
+                    model.selectedIndex
+                        |> Maybe.andThen (\selectedIndex -> Array.get selectedIndex model.matchingPlayers)
+                        |> Maybe.map (\player -> Dict.insert player.id player model.selectedPlayers)
+                        |> Maybe.map (\players -> { model | selectedPlayers = players })
+                        |> Maybe.withDefault model
+            in
+            ( newModel, Cmd.none )
 
         RemovePlayer id ->
             let

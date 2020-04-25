@@ -21,7 +21,7 @@ defmodule LaFamiglia.AppView do
   def unread_conversations_badge(_), do: ""
 
   def player_select(%{name: name}, field) do
-     elm_module "PlayerSelector", %{name: "#{name}[#{field}]"},
+    elm_module "PlayerSelector", %{name: "#{name}[#{field}]"},
                                  [class: "player-select"]
   end
 
