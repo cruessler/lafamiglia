@@ -11,13 +11,13 @@ module.exports = (env, options) => ({
   optimization: {
     minimizer: [
       new TerserPlugin({ cache: true, parallel: true, sourceMap: false }),
-      new OptimizeCSSAssetsPlugin({})
-    ]
+      new OptimizeCSSAssetsPlugin({}),
+    ],
   },
   entry: './js/app.js',
   output: {
     filename: 'js/app.js',
-    path: path.resolve(__dirname, '../priv/static')
+    path: path.resolve(__dirname, '../priv/static'),
   },
   module: {
     rules: [
@@ -27,17 +27,17 @@ module.exports = (env, options) => ({
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/react']
-          }
-        }
+            presets: ['@babel/react'],
+          },
+        },
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
         test: /\.scss$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
       },
       {
         test: /\.elm$/,
@@ -45,8 +45,8 @@ module.exports = (env, options) => ({
         loader: 'elm-webpack-loader',
         options: {
           cwd: elmRoot,
-          pathToElm: '../node_modules/.bin/elm'
-        }
+          pathToElm: '../node_modules/.bin/elm',
+        },
       },
       {
         test: /\.(eot|svg|ttf|woff|woff2)$/,
@@ -54,13 +54,13 @@ module.exports = (env, options) => ({
           {
             loader: 'file-loader',
             options: {
-              name: '/css/fonts/bootstrap/[name].[ext]'
-            }
-          }
-        ]
-      }
+              name: '/css/fonts/bootstrap/[name].[ext]',
+            },
+          },
+        ],
+      },
     ],
-    noParse: [/\.elm$/]
+    noParse: [/\.elm$/],
   },
   plugins: [
     new MiniCssExtractPlugin({ filename: 'css/app.css' }),
@@ -68,10 +68,10 @@ module.exports = (env, options) => ({
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
-      'window.jQuery': 'jquery'
-    })
+      'window.jQuery': 'jquery',
+    }),
   ],
   watchOptions: {
-    aggregateTimeout: 1000
-  }
+    aggregateTimeout: 1000,
+  },
 });

@@ -36,3 +36,4 @@ matrix:
 
       script:
         - npm run deploy
+        - npx prettier --check "js/**/*.js" "*.js"

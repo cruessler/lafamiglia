@@ -59,13 +59,13 @@ class App {
       const tileNode = document.getElementById('tile-probe');
       const tileDimensions = {
         width: $(tileNode).width(),
-        height: $(tileNode).height()
+        height: $(tileNode).height(),
       };
 
       const mapNode = document.getElementById('map-probe');
       const mapDimensions = {
         width: $(mapNode).width(),
-        height: $(mapNode).height()
+        height: $(mapNode).height(),
       };
 
       document.getElementById('viewport-probe').remove();
@@ -77,8 +77,8 @@ class App {
         flags: {
           mapDimensions: mapDimensions,
           tileDimensions: tileDimensions,
-          ...flags
-        }
+          ...flags,
+        },
       });
     }
   }
