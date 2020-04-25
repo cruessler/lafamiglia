@@ -187,6 +187,7 @@ viewInput model =
         , H.input
             [ A.type_ "text"
             , A.class "form-control player-search tt-input"
+            , A.classList [ ( "focus", model.state == Open ) ]
             , A.value model.name
             , A.placeholder "Type to search …"
             , E.onInput SetName
