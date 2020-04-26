@@ -15,10 +15,20 @@ matrix:
       addons:
         postgresql: '9.6'
 
+      before_install:
+        - nvm install 12
+        - (cd assets && npm install)
+
       before_script:
         - cp config/config.travis.exs config/config.exs
         - cp config/test.travis.exs config/test.exs
+        - cp config/integration.travis.exs config/integration.exs
         - psql -c 'create database travis_ci_test;' -U postgres
+
+      script:
+        - mix test
+        - MIX_ENV=integration mix integration.setup
+        - cd assets && npm test
 
     - language: node_js
       node_js: 12
@@ -36,4 +46,4 @@ matrix:
 
       script:
         - npm run deploy
-        - npx prettier --check "js/**/*.js" "*.js"
+        - npx prettier --check "{js,__tests__}/**/*.js" "*.js"
