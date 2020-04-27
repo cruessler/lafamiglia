@@ -11,6 +11,6 @@ defmodule LaFamiglia.QueueTest do
 
     [shifted_item] = Queue.shift_later_items(queue, first, @shift_by)
 
-    assert shifted_item.completed_at.second == item.completed_at.second - 1
+    assert Timex.diff(item.completed_at, shifted_item.completed_at, :seconds) == 1
   end
 end
