@@ -37,7 +37,8 @@ Among the things not yet implemented are:
 
 ### First installation
 
-Prerequisites: Erlang 18, Elixir 1.2, PostgreSQL 9.4.
+Prerequisites: Erlang 20.0, Elixir 1.7, PostgreSQL 9.6 (these are the version
+that are tested on CI as of May 2020).
 
 - `git clone https://github.com/cruessler/lafamiglia.git`
 - Copy sample configuration files:
