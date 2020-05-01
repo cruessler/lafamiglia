@@ -6,6 +6,8 @@ matrix:
 
       cache:
         directories:
+          - assets/node_modules
+          - assets/elm/elm-stuff
           - _build
           - deps
 
@@ -28,22 +30,7 @@ matrix:
       script:
         - mix test
         - MIX_ENV=integration mix integration.setup
-        - cd assets && npm test
-
-    - language: node_js
-      node_js: 12
-
-      cache:
-        directories:
-          - assets/node_modules
-          - assets/elm/elm-stuff
-
-      before_install:
         - cd assets
-
-      install:
-        - npm install
-
-      script:
         - npm run deploy
+        - npm test
         - npx prettier --check "{js,__tests__}/**/*.js" "*.js"

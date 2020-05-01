@@ -10,6 +10,8 @@ import css from '../css/app.scss';
 import { Elm as ElmMap } from '../elm/Map.elm';
 import { Elm as ElmPlayerSelector } from '../elm/PlayerSelector.elm';
 
+import 'phoenix_html';
+
 import 'jquery-ujs';
 import 'bootstrap-sass/assets/javascripts/bootstrap';
 
@@ -18,6 +20,7 @@ import ReactDom from 'react-dom';
 
 import Countdown from './countdown';
 import Conversation from './conversation';
+import './addClickListener';
 
 window.Countdown = Countdown;
 window.Conversation = Conversation;
