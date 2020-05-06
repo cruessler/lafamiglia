@@ -50,7 +50,7 @@ defmodule LaFamiglia.Mixfile do
      {:comeonin, "~> 2.0"},
      {:plug_cowboy, "~> 1.0"},
      # https://github.com/thoughtbot/ex_machina/
-     {:ex_machina, "~> 1.0"},
+     {:ex_machina, "~> 2.4"},
      {:gettext, "~> 0.10"},
      {:timex, "~> 3.1"}
     ]

@@ -24,7 +24,7 @@ defmodule LaFamiglia.VillaTest do
     player = insert(:player)
 
     villas_count     = assoc(player, :villas) |> Repo.all |> Enum.count
-    number_to_create = (Villa.max_x + 1) * (Villa.max_y + 1)
+    number_to_create = (Villa.max_x + 1) * (Villa.max_y + 1) - villas_count
 
     for _ <- 1..number_to_create do
       Villa.create_for(player) |> Repo.insert!
