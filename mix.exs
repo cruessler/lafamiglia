@@ -53,7 +53,7 @@ defmodule LaFamiglia.Mixfile do
      # https://github.com/thoughtbot/ex_machina/
      {:ex_machina, "~> 2.4"},
      {:gettext, "~> 0.10"},
-     {:timex, "~> 3.1"}
+     {:timex, "~> 3.4.0"}
     ]
   end
 
