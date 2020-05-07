@@ -28,6 +28,6 @@ describe('Create new user and log in', () => {
     expect(await page.$$('a[href="/villas/1"]')).toHaveLength(2);
 
     await page.click('span.glyphicon-user');
-    await clickAndWaitForNavigation('ul.dropdown-menu a[href="#"]');
+    await clickAndWaitForNavigation('ul.dropdown-menu a[href="/session"]');
   });
 });

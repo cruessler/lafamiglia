@@ -9,7 +9,7 @@ defmodule LaFamiglia.Repo.Migrations.CreateAttackMovement do
       add :unit_1, :integer
       add :unit_2, :integer
 
-      add :arrives_at, :datetime
+      add :arrives_at, :utc_datetime_usec
 
       timestamps
     end

@@ -39,7 +39,7 @@ defmodule LaFamiglia.Message do
       {:ok, conversation} ->
         continue_conversation(sender, conversation, text)
       _ ->
-        sent_at = LaFamiglia.DateTime.now
+        sent_at = LaFamiglia.DateTime.now |> DateTime.truncate(:second)
         # `receivers` is of type `{:array, :map}`, and thus does not accept
         # structs.
         receivers = for r <- receivers, do: %{id: r.id}
@@ -54,7 +54,7 @@ defmodule LaFamiglia.Message do
   end
 
   def continue_conversation(sender, conversation, text) do
-    sent_at = LaFamiglia.DateTime.now
+    sent_at = LaFamiglia.DateTime.now |> DateTime.truncate(:second)
 
     conversation_changeset =
       conversation
@@ -85,9 +85,9 @@ defmodule LaFamiglia.Message do
   end
 end
 
-defimpl Poison.Encoder, for: LaFamiglia.Message do
+defimpl Jason.Encoder, for: LaFamiglia.Message do
   def encode(%{id: id, text: text, sender: sender}, _options) do
-    Poison.encode!(%{id: id, text: text,
-                     sender: %{id: sender.id, name: sender.name}})
+    Jason.encode!(%{id: id, text: text,
+                    sender: %{id: sender.id, name: sender.name}})
   end
 end

@@ -6,7 +6,7 @@ defmodule LaFamiglia.Repo.Migrations.CreateOccupation do
       add :origin_id, references(:villas, on_delete: :delete_all)
       add :target_id, references(:villas, on_delete: :delete_all)
 
-      add :succeeds_at, :datetime
+      add :succeeds_at, :utc_datetime_usec
 
       add :unit_1, :integer
       add :unit_2, :integer

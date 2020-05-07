@@ -24,7 +24,7 @@ defmodule LaFamiglia.MapController do
         unitNumbers: Unit.filter(current_villa),
         csrfToken: get_csrf_token
       }
-      |> Poison.encode!()
+      |> Jason.encode!()
 
     conn =
       conn

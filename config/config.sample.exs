@@ -23,6 +23,9 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# Use Jason for JSON parsing in Phoenix
+config :phoenix, :json_library, Jason
+
 config :la_famiglia, game_speed: 1
 
 # Import environment specific config. This must remain at the bottom

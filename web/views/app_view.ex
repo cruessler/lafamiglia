@@ -29,7 +29,7 @@ defmodule LaFamiglia.AppView do
     {tag, attrs} = Keyword.pop(attrs, :tag, :div)
     data_attributes =
       [ "data-react-class": class,
-        "data-react-props": html_escape(Poison.encode!(props)) ]
+        "data-react-props": html_escape(Jason.encode!(props)) ]
 
     content_tag(tag, "", Dict.merge(attrs, data_attributes))
   end
@@ -38,7 +38,7 @@ defmodule LaFamiglia.AppView do
     {tag, attrs} = Keyword.pop(attrs, :tag, :div)
     data_attributes =
       [ "data-elm-module": module,
-        "data-elm-flags": html_escape(Poison.encode!(params)) ]
+        "data-elm-flags": html_escape(Jason.encode!(params)) ]
 
     content_tag(tag, "", Dict.merge(attrs, data_attributes))
   end

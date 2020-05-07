@@ -76,7 +76,7 @@ defmodule LaFamiglia.Player do
     ids = for p <- players, do: p.id
 
     Multi.new
-    |> Multi.run(:recalc_player_points, fn(_) ->
+    |> Multi.run(:recalc_player_points, fn(_, _) ->
       from(p in Player,
         update:
           [set: [points: fragment("(SELECT SUM(v.points) FROM villas AS v WHERE v.player_id = ?)", p.id)]],

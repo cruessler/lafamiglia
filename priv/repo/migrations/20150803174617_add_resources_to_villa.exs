@@ -9,7 +9,7 @@ defmodule LaFamiglia.Repo.Migrations.AddResourcesToVilla do
 
       add :storage_capacity, :integer
 
-      add :processed_until, :datetime
+      add :processed_until, :utc_datetime_usec
     end
   end
 end

@@ -77,9 +77,6 @@ defmodule LaFamiglia.ReportController do
         where: r.player_id == ^current_player.id,
         select: %{delivered_at: max(r.delivered_at), villa: %{id: v.id, name: v.name, x: v.x, y: v.y}})
       |> Repo.all
-      # Using max(…) in a select makes Ecto not cast the respective column
-      # automatically.
-      |> Enum.map(fn(r) -> update_in(r, [:delivered_at], &Ecto.DateTime.cast!(&1)) end)
 
     conn
     |> assign(:grouped_reports, grouped_reports)

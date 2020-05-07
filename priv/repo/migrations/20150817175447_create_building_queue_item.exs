@@ -6,7 +6,7 @@ defmodule LaFamiglia.Repo.Migrations.CreateBuildingQueueItem do
       add :villa_id, references(:villas)
 
       add :building_id, :integer
-      add :completed_at, :datetime
+      add :completed_at, :utc_datetime_usec
 
       timestamps
     end

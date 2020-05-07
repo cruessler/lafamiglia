@@ -3,7 +3,7 @@ defmodule LaFamiglia.Repo.Migrations.AddSentAtToMessage do
 
   def change do
     alter table(:messages) do
-      add :sent_at, :datetime
+      add :sent_at, :utc_datetime
     end
   end
 end

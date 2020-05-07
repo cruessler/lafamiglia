@@ -8,7 +8,7 @@ defmodule LaFamiglia.Occupation do
   alias __MODULE__
 
   schema "occupations" do
-    field :succeeds_at, :utc_datetime
+    field :succeeds_at, :utc_datetime_usec
 
     field :unit_1, :integer
     field :unit_2, :integer

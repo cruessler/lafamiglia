@@ -13,7 +13,7 @@ defmodule LaFamiglia.Repo.Migrations.CreateComebackMovement do
       add :resource_2, :integer
       add :resource_3, :integer
 
-      add :arrives_at, :datetime
+      add :arrives_at, :utc_datetime_usec
 
       timestamps
     end

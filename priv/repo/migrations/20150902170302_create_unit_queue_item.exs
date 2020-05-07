@@ -8,7 +8,7 @@ defmodule LaFamiglia.Repo.Migrations.CreateUnitQueueItem do
       add :unit_id, :integer
       add :number, :integer
       add :build_time, :float
-      add :completed_at, :datetime
+      add :completed_at, :utc_datetime_usec
 
       timestamps
     end

@@ -3,7 +3,7 @@ defmodule LaFamiglia.Repo.Migrations.AddLastMessageSentAtToConversation do
 
   def change do
     alter table(:conversations) do
-      add :last_message_sent_at, :datetime
+      add :last_message_sent_at, :utc_datetime
     end
   end
 end

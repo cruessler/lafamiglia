@@ -12,7 +12,7 @@ defmodule LaFamiglia.UnitQueueItem do
     field :unit_id, :integer
     field :number, :integer
     field :build_time, :integer
-    field :completed_at, :utc_datetime
+    field :completed_at, :utc_datetime_usec
 
     belongs_to :villa, Villa
 

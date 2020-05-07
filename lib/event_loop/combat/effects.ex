@@ -110,7 +110,7 @@ defmodule LaFamiglia.Combat.Effects do
 
   defp notify_queue(multi) do
     multi
-    |> Multi.run(:send_to_queue, fn(changes) ->
+    |> Multi.run(:send_to_queue, fn(_repo, changes) ->
       case changes do
         %{comeback: comeback} ->
           LaFamiglia.EventQueue.cast({:new_event, comeback})

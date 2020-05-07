@@ -7,7 +7,7 @@ defmodule LaFamiglia.Actions.Dequeue do
   def dequeue(%Changeset{} = changeset, %BuildingQueueItem{} = item) do
     Multi.new
     |> Multi.update(:villa, BuildingQueueItem.dequeue(changeset, item))
-    |> Multi.run(:drop_from_queue, fn(_) ->
+    |> Multi.run(:drop_from_queue, fn(_, _) ->
       LaFamiglia.EventCallbacks.drop_from_queue(item)
     end)
   end
@@ -15,7 +15,7 @@ defmodule LaFamiglia.Actions.Dequeue do
   def dequeue(%Changeset{} = changeset, %UnitQueueItem{} = item) do
     Multi.new
     |> Multi.update(:villa, UnitQueueItem.dequeue(changeset, item))
-    |> Multi.run(:drop_from_queue, fn(_) ->
+    |> Multi.run(:drop_from_queue, fn(_, _) ->
       LaFamiglia.EventCallbacks.drop_from_queue(item)
     end)
   end

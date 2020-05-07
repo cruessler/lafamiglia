@@ -9,7 +9,7 @@ defmodule LaFamiglia.Repo.Migrations.CreateReport do
       add :data, :map
       add :read, :boolean
 
-      add :delivered_at, :datetime
+      add :delivered_at, :utc_datetime_usec
 
       timestamps
     end

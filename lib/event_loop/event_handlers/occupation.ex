@@ -32,7 +32,7 @@ defimpl LaFamiglia.Event, for: LaFamiglia.Occupation do
     |> Multi.update(:target, target_changeset)
     |> Multi.insert(:comeback, comeback)
     |> Multi.append(Player.recalc_points([occupation.origin.player, occupation.target.player]))
-    |> Multi.run(:send_to_queue, fn(%{comeback: comeback}) ->
+    |> Multi.run(:send_to_queue, fn(_repo, %{comeback: comeback}) ->
       LaFamiglia.EventQueue.cast({:new_event, comeback})
 
       {:ok, nil}
