@@ -12,6 +12,6 @@ defmodule LaFamiglia.Repo.Migrations.CreateVilla do
       timestamps
     end
 
-    create index(:villas, [ :x, :y ], unique: true)
+    create index(:villas, [:x, :y], unique: true)
   end
 end

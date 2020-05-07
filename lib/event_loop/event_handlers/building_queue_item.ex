@@ -18,28 +18,30 @@ defimpl LaFamiglia.Event, for: LaFamiglia.BuildingQueueItem do
   end
 
   def handle(item) do
-    Logger.info "processing build event ##{item.id}"
+    Logger.info("processing build event ##{item.id}")
 
     building = Building.get(item.building_id)
-    key      = building.key
+    key = building.key
+
     villa =
       from(v in assoc(item, :villa),
-        preload: [:player, :unit_queue_items])
-      |> Repo.one
+        preload: [:player, :unit_queue_items]
+      )
+      |> Repo.one()
 
     changeset =
       villa
-      |> Changeset.change
+      |> Changeset.change()
       |> Villa.gain_resources_until(item.completed_at)
       |> Changeset.put_change(key, Map.get(villa, key) + 1)
-      |> Villa.recalc_points
-      |> Villa.recalc_storage_capacity
-      |> Villa.recalc_max_supply
+      |> Villa.recalc_points()
+      |> Villa.recalc_storage_capacity()
+      |> Villa.recalc_max_supply()
 
-    Multi.new
+    Multi.new()
     |> Multi.update(:villa, changeset)
     |> Multi.delete(:item, item)
     |> Multi.append(Player.recalc_points(villa.player))
-    |> Repo.transaction
+    |> Repo.transaction()
   end
 end

@@ -1,5 +1,5 @@
 defmodule LaFamiglia.Queue do
-  def completed_at([]), do: LaFamiglia.DateTime.now
+  def completed_at([]), do: LaFamiglia.DateTime.now()
   def completed_at(queue) when is_list(queue), do: List.last(queue).completed_at
 
   @doc
@@ -7,8 +7,10 @@ defmodule LaFamiglia.Queue do
   Returns, in microseconds, how long it would take for an item in a queue to be
   completed.
   """
-  def build_time_left([first|_], first),
-    do: Timex.diff(LaFamiglia.DateTime.now, first.completed_at, :microseconds)
+
+  def build_time_left([first | _], first),
+    do: Timex.diff(LaFamiglia.DateTime.now(), first.completed_at, :microseconds)
+
   def build_time_left(_, item), do: item.build_time
 
   @doc
@@ -18,7 +20,8 @@ defmodule LaFamiglia.Queue do
 
   Expects `time_diff` to be specified in microseconds.
   """
-  def shift_later_items([first|rest], item, time_diff) do
+
+  def shift_later_items([first | rest], item, time_diff) do
     cond do
       first.id == item.id -> shift_items(rest, time_diff)
       true -> [first] ++ shift_later_items(rest, item, time_diff)

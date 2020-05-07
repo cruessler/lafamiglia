@@ -15,8 +15,7 @@ config :la_famiglia, LaFamiglia.Endpoint,
   root: Path.dirname(__DIR__),
   secret_key_base: "",
   render_errors: [accepts: ["html"]],
-  pubsub: [name: LaFamiglia.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: LaFamiglia.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -30,4 +29,4 @@ config :la_famiglia, game_speed: 1
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"

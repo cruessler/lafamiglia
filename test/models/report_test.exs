@@ -6,8 +6,7 @@ defmodule LaFamiglia.ReportTest do
   alias LaFamiglia.CombatReport
   alias LaFamiglia.ConquestReport
 
-  @valid_attrs %{title: "This is a title",
-                 player_id: 1}
+  @valid_attrs %{title: "This is a title", player_id: 1}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do
@@ -25,10 +24,10 @@ defmodule LaFamiglia.ReportTest do
 
     [report_for_origin: {:insert, first, []}, report_for_target: {:insert, second, []}] =
       attack
-      |> Combat.new
-      |> Combat.calculate
-      |> CombatReport.deliver
-      |> Ecto.Multi.to_list
+      |> Combat.new()
+      |> Combat.calculate()
+      |> CombatReport.deliver()
+      |> Ecto.Multi.to_list()
 
     {:ok, %{attack: attack, first: first, second: second}}
   end
@@ -59,7 +58,7 @@ defmodule LaFamiglia.ReportTest do
   end
 
   test "get payload" do
-    assert %CombatReport{} = build(:combat_report) |> Report.payload
-    assert %ConquestReport{} = build(:conquest_report) |> Report.payload
+    assert %CombatReport{} = build(:combat_report) |> Report.payload()
+    assert %ConquestReport{} = build(:conquest_report) |> Report.payload()
   end
 end

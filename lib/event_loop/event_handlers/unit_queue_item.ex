@@ -16,20 +16,20 @@ defimpl LaFamiglia.Event, for: LaFamiglia.UnitQueueItem do
   end
 
   def handle(item) do
-    Logger.info "processing recruiting event ##{item.id}"
+    Logger.info("processing recruiting event ##{item.id}")
 
-    unit  = Unit.get(item.unit_id)
-    key   = unit.key
-    villa = from(v in assoc(item, :villa), preload: :unit_queue_items) |> Repo.one
+    unit = Unit.get(item.unit_id)
+    key = unit.key
+    villa = from(v in assoc(item, :villa), preload: :unit_queue_items) |> Repo.one()
 
     changeset =
       villa
       |> Villa.changeset(%{key => Map.get(villa, key) + item.number})
       |> Changeset.put_change(:units_recruited_until, item.completed_at)
 
-    Multi.new
+    Multi.new()
     |> Multi.update(:villa, changeset)
     |> Multi.delete(:item, item)
-    |> Repo.transaction
+    |> Repo.transaction()
   end
 end

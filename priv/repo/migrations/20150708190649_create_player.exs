@@ -11,6 +11,5 @@ defmodule LaFamiglia.Repo.Migrations.CreatePlayer do
 
       timestamps
     end
-
   end
 end

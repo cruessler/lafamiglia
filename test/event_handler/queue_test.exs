@@ -2,10 +2,10 @@ defmodule LaFamiglia.EventHandler.QueueTest do
   use LaFamiglia.EventHandlerCase
 
   test "should update `resources_gained_until` when build event is handled" do
-    villa = build(:villa) |> with_building_queue |> Repo.insert!
+    villa = build(:villa) |> with_building_queue |> Repo.insert!()
     changeset = change(villa)
 
-    [first|_] = villa.building_queue_items
+    [first | _] = villa.building_queue_items
 
     assert get_field(changeset, :resources_gained_until) != first.completed_at
 
@@ -17,17 +17,15 @@ defmodule LaFamiglia.EventHandler.QueueTest do
       |> change
       |> Villa.process_virtually_until(first.completed_at)
 
-    assert \
-      DateTime.compare(
-        get_field(changeset, :resources_gained_until), first.completed_at)
-      == :eq
+    assert DateTime.compare(get_field(changeset, :resources_gained_until), first.completed_at) ==
+             :eq
   end
 
   test "should update `units_recruited_until` when recruit event is handled" do
-    villa = build(:villa) |> with_unit_queue |> Repo.insert!
+    villa = build(:villa) |> with_unit_queue |> Repo.insert!()
     changeset = villa |> change
 
-    [first|_] = villa.unit_queue_items
+    [first | _] = villa.unit_queue_items
 
     assert get_field(changeset, :units_recruited_until) != first.completed_at
 

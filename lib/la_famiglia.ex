@@ -6,12 +6,13 @@ defmodule LaFamiglia do
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
-    children = [
-      # Start the endpoint when the application starts
-      supervisor(LaFamiglia.Endpoint, []),
-      # Start the Ecto repository
-      worker(LaFamiglia.Repo, [])
-    ] ++ worker_children
+    children =
+      [
+        # Start the endpoint when the application starts
+        supervisor(LaFamiglia.Endpoint, []),
+        # Start the Ecto repository
+        worker(LaFamiglia.Repo, [])
+      ] ++ worker_children
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
@@ -32,8 +33,7 @@ defmodule LaFamiglia do
 
   defp worker_children() do
     if start_event_loop? do
-      [worker(LaFamiglia.EventLoop, []),
-       worker(LaFamiglia.EventQueue, [])]
+      [worker(LaFamiglia.EventLoop, []), worker(LaFamiglia.EventQueue, [])]
     else
       []
     end

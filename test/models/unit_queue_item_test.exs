@@ -23,12 +23,12 @@ defmodule LaFamiglia.UnitQueueItemTest do
   end
 
   test "should cancel unit queue item" do
-    villa = build(:villa) |> with_unit_queue |> Repo.insert!
+    villa = build(:villa) |> with_unit_queue |> Repo.insert!()
 
     {:ok, new_villa} =
       change(villa)
       |> UnitQueueItem.dequeue(List.last(villa.unit_queue_items))
-      |> Repo.update
+      |> Repo.update()
 
     assert length(new_villa.unit_queue_items) == length(villa.unit_queue_items) - 1
   end
@@ -44,15 +44,15 @@ defmodule LaFamiglia.UnitQueueItemTest do
       changeset = Villa.process_units_virtually_until(changeset, process_until)
 
       assert total_number == Unit.virtual_number(changeset, unit)
-      assert Unit.virtual_number(changeset, unit) == Unit.number(changeset, unit) + Unit.enqueued_number(changeset, unit)
+
+      assert Unit.virtual_number(changeset, unit) ==
+               Unit.number(changeset, unit) + Unit.enqueued_number(changeset, unit)
     end
   end
 
   test "does not recruit more units than enqueued", %{unit: unit} do
-    yesterday =
-      LaFamiglia.DateTime.from_now(seconds: -86400)
-    until =
-      LaFamiglia.DateTime.from_now(microseconds: trunc(Unit.training_time(unit) * 0.9))
+    yesterday = LaFamiglia.DateTime.from_now(seconds: -86400)
+    until = LaFamiglia.DateTime.from_now(microseconds: trunc(Unit.training_time(unit) * 0.9))
 
     changeset =
       build(:villa)

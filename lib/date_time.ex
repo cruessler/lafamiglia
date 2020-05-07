@@ -10,16 +10,16 @@ defmodule LaFamiglia.DateTime do
   def max(time1, time2) do
     case DateTime.compare(time1, time2) do
       :gt -> time1
-      _   -> time2
+      _ -> time2
     end
   end
 
-  @spec from_now(Timex.shift_options) :: Timex.Types.valid_datetime | {:error, term}
+  @spec from_now(Timex.shift_options()) :: Timex.Types.valid_datetime() | {:error, term}
   def from_now(options) do
     Timex.shift(now, options)
   end
 
-  def clock!(time \\ DateTime.utc_now) do
+  def clock!(time \\ DateTime.utc_now()) do
     Process.put(:la_famiglia_now, time)
   end
 

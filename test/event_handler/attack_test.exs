@@ -8,14 +8,14 @@ defmodule LaFamiglia.EventHandler.AttackTest do
 
   defp report_count do
     from(r in Report, select: count(r.id))
-    |> Repo.one
+    |> Repo.one()
   end
 
   test "gets handled when attacker wins" do
     attack = insert(:attack)
 
     old_report_count = report_count
-    old_supply       = attack.origin.supply
+    old_supply = attack.origin.supply
 
     assert {:ok, _} = LaFamiglia.Event.handle(attack)
 
@@ -25,10 +25,12 @@ defmodule LaFamiglia.EventHandler.AttackTest do
     target = Repo.get(Villa, attack.target.id)
     assert Resource.filter(target) != Resource.filter(attack.target)
 
-    report = from(r in Report, order_by: [desc: :id], limit: 1, preload: :combat_report) |> Repo.one
+    report =
+      from(r in Report, order_by: [desc: :id], limit: 1, preload: :combat_report) |> Repo.one()
+
     assert attack.arrives_at == report.delivered_at
 
-    comeback = from(c in ComebackMovement, preload: :origin) |> Repo.one
+    comeback = from(c in ComebackMovement, preload: :origin) |> Repo.one()
     assert comeback.origin.id == attack.origin.id
     assert DateTime.compare(comeback.arrives_at, attack.arrives_at) == :gt
     assert comeback.resource_1 > 0
@@ -40,19 +42,18 @@ defmodule LaFamiglia.EventHandler.AttackTest do
 
     assert {:ok, _} = LaFamiglia.Event.handle(attack)
 
-    assert from(c in ComebackMovement) |> Repo.all |> Enum.count == 0
+    assert from(c in ComebackMovement) |> Repo.all() |> Enum.count() == 0
   end
 
   test "gets handled when attacker wins and target has no resources" do
     target_without_resources =
       insert(:villa, %{resource_1: 0.0, resource_2: 0.0, resource_3: 0.0})
 
-    attack =
-      insert(:attack, %{target: target_without_resources})
+    attack = insert(:attack, %{target: target_without_resources})
 
     assert {:ok, _} = LaFamiglia.Event.handle(attack)
 
-    comeback = from(c in ComebackMovement, preload: :origin) |> Repo.one
+    comeback = from(c in ComebackMovement, preload: :origin) |> Repo.one()
     refute is_nil(comeback.resource_1)
   end
 

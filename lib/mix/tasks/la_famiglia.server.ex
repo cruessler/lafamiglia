@@ -5,6 +5,6 @@ defmodule Mix.Tasks.LaFamiglia.Server do
 
   def run(args) do
     Application.put_env(:la_famiglia, :start_event_loop, true, persistent: true)
-    Mix.Task.run "phx.server", args
+    Mix.Task.run("phx.server", args)
   end
 end

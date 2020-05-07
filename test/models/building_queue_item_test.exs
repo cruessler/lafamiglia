@@ -23,12 +23,12 @@ defmodule LaFamiglia.BuildingQueueItemTest do
   end
 
   test "should cancel building queue item" do
-    villa = build(:villa) |> with_building_queue |> Repo.insert!
+    villa = build(:villa) |> with_building_queue |> Repo.insert!()
 
     assert {:ok, new_villa} =
-      change(villa)
-      |> BuildingQueueItem.dequeue(List.last(villa.building_queue_items))
-      |> Repo.update
+             change(villa)
+             |> BuildingQueueItem.dequeue(List.last(villa.building_queue_items))
+             |> Repo.update()
 
     assert length(new_villa.building_queue_items) == length(villa.building_queue_items) - 1
   end

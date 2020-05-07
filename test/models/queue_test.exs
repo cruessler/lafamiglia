@@ -7,7 +7,7 @@ defmodule LaFamiglia.QueueTest do
   @shift_by 1_000_000
 
   test "shift_later_items" do
-    [first|[item]] = queue = Factory.building_queue
+    [first | [item]] = queue = Factory.building_queue()
 
     [shifted_item] = Queue.shift_later_items(queue, first, @shift_by)
 

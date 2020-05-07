@@ -19,8 +19,8 @@ defmodule LaFamiglia.Factory do
   def villa_factory do
     %LaFamiglia.Villa{
       name: "New Villa",
-      x: sequence(:x, &(&1)),
-      y: sequence(:y, &(&1)),
+      x: sequence(:x, & &1),
+      y: sequence(:y, & &1),
       is_occupied: false,
       resource_1: 50.0,
       resource_2: 50.0,
@@ -43,8 +43,8 @@ defmodule LaFamiglia.Factory do
       # `max_supply` needs to be set here for testing as
       # `Villa.recalc_max_supply` is not called automatically.
       max_supply: 100,
-      resources_gained_until: LaFamiglia.DateTime.now,
-      units_recruited_until: LaFamiglia.DateTime.now,
+      resources_gained_until: LaFamiglia.DateTime.now(),
+      units_recruited_until: LaFamiglia.DateTime.now(),
       player: build(:player, %{points: 1})
     }
   end
@@ -61,7 +61,9 @@ defmodule LaFamiglia.Factory do
 
     completed_at = [
       LaFamiglia.DateTime.from_now(microseconds: Enum.at(build_times, 0)),
-      LaFamiglia.DateTime.from_now(microseconds: Enum.at(build_times, 0) + Enum.at(build_times, 1))
+      LaFamiglia.DateTime.from_now(
+        microseconds: Enum.at(build_times, 0) + Enum.at(build_times, 1)
+      )
     ]
 
     for {t, c} <- Enum.zip(build_times, completed_at) do
@@ -79,10 +81,14 @@ defmodule LaFamiglia.Factory do
 
   def with_unit_queue(villa) do
     items = [
-      build(:unit_queue_item,
-        %{completed_at: LaFamiglia.DateTime.from_now(microseconds: @training_time)}),
-      build(:unit_queue_item,
-        %{completed_at: LaFamiglia.DateTime.from_now(microseconds: 2 * @training_time)})
+      build(
+        :unit_queue_item,
+        %{completed_at: LaFamiglia.DateTime.from_now(microseconds: @training_time)}
+      ),
+      build(
+        :unit_queue_item,
+        %{completed_at: LaFamiglia.DateTime.from_now(microseconds: 2 * @training_time)}
+      )
     ]
 
     %{villa | unit_queue_items: items}
@@ -101,12 +107,13 @@ defmodule LaFamiglia.Factory do
 
     participants = build_list(3, :player, %{unread_conversations: 0})
 
-    statuses = for p <- participants do
-      %LaFamiglia.ConversationStatus{
-        player: p,
-        read_until: sent_at
-      }
-    end
+    statuses =
+      for p <- participants do
+        %LaFamiglia.ConversationStatus{
+          player: p,
+          read_until: sent_at
+        }
+      end
 
     %LaFamiglia.Conversation{
       participants: participants,
@@ -154,7 +161,7 @@ defmodule LaFamiglia.Factory do
     %LaFamiglia.Report{
       title: "Attack on a villa",
       player: build(:player),
-      delivered_at: LaFamiglia.DateTime.now,
+      delivered_at: LaFamiglia.DateTime.now(),
       read: false,
       origin: origin,
       target: target
@@ -177,15 +184,17 @@ defmodule LaFamiglia.Factory do
   end
 
   def combat_report_factory do
-    build(:report, combat_report: %LaFamiglia.CombatReport{
-      attacker_before_combat: units,
-      attacker_losses: units,
-      defender_before_combat: units,
-      defender_losses: units,
-      resources_plundered: resources,
-      results_in_occupation: false,
-      attacker_wins: true
-    })
+    build(:report,
+      combat_report: %LaFamiglia.CombatReport{
+        attacker_before_combat: units,
+        attacker_losses: units,
+        defender_before_combat: units,
+        defender_losses: units,
+        resources_plundered: resources,
+        results_in_occupation: false,
+        attacker_wins: true
+      }
+    )
   end
 
   def conquest_report_factory do

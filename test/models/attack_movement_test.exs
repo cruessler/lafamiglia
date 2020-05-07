@@ -22,7 +22,7 @@ defmodule LaFamiglia.AttackMovementTest do
       |> AttackMovement.create(target, %{unit_1: 1, unit_2: 0})
       |> get_change(:arrives_at)
 
-    assert DateTime.compare(arrives_at, LaFamiglia.DateTime.now) == :gt
+    assert DateTime.compare(arrives_at, LaFamiglia.DateTime.now()) == :gt
   end
 
   test "is invalid without units" do

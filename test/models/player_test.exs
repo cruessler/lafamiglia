@@ -3,9 +3,13 @@ defmodule LaFamiglia.PlayerTest do
 
   alias LaFamiglia.Player
 
-  @valid_attrs %{ email: "mail@adre.ss", name: "some name",
-                  points: 42, password: "this is a password" }
-  @invalid_attrs %{ email: "not an email" }
+  @valid_attrs %{
+    email: "mail@adre.ss",
+    name: "some name",
+    points: 42,
+    password: "this is a password"
+  }
+  @invalid_attrs %{email: "not an email"}
 
   test "changeset with valid attributes" do
     changeset = Player.changeset(%Player{}, @valid_attrs)
@@ -22,15 +26,15 @@ defmodule LaFamiglia.PlayerTest do
     insert_list(3, :villa, %{player: player})
 
     Player.recalc_points(player)
-    |> Repo.transaction
+    |> Repo.transaction()
 
     player = Repo.get(Player, player.id) |> Repo.preload(:villas)
     assert player.points == 3
 
-    {:ok, player} = change(player) |> put_assoc(:villas, []) |> Repo.update
+    {:ok, player} = change(player) |> put_assoc(:villas, []) |> Repo.update()
 
     Player.recalc_points(player)
-    |> Repo.transaction
+    |> Repo.transaction()
 
     player = Repo.get(Player, player.id)
     assert player.points == 0

@@ -39,7 +39,7 @@ defmodule LaFamiglia.ConnCase do
   end
 
   setup tags do
-    LaFamiglia.DateTime.clock!
+    LaFamiglia.DateTime.clock!()
 
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(LaFamiglia.Repo, [])
 

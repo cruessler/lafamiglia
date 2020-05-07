@@ -5,6 +5,6 @@ defmodule Mix.Tasks.LaFamiglia.EventLoop do
 
   def run(args) do
     Application.put_env(:la_famiglia, :start_event_loop, true, persistent: true)
-    Mix.Task.run "run", ["--no-halt"] ++ args
+    Mix.Task.run("run", ["--no-halt"] ++ args)
   end
 end

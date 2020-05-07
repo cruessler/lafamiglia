@@ -10,11 +10,11 @@ defimpl LaFamiglia.Event, for: LaFamiglia.ComebackMovement do
   end
 
   def handle(comeback) do
-    Logger.info "processing comeback event ##{comeback.id}"
+    Logger.info("processing comeback event ##{comeback.id}")
 
     LaFamiglia.DateTime.clock!(comeback.arrives_at)
 
     ComebackMovement.arrive(comeback)
-    |> Repo.transaction
+    |> Repo.transaction()
   end
 end

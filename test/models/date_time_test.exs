@@ -6,11 +6,11 @@ defmodule LaFamiglia.DateTimeTest do
   test "should set and get game time" do
     DateTime.clock!(nil)
 
-    assert DateTime.now == nil
+    assert DateTime.now() == nil
 
-    DateTime.clock!
+    DateTime.clock!()
 
-    assert DateTime.now != nil
+    assert DateTime.now() != nil
   end
 
   test "from_now" do

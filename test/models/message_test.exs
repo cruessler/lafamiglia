@@ -9,15 +9,19 @@ defmodule LaFamiglia.MessageTest do
 
   test "validate message", %{sender: sender} do
     invalid_messages = [
-      %{text: "This is a text"}, # has neither sender nor receivers
-      %{sender: sender,
+      # has neither sender nor receivers
+      %{text: "This is a text"},
+      %{
+        sender: sender,
         receivers: build_pair(:player),
-        text: ""}                # has no text
-      ]
+        # has no text
+        text: ""
+      }
+    ]
 
-    Enum.map invalid_messages, fn(m) ->
+    Enum.map(invalid_messages, fn m ->
       refute Message.changeset(%Message{}, m).valid?
-    end
+    end)
   end
 
   test "create message", %{sender: sender} do
@@ -47,7 +51,8 @@ defmodule LaFamiglia.MessageTest do
 
     message = apply_changes(changeset)
 
-    changeset = Message.continue_conversation(message.sender, message.conversation, "This is a text.")
+    changeset =
+      Message.continue_conversation(message.sender, message.conversation, "This is a text.")
 
     conversation = get_field(changeset, :conversation)
     first = hd(conversation.participants)

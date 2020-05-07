@@ -5,7 +5,7 @@ defmodule LaFamiglia.ConnHelper do
   @endpoint LaFamiglia.Endpoint
 
   def with_login(conn, player) do
-    conn = post conn, "/session", [ session: [ email: player.email, password: "password" ]]
+    conn = post conn, "/session", session: [email: player.email, password: "password"]
 
     assert html_response(conn, 302)
     assert redirected_to(conn)

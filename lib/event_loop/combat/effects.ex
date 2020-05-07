@@ -9,9 +9,9 @@ defmodule LaFamiglia.Combat.Effects do
   alias LaFamiglia.CombatReport
 
   def to_multi(
-    %Combat{attack: %{target: %{is_occupied: true}},
-            result: %{results_in_occupation?: true}} = combat)
-  do
+        %Combat{attack: %{target: %{is_occupied: true}}, result: %{results_in_occupation?: true}} =
+          combat
+      ) do
     %{attack: attack, result: result} = combat
 
     occupation_multi = Occupation.from_combat(combat)
@@ -19,16 +19,18 @@ defmodule LaFamiglia.Combat.Effects do
     origin_changeset =
       Changeset.change(attack.origin)
       |> Villa.subtract_supply(result.attacker_supply_loss)
+
     target_changeset =
       attack.target
       |> Villa.process_virtually_until(attack.arrives_at)
       |> Villa.subtract_resources(result.resources_plundered)
       |> Changeset.put_change(:is_occupied, true)
+
     origin_of_occupation_changeset =
       Changeset.change(attack.target.occupation.origin)
       |> Villa.subtract_supply(result.defender_supply_loss)
 
-    Multi.new
+    Multi.new()
     |> Multi.append(CombatReport.deliver(combat))
     |> Multi.delete(:attack, attack)
     |> Multi.update(:origin, origin_changeset)
@@ -38,6 +40,7 @@ defmodule LaFamiglia.Combat.Effects do
     |> Multi.append(occupation_multi)
     |> notify_queue
   end
+
   def to_multi(%Combat{result: %{results_in_occupation?: true}} = combat) do
     %{attack: attack, result: result} = combat
 
@@ -46,6 +49,7 @@ defmodule LaFamiglia.Combat.Effects do
     origin_changeset =
       Changeset.change(attack.origin)
       |> Villa.subtract_supply(result.attacker_supply_loss)
+
     target_changeset =
       attack.target
       |> Villa.process_virtually_until(attack.arrives_at)
@@ -53,7 +57,7 @@ defmodule LaFamiglia.Combat.Effects do
       |> Villa.subtract_supply(result.defender_supply_loss)
       |> Changeset.put_change(:is_occupied, true)
 
-    Multi.new
+    Multi.new()
     |> Multi.append(CombatReport.deliver(combat))
     |> Multi.delete(:attack, attack)
     |> Multi.update(:origin, origin_changeset)
@@ -61,22 +65,25 @@ defmodule LaFamiglia.Combat.Effects do
     |> Multi.append(occupation_multi)
     |> notify_queue
   end
+
   def to_multi(%Combat{attack: %{target: %{is_occupied: true}}} = combat) do
     %{attack: attack, result: result} = combat
 
     origin_changeset =
       Changeset.change(attack.origin)
       |> Villa.subtract_supply(result.attacker_supply_loss)
+
     target_changeset =
       attack.target
       |> Villa.process_virtually_until(attack.arrives_at)
       |> Villa.subtract_resources(result.resources_plundered)
       |> Changeset.put_change(:is_occupied, false)
+
     origin_of_occupation_changeset =
       Changeset.change(attack.target.occupation.origin)
       |> Villa.subtract_supply(result.defender_supply_loss)
 
-    Multi.new
+    Multi.new()
     |> Multi.append(CombatReport.deliver(combat))
     |> Multi.delete(:attack, attack)
     |> Multi.update(:origin, origin_changeset)
@@ -86,12 +93,14 @@ defmodule LaFamiglia.Combat.Effects do
     |> append_comeback(combat)
     |> notify_queue
   end
+
   def to_multi(%Combat{} = combat) do
     %{attack: attack, result: result} = combat
 
     origin_changeset =
       Changeset.change(attack.origin)
       |> Villa.subtract_supply(result.attacker_supply_loss)
+
     target_changeset =
       attack.target
       |> Villa.process_virtually_until(attack.arrives_at)
@@ -99,7 +108,7 @@ defmodule LaFamiglia.Combat.Effects do
       |> Villa.subtract_supply(result.defender_supply_loss)
       |> Villa.subtract_resources(result.resources_plundered)
 
-    Multi.new
+    Multi.new()
     |> Multi.append(CombatReport.deliver(combat))
     |> Multi.delete(:attack, attack)
     |> Multi.update(:origin, origin_changeset)
@@ -110,13 +119,16 @@ defmodule LaFamiglia.Combat.Effects do
 
   defp notify_queue(multi) do
     multi
-    |> Multi.run(:send_to_queue, fn(_repo, changes) ->
+    |> Multi.run(:send_to_queue, fn _repo, changes ->
       case changes do
         %{comeback: comeback} ->
           LaFamiglia.EventQueue.cast({:new_event, comeback})
+
         %{occupation: occupation} ->
           LaFamiglia.EventQueue.cast({:new_event, occupation})
-        _ -> nil
+
+        _ ->
+          nil
       end
 
       {:ok, nil}
@@ -129,5 +141,6 @@ defmodule LaFamiglia.Combat.Effects do
     multi
     |> Multi.insert(:comeback, changeset)
   end
+
   defp append_comeback(multi, _), do: multi
 end

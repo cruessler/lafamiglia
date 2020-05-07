@@ -8,7 +8,7 @@ defmodule LaFamiglia.Repo.Migrations.CreateConversation do
 
     create table(:conversation_statuses) do
       add :conversation_id, references(:conversations)
-      add :player_id,       references(:players)
+      add :player_id, references(:players)
 
       timestamps
     end

@@ -15,4 +15,5 @@ config :la_famiglia, LaFamiglia.Repo,
   username: "la_famiglia",
   password: "la_famiglia",
   database: "la_famiglia_test",
-  pool: Ecto.Adapters.SQL.Sandbox # Use a sandbox for transactional testing
+  # Use a sandbox for transactional testing
+  pool: Ecto.Adapters.SQL.Sandbox
