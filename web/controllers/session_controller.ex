@@ -15,7 +15,7 @@ defmodule LaFamiglia.SessionController do
         conn
         |> put_session(:current_player_id, player.id)
         |> put_flash(:info, "You are now logged in")
-        |> redirect(to: villa_path(conn, :index))
+        |> redirect(to: Routes.villa_path(conn, :index))
       :error ->
         conn
         |> put_flash(:error, "Wrong email or password")
@@ -27,12 +27,12 @@ defmodule LaFamiglia.SessionController do
     conn
     |> delete_session(:current_player_id)
     |> put_flash(:info, "Logged out")
-    |> redirect(to: page_path(conn, :index))
+    |> redirect(to: Routes.page_path(conn, :index))
   end
 
   defp redirect_if_logged_in(conn, _) do
     if(conn.assigns[:current_player]) do
-      conn |> redirect(to: page_path(conn, :index)) |> halt
+      conn |> redirect(to: Routes.page_path(conn, :index)) |> halt
     else
       conn
     end

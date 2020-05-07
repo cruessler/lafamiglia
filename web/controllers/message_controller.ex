@@ -17,7 +17,7 @@ defmodule LaFamiglia.MessageController do
     Message.continue_conversation(conn.assigns.current_player, conversation, text)
     |> Repo.insert
 
-    redirect(conn, to: conversation_path(conn, :show, conversation.id))
+    redirect(conn, to: Routes.conversation_path(conn, :show, conversation.id))
   end
   def create(conn, %{"message" => %{"text" => text, "receivers" => receivers}} = _params) do
     receivers =
@@ -34,7 +34,7 @@ defmodule LaFamiglia.MessageController do
         |> render("new.html")
       {:ok, message} ->
         conn
-        |> redirect(to: conversation_path(conn, :show, message.conversation_id))
+        |> redirect(to: Routes.conversation_path(conn, :show, message.conversation_id))
     end
   end
   # When no receiver is selected, `receivers[]` is not part of `params` and the

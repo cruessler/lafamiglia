@@ -1,5 +1,5 @@
 <%= form_for @changeset,
-             villa_attack_movement_path(@conn, :create, @current_villa.id),
+             Routes.villa_attack_movement_path(@conn, :create, @current_villa.id),
              [method: :post],
              fn f -> %>
   <%= if f.errors != [] do %>

@@ -3,7 +3,7 @@
 <ul class="reports">
   <%= for r <- @reports do %>
     <li>
-      <%= link to: report_path(@conn, :show, r.id) do %>
+      <%= link to: Routes.report_path(@conn, :show, r.id) do %>
         <%= r.title %> <small><%= r.delivered_at %></small>
       <% end %>
     </li>

@@ -9,7 +9,7 @@
 
       <%= for r <- @grouped_reports do %>
         <li class="<%= li_class_for(r, @grouped_by) %>">
-          <%= link to: villa_report_path(@conn, :index, r.villa.id) do %>
+          <%= link to: Routes.villa_report_path(@conn, :index, r.villa.id) do %>
             <%= r.villa.name %> (<%= r.villa.x %>|<%= r.villa.y %>)
             <small><%= r.delivered_at %></small>
           <% end %>

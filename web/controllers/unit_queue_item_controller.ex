@@ -16,10 +16,10 @@ defmodule LaFamiglia.UnitQueueItemController do
 
         conn
         |> put_flash(:info, message)
-        |> redirect(to: villa_path(conn, :show, villa_id))
+        |> redirect(to: Routes.villa_path(conn, :show, villa_id))
       {:ok, _villa} ->
         conn
-        |> redirect(to: villa_path(conn, :show, villa_id))
+        |> redirect(to: Routes.villa_path(conn, :show, villa_id))
     end
   end
 
@@ -33,10 +33,10 @@ defmodule LaFamiglia.UnitQueueItemController do
 
         conn
         |> put_flash(:info, message)
-        |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))
+        |> redirect(to: Routes.villa_path(conn, :show, conn.assigns.current_villa.id))
       {:ok, _villa} ->
         conn
-        |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))
+        |> redirect(to: Routes.villa_path(conn, :show, conn.assigns.current_villa.id))
     end
   end
 end

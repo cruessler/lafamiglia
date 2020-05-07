@@ -8,7 +8,7 @@
     <meta name="author" content="">
 
     <title>La Famiglia – un’offerta nessuno può rifiutare</title>
-    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>">
   </head>
 
   <body>
@@ -27,19 +27,19 @@
           <div class="navbar-collapse collapse">
             <%= if @current_villa do %>
               <ul class="nav navbar-nav">
-                <li><%= link coordinates(@current_villa), to: villa_path(@conn, :show, @current_villa)%></li>
-                <li><%= link "Villas", to: villa_path(@conn, :index) %></li>
-                <li><%= link "Troops", to: movement_path(@conn, :index) %></li>
-                <li><%= link "Map", to: map_path(@conn, :show, @current_villa.x, @current_villa.y) %></li>
+                <li><%= link coordinates(@current_villa), to: Routes.villa_path(@conn, :show, @current_villa)%></li>
+                <li><%= link "Villas", to: Routes.villa_path(@conn, :index) %></li>
+                <li><%= link "Troops", to: Routes.movement_path(@conn, :index) %></li>
+                <li><%= link "Map", to: Routes.map_path(@conn, :show, @current_villa.x, @current_villa.y) %></li>
                 <li>
-                  <%= link to: conversation_path(@conn, :index) do %>
+                  <%= link to: Routes.conversation_path(@conn, :index) do %>
                     Messages
                     <%= unread_conversations_badge(@current_player) %>
                   <% end %>
                 </li>
-                <li><%= link "Reports", to: report_path(@conn, :index) %></li>
-                <li><%= link "Ranking", to: player_path(@conn, :index) %></li>
-                <li><%= link "Help", to: help_path(@conn, :index) %></li>
+                <li><%= link "Reports", to: Routes.report_path(@conn, :index) %></li>
+                <li><%= link "Ranking", to: Routes.player_path(@conn, :index) %></li>
+                <li><%= link "Help", to: Routes.help_path(@conn, :index) %></li>
               </ul>
             <% end %>
 
@@ -49,7 +49,7 @@
                   <span class="glyphicon glyphicon-user"></span> <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu" role="menu">
-                  <li><%= link "Logout", to: session_path(@conn, :delete), method: :delete %></li>
+                  <li><%= link "Logout", to: Routes.session_path(@conn, :delete), method: :delete %></li>
                 </ul>
               </li>
             </ul>
@@ -69,6 +69,6 @@
       </div><!--/row-->
     </div> <!-- /container -->
 
-    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+    <script src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>

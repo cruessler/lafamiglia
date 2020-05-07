@@ -27,7 +27,7 @@ defmodule LaFamiglia.ConnCase do
       import Ecto.Changeset
       import Ecto.Query
 
-      import LaFamiglia.Router.Helpers
+      alias LaFamiglia.Router.Helpers, as: Routes
 
       # The default endpoint for testing
       @endpoint LaFamiglia.Endpoint

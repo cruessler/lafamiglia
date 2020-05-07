@@ -34,7 +34,7 @@ defmodule LaFamiglia.AttackMovementController do
         |> render("new.html")
       {:ok, _} ->
         conn
-        |> redirect(to: villa_path(conn, :show, conn.assigns.current_villa.id))
+        |> redirect(to: Routes.villa_path(conn, :show, conn.assigns.current_villa.id))
     end
   end
 

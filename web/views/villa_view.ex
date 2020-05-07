@@ -24,7 +24,7 @@ defmodule LaFamiglia.VillaView do
         "Build"
       end
 
-      link title, to: villa_building_queue_item_path(conn, :create, villa.id, building_id: building.id),
+      link title, to: Routes.villa_building_queue_item_path(conn, :create, villa.id, building_id: building.id),
                   method: :post, class: "btn btn-primary"
     else
       link "Maximum level", to: "#", class: "btn btn-primary disabled"
@@ -34,7 +34,7 @@ defmodule LaFamiglia.VillaView do
   def link_to_recruit_start(conn, villa, unit, number) do
     if Villa.has_supply?(villa, unit.supply * number) do
       link Integer.to_string(number),
-           to: villa_unit_queue_item_path(conn, :create, villa.id, [unit_id: unit.id, number: number]),
+           to: Routes.villa_unit_queue_item_path(conn, :create, villa.id, [unit_id: unit.id, number: number]),
            method: :post, class: "btn btn-primary btn-sm"
     else
       link Integer.to_string(number), to: "#", class: "btn btn-primary btn-sm disabled"
@@ -42,7 +42,7 @@ defmodule LaFamiglia.VillaView do
   end
 
   def link_to_recruit_cancel(conn, item) do
-    link "Cancel", to: unit_queue_item_path(conn, :delete, item.id),
+    link "Cancel", to: Routes.unit_queue_item_path(conn, :delete, item.id),
                        method: :delete, class: "btn btn-primary"
   end
 

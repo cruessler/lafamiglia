@@ -3,11 +3,11 @@
     <h3>Conversations</h3>
 
     <ul class="conversations link-list">
-      <li><%= link "Write a message", to: conversation_path(@conn, :index) %></li>
+      <li><%= link "Write a message", to: Routes.conversation_path(@conn, :index) %></li>
 
       <%= for c <- @conversations do %>
         <li class="<%= li_class_for(c, @conversation) %>">
-          <%= link to: conversation_path(@conn, :show, c) do %>
+          <%= link to: Routes.conversation_path(@conn, :show, c) do %>
             <%= participants_except(c.participants, @current_player) %>
             <small><%= c.last_message_sent_at %></small>
 

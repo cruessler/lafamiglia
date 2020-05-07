@@ -1,5 +1,5 @@
 <%= form_for @changeset,
-             player_path(@conn, :create),
+             Routes.player_path(@conn, :create),
              [class: :"form-account"],
              fn f -> %>
   <h2>Register</h2>

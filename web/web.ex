@@ -35,9 +35,8 @@ defmodule LaFamiglia.Web do
       import Ecto
       import Ecto.Query, only: [from: 1, from: 2]
 
-      # Import URL helpers from the router
-      import LaFamiglia.Router.Helpers
       import LaFamiglia.Gettext
+      alias LaFamiglia.Router.Helpers, as: Routes
     end
   end
 
@@ -48,15 +47,12 @@ defmodule LaFamiglia.Web do
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_csrf_token: 0, get_flash: 2, view_module: 1]
 
-      # Import URL helpers from the router
-      import LaFamiglia.Router.Helpers
-
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import LaFamiglia.Router.Helpers
       import LaFamiglia.ErrorHelpers
       import LaFamiglia.Gettext
+      alias LaFamiglia.Router.Helpers, as: Routes
 
       alias LaFamiglia.Building
       alias LaFamiglia.Unit
