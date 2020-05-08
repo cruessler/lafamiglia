@@ -1,5 +1,5 @@
-defmodule LaFamiglia.VillaControllerTest do
-  use LaFamiglia.ConnCase
+defmodule LaFamigliaWeb.VillaControllerTest do
+  use LaFamigliaWeb.ConnCase
 
   alias LaFamiglia.Player
   alias LaFamiglia.Villa

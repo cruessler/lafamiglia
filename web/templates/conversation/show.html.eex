@@ -1,2 +1,0 @@
-<%= render LaFamiglia.ConversationView, "_show.html",
-           Dict.put(assigns, :layout, {LaFamiglia.ConversationView, "_layout.html"}) %>

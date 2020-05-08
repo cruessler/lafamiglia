@@ -1,4 +1,4 @@
-defmodule LaFamiglia.ChannelCase do
+defmodule LaFamigliaWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -28,7 +28,7 @@ defmodule LaFamiglia.ChannelCase do
       import Ecto.Query
 
       # The default endpoint for testing
-      @endpoint LaFamiglia.Endpoint
+      @endpoint LaFamigliaWeb.Endpoint
     end
   end
 

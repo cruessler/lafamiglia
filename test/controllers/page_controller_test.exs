@@ -1,5 +1,5 @@
-defmodule LaFamiglia.PageControllerTest do
-  use LaFamiglia.ConnCase
+defmodule LaFamigliaWeb.PageControllerTest do
+  use LaFamigliaWeb.ConnCase
 
   test "GET /" do
     conn = get(build_conn(), "/")

@@ -1,3 +1,3 @@
-defmodule LaFamiglia.PageViewTest do
-  use LaFamiglia.ConnCase, async: true
+defmodule LaFamigliaWeb.PageViewTest do
+  use LaFamigliaWeb.ConnCase, async: true
 end

@@ -1,5 +1,5 @@
-defmodule LaFamiglia.MessageControllerTest do
-  use LaFamiglia.ConnCase
+defmodule LaFamigliaWeb.MessageControllerTest do
+  use LaFamigliaWeb.ConnCase
 
   alias LaFamiglia.Conversation
 

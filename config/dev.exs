@@ -6,7 +6,7 @@ use Mix.Config
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
-config :la_famiglia, LaFamiglia.Endpoint,
+config :la_famiglia, LaFamigliaWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
   code_reloader: true,
@@ -22,12 +22,12 @@ config :la_famiglia, LaFamiglia.Endpoint,
   ]
 
 # Watch static and templates for browser reloading.
-config :la_famiglia, LaFamiglia.Endpoint,
+config :la_famiglia, LaFamigliaWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif)$},
-      ~r{web/views/.*(ex)$},
-      ~r{web/templates/.*(eex)$}
+      ~r{lib/la_famiglia_web/views/.*(ex)$},
+      ~r{lib/la_famiglia_web/templates/.*(eex)$}
     ]
   ]
 

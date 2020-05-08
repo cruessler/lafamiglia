@@ -10,7 +10,7 @@ config :la_famiglia,
   ecto_repos: [LaFamiglia.Repo]
 
 # Configures the endpoint
-config :la_famiglia, LaFamiglia.Endpoint,
+config :la_famiglia, LaFamigliaWeb.Endpoint,
   url: [host: "localhost"],
   root: Path.dirname(__DIR__),
   secret_key_base: "",

@@ -1,0 +1,2 @@
+<%= render LaFamigliaWeb.ReportView, @report_name,
+           Dict.put(assigns, :layout, {LaFamigliaWeb.ReportView, "_layout.html"}) %>

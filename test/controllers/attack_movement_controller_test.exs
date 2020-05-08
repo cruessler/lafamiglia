@@ -1,5 +1,5 @@
-defmodule LaFamiglia.AttackMovementControllerTest do
-  use LaFamiglia.ConnCase
+defmodule LaFamigliaWeb.AttackMovementControllerTest do
+  use LaFamigliaWeb.ConnCase
 
   alias LaFamiglia.AttackMovement
 

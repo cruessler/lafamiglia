@@ -1,5 +1,5 @@
-defmodule LaFamiglia.SessionControllerTest do
-  use LaFamiglia.ConnCase
+defmodule LaFamigliaWeb.SessionControllerTest do
+  use LaFamigliaWeb.ConnCase
 
   test "GET /session/new" do
     conn = get(build_conn(), "/session/new")

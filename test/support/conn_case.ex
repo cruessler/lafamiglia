@@ -1,4 +1,4 @@
-defmodule LaFamiglia.ConnCase do
+defmodule LaFamigliaWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -27,10 +27,10 @@ defmodule LaFamiglia.ConnCase do
       import Ecto.Changeset
       import Ecto.Query
 
-      alias LaFamiglia.Router.Helpers, as: Routes
+      alias LaFamigliaWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
-      @endpoint LaFamiglia.Endpoint
+      @endpoint LaFamigliaWeb.Endpoint
 
       import LaFamiglia.ConnHelper
 

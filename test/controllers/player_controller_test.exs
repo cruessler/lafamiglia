@@ -1,5 +1,5 @@
-defmodule LaFamiglia.PlayerControllerTest do
-  use LaFamiglia.ConnCase
+defmodule LaFamigliaWeb.PlayerControllerTest do
+  use LaFamigliaWeb.ConnCase
 
   test "POST /players" do
     params = [

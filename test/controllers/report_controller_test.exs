@@ -1,5 +1,5 @@
-defmodule LaFamiglia.ReportControllerTest do
-  use LaFamiglia.ConnCase
+defmodule LaFamigliaWeb.ReportControllerTest do
+  use LaFamigliaWeb.ConnCase
 
   alias LaFamiglia.Villa
 

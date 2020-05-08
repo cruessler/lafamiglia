@@ -2,7 +2,7 @@ defmodule LaFamiglia.ConnHelper do
   import ExUnit.Assertions
   import Phoenix.ConnTest
 
-  @endpoint LaFamiglia.Endpoint
+  @endpoint LaFamigliaWeb.Endpoint
 
   def with_login(conn, player) do
     conn = post conn, "/session", session: [email: player.email, password: "password"]

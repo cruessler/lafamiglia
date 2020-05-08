@@ -9,7 +9,7 @@ defmodule LaFamiglia do
     children =
       [
         # Start the endpoint when the application starts
-        supervisor(LaFamiglia.Endpoint, []),
+        supervisor(LaFamigliaWeb.Endpoint, []),
         # Start the Ecto repository
         worker(LaFamiglia.Repo, [])
       ] ++ worker_children
@@ -23,7 +23,7 @@ defmodule LaFamiglia do
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
   def config_change(changed, _new, removed) do
-    LaFamiglia.Endpoint.config_change(changed, removed)
+    LaFamigliaWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 
