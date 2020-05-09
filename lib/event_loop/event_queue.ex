@@ -108,7 +108,11 @@ defmodule LaFamiglia.EventQueue do
   def handle_info(:timeout, [{_completed_at, module, id} | queue]) do
     event = Repo.get!(module, id)
 
-    LaFamiglia.EventLoop.notify(event)
+    # Until May 2020, the event was sent to another process, `EventLoop`, using
+    # `notify` and handled by that process which implemented `GenEvent`.
+    # `GenEvent` has been deprecated in Elixir 1.5, so `EventLoop` has been
+    # removed, and the event is now handled by `EventQueue`.
+    {:ok, _} = LaFamiglia.Event.handle(event)
 
     {:noreply, queue, timeout(queue)}
   end
@@ -121,8 +125,12 @@ defmodule LaFamiglia.EventQueue do
     :infinity
   end
 
-  defp timeout([{happens_at, _, _} | _]) do
-    max(milliseconds_until(happens_at), 0)
+  defp timeout([{happens_at, _, id} | _]) do
+    timeout_in_milliseconds = max(milliseconds_until(happens_at), 0)
+
+    Logger.info("timeout for event ##{id} will be in #{timeout_in_milliseconds} milliseconds")
+
+    timeout_in_milliseconds
   end
 
   defp milliseconds_until(%DateTime{} = time) do

@@ -33,7 +33,7 @@ defmodule LaFamiglia do
 
   defp worker_children() do
     if start_event_loop? do
-      [LaFamiglia.EventLoop, LaFamiglia.EventQueue]
+      [LaFamiglia.EventQueue]
     else
       []
     end
