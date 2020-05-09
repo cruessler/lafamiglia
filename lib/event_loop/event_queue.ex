@@ -134,6 +134,12 @@ defmodule LaFamiglia.EventQueue do
   end
 
   defp milliseconds_until(%DateTime{} = time) do
-    Timex.diff(DateTime.utc_now(), time, :milliseconds)
+    # `Timex.diff/3` returns negative integers if the first `DateTime` comes
+    # before the second one.
+    #
+    # This was a breaking change in timex 3.0.
+    #
+    # https://github.com/bitwalker/timex/blob/master/CHANGELOG.md#changed-1
+    Timex.diff(time, DateTime.utc_now(), :milliseconds)
   end
 end
