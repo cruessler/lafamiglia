@@ -4,18 +4,7 @@ class Countdown extends React.Component {
   constructor(props) {
     super(props);
 
-    // After the pull request https://github.com/elixir-lang/ecto/pull/1216 got
-    // merged, Ecto no longer assumes Ecto.DateTimes are given as UTC, and stops
-    // appending "Z" in its implementation of String.Chars.
-    //
-    // This makes Firefox assume that `props.countdownTo` is local time.
-    // Appending "Z" makes Firefox parse `props.countdownTo` as UTC again.
-    //
-    // Chrome parses it as UTC regardless of whether it ends in "Z".
-    //
-    // This solution is not optimal and should be replaced by a better one in
-    // the future.
-    this.countdownTo = new Date(props.countdownTo + 'Z').getTime();
+    this.countdownTo = new Date(props.countdownTo).getTime();
 
     this.state = { timeLeft: this.getTimeLeft() };
 
