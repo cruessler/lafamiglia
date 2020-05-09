@@ -51,8 +51,8 @@ defmodule LaFamiglia.Mixfile do
   # Type `mix help deps` for examples and options
   defp deps do
     [
-      {:phoenix, "~> 1.4.0"},
-      {:phoenix_pubsub, "~> 1.0"},
+      {:phoenix, "~> 1.5.0"},
+      {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_ecto, "~> 4.0"},
       {:ecto_sql, "~> 3.0"},
       {:postgrex, "~> 0.13"},
@@ -61,7 +61,7 @@ defmodule LaFamiglia.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       # https://github.com/elixircnx/comeonin
       {:comeonin, "~> 2.0"},
-      {:plug_cowboy, "~> 2.0"},
+      {:plug_cowboy, "~> 2.1"},
       {:plug, "~> 1.7"},
       # https://github.com/thoughtbot/ex_machina/
       {:ex_machina, "~> 2.4"},

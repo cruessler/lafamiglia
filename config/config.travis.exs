@@ -15,7 +15,7 @@ config :la_famiglia, LaFamigliaWeb.Endpoint,
   root: Path.dirname(__DIR__),
   secret_key_base: String.duplicate("abcdefgh", 8),
   render_errors: [accepts: ["html"]],
-  pubsub: [name: LaFamiglia.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub_server: LaFamiglia.PubSub
 
 # Configures Elixir's Logger
 config :logger, :console,

@@ -1,17 +1,17 @@
 defmodule LaFamiglia do
   use Application
 
-  import Supervisor.Spec, warn: false
-
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
     children =
       [
-        # Start the endpoint when the application starts
-        supervisor(LaFamigliaWeb.Endpoint, []),
         # Start the Ecto repository
-        worker(LaFamiglia.Repo, [])
+        LaFamiglia.Repo,
+        # Start the PubSub system
+        {Phoenix.PubSub, name: LaFamiglia.PubSub},
+        # Start the endpoint (http/https)
+        LaFamigliaWeb.Endpoint
       ] ++ worker_children
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
@@ -33,7 +33,7 @@ defmodule LaFamiglia do
 
   defp worker_children() do
     if start_event_loop? do
-      [worker(LaFamiglia.EventLoop, []), worker(LaFamiglia.EventQueue, [])]
+      [LaFamiglia.EventLoop, LaFamiglia.EventQueue]
     else
       []
     end

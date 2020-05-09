@@ -20,6 +20,6 @@
     </ul>
   </div>
   <div class="col-sm-8">
-    <%= render @view_module, @view_template, assigns %>
+    <%= @inner_content %>
   </div>
 </div>

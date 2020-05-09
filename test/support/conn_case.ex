@@ -17,8 +17,9 @@ defmodule LaFamigliaWeb.ConnCase do
 
   using do
     quote do
-      # Import conveniences for testing with connections
-      use Phoenix.ConnTest
+      # Import conveniences for testing with channels
+      import Plug.Conn
+      import Phoenix.ConnTest
 
       # Alias the data repository and import query/model functions
       alias LaFamiglia.Repo
