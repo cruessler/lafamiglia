@@ -1,12 +1,11 @@
-const clickAndWaitForNavigation = async (selector) => {
-  await Promise.all([page.waitForNavigation(), page.click(selector)]);
-};
-
 describe('Create new user and log in', () => {
-  it('Creates a new user, logs in, gets assigned a new villa, and logs out', async () => {
+  it('Creates a new user, logs in, builds a building in a newly assigned villa', async () => {
     await page.goto('http://localhost:4001');
 
-    await clickAndWaitForNavigation('a[href="/players/new"]');
+    await Promise.all([
+      page.click('a[href="/players/new"]'),
+      page.waitForNavigation(),
+    ]);
 
     await page.type('input[id="player_name"]', 'player');
     await page.type('input[id="player_email"]', 'player@example.com');
@@ -16,18 +15,53 @@ describe('Create new user and log in', () => {
       'eKuSh4ahbuelienu'
     );
 
-    await clickAndWaitForNavigation('button[type="submit"]');
+    await Promise.all([
+      page.click('button[type="submit"]'),
+      page.waitForNavigation(),
+    ]);
 
-    await clickAndWaitForNavigation('a[href="/session/new"]');
+    await Promise.all([
+      page.click('a[href="/session/new"]'),
+      page.waitForNavigation(),
+    ]);
 
     await page.type('input[id="session_email"]', 'player@example.com');
     await page.type('input[id="session_password"]', 'eKuSh4ahbuelienu');
 
-    await clickAndWaitForNavigation('button[type="submit"]');
+    await Promise.all([
+      page.click('button[type="submit"]'),
+      page.waitForNavigation(),
+    ]);
 
     expect(await page.$$('a[href="/villas/1"]')).toHaveLength(2);
 
     await page.click('span.glyphicon-user');
-    await clickAndWaitForNavigation('ul.dropdown-menu a[href="/session"]');
+    await Promise.all([
+      page.click('ul.dropdown-menu a[href="/session"]'),
+      page.waitForNavigation(),
+    ]);
+
+    await Promise.all([
+      page.click('a[href="/session/new"]'),
+      page.waitForNavigation(),
+    ]);
+
+    await page.type('input[id="session_email"]', 'player@example.com');
+    await page.type('input[id="session_password"]', 'eKuSh4ahbuelienu');
+
+    await Promise.all([
+      page.click('button[type="submit"]'),
+      page.waitForNavigation(),
+    ]);
+
+    await Promise.all([
+      page.click('a[href="/villas/1"]'),
+      page.waitForNavigation(),
+    ]);
+
+    await Promise.all([
+      page.click('a[href="/villas/1/building_queue_items?building_id=1"]'),
+      page.waitForNavigation(),
+    ]);
   });
 });
