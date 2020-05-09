@@ -1,8 +1,8 @@
 defmodule LaFamigliaWeb.VillaView do
   use LaFamiglia.Web, :view
 
-  alias LaFamiglia.BuildingQueueItemView
-  alias LaFamiglia.UnitQueueItemView
+  alias LaFamigliaWeb.BuildingQueueItemView
+  alias LaFamigliaWeb.UnitQueueItemView
 
   def build_time(villa, building) do
     virtual_level = Building.virtual_level(villa, building)
