@@ -12,7 +12,7 @@ defmodule LaFamigliaWeb.UnitQueueItemController do
 
     case Repo.transaction(multi) do
       {:error, :villa, changeset} ->
-        [{_, message} | _] = changeset.errors
+        [{_, {message, _}} | _] = changeset.errors
 
         conn
         |> put_flash(:info, message)
@@ -30,7 +30,7 @@ defmodule LaFamigliaWeb.UnitQueueItemController do
 
     case Repo.transaction(multi) do
       {:error, :villa, changeset} ->
-        [{_, message} | _] = changeset.errors
+        [{_, {message, _}} | _] = changeset.errors
 
         conn
         |> put_flash(:info, message)
