@@ -12,7 +12,6 @@ import { Elm as ElmPlayerSelector } from '../elm/PlayerSelector.elm';
 
 import 'phoenix_html';
 
-import 'jquery-ujs';
 import 'bootstrap-sass/assets/javascripts/bootstrap';
 
 import React from 'react';
