@@ -9,6 +9,7 @@ defmodule LaFamiglia.EventHandlerCase do
       import Ecto.Changeset
       import Ecto.Query
 
+      alias LaFamiglia.EventQueue
       alias LaFamiglia.Villa
 
       import LaFamiglia.Factory

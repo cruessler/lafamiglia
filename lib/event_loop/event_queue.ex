@@ -19,49 +19,40 @@ defmodule LaFamiglia.EventQueue do
 
   alias LaFamiglia.Event
 
-  alias LaFamiglia.Repo
-  alias LaFamiglia.BuildingQueueItem
-  alias LaFamiglia.UnitQueueItem
-  alias LaFamiglia.AttackMovement
-  alias LaFamiglia.ComebackMovement
-  alias LaFamiglia.Occupation
+  @store LaFamiglia.EventQueue.Store
 
   def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, :ok, Dict.put(opts, :name, LaFamiglia.EventQueue))
+    opts =
+      opts
+      |> Keyword.put_new(:store, @store)
+
+    state = %{opts: opts, queue: :ordsets.new()}
+
+    GenServer.start_link(__MODULE__, state, name: LaFamiglia.EventQueue)
   end
 
   def cast(request) do
     GenServer.cast(__MODULE__, request)
   end
 
-  def init(_args) do
-    queries = [
-      from(i in BuildingQueueItem, order_by: [asc: i.completed_at]),
-      from(i in UnitQueueItem, order_by: [asc: i.completed_at]),
-      from(m in AttackMovement, order_by: [asc: m.arrives_at]),
-      from(m in ComebackMovement, order_by: [asc: m.arrives_at]),
-      from(o in Occupation, order_by: [asc: o.succeeds_at])
-    ]
-
-    queue =
-      queries
-      |> Enum.map(&Repo.all/1)
-      |> Enum.concat()
+  def init(%{opts: opts} = state) do
+    new_queue =
+      opts[:store].load()
       |> Enum.map(fn e -> to_tuple(e) end)
       |> :ordsets.from_list()
 
-    {:ok, queue, timeout(queue)}
+    {:ok, %{state | queue: new_queue}, timeout(new_queue)}
   end
 
-  def handle_cast({:new_event, event}, queue) do
+  def handle_cast({:new_event, event}, %{queue: queue} = state) do
     Logger.info("adding event ##{event.id} to queue with length #{length(queue)}")
 
     new_queue = :ordsets.add_element(to_tuple(event), queue)
 
-    {:noreply, new_queue, timeout(new_queue)}
+    {:noreply, %{state | queue: new_queue}, timeout(new_queue)}
   end
 
-  def handle_cast({:cancel_event, event}, queue) do
+  def handle_cast({:cancel_event, event}, %{queue: queue} = state) do
     Logger.info("removing event ##{event.id} from queue with length #{length(queue)}")
 
     # This is a workaround for MySQL. Even though MySQL supports microseconds
@@ -85,10 +76,10 @@ defmodule LaFamiglia.EventQueue do
         queue
       )
 
-    {:noreply, new_queue, timeout(new_queue)}
+    {:noreply, %{state | queue: new_queue}, timeout(new_queue)}
   end
 
-  def handle_cast({:update_event, event}, queue) do
+  def handle_cast({:update_event, event}, %{queue: queue} = state) do
     Logger.info("updating event ##{event.id} in queue with length #{length(queue)}")
 
     new_queue =
@@ -101,19 +92,21 @@ defmodule LaFamiglia.EventQueue do
 
     new_queue = :ordsets.add_element(to_tuple(event), new_queue)
 
-    {:noreply, new_queue, timeout(new_queue)}
+    {:noreply, %{state | queue: new_queue}, timeout(new_queue)}
   end
 
-  def handle_info(:timeout, [{_completed_at, module, id} | queue]) do
-    event = Repo.get!(module, id)
+  def handle_info(:timeout, %{opts: opts, queue: queue} = state) do
+    [{_completed_at, module, id} | rest] = queue
+
+    event = opts[:store].get!(module, id)
 
     # Until May 2020, the event was sent to another process, `EventLoop`, using
     # `notify` and handled by that process which implemented `GenEvent`.
     # `GenEvent` has been deprecated in Elixir 1.5, so `EventLoop` has been
     # removed, and the event is now handled by `EventQueue`.
-    {:ok, _} = LaFamiglia.Event.handle(event)
+    {:ok, _} = Event.handle(event)
 
-    {:noreply, queue, timeout(queue)}
+    {:noreply, %{state | queue: rest}, timeout(rest)}
   end
 
   defp to_tuple(event) do

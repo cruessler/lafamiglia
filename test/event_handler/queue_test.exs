@@ -40,4 +40,46 @@ defmodule LaFamiglia.EventHandler.QueueTest do
     assert get_field(changeset, :units_recruited_until) == first.completed_at
     assert hd(get_field(changeset, :unit_queue_items)).number == 10
   end
+
+  test "should handle events" do
+    villa = build(:villa) |> with_unit_queue
+
+    event_in_the_past = %TestEvent{
+      id: 1,
+      happens_at: LaFamiglia.DateTime.from_now(milliseconds: 100),
+      pid: self()
+    }
+
+    event = %TestEvent{id: 2, happens_at: LaFamiglia.DateTime.now(), pid: self()}
+
+    event_in_the_future = %TestEvent{
+      id: 3,
+      happens_at: LaFamiglia.DateTime.from_now(milliseconds: 1000),
+      pid: self()
+    }
+
+    events = %{1 => event_in_the_past, 2 => event, 3 => event_in_the_future}
+
+    defmodule TestStore do
+      @events events
+
+      def load(), do: []
+
+      def get!(_module, id), do: @events[id]
+    end
+
+    {:ok, _} = EventQueue.start_link(store: TestStore)
+
+    EventQueue.cast({:new_event, event_in_the_past})
+
+    assert_receive {:handle, 1}
+
+    EventQueue.cast({:new_event, event})
+
+    assert_receive {:handle, 2}
+
+    EventQueue.cast({:new_event, event_in_the_future})
+
+    refute_receive {:handle, 3}, 50
+  end
 end

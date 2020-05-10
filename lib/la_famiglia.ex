@@ -12,7 +12,7 @@ defmodule LaFamiglia do
         {Phoenix.PubSub, name: LaFamiglia.PubSub},
         # Start the endpoint (http/https)
         LaFamigliaWeb.Endpoint
-      ] ++ worker_children
+      ] ++ worker_children(Application.get_env(:la_famiglia, :start_event_loop, false))
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
@@ -27,15 +27,6 @@ defmodule LaFamiglia do
     :ok
   end
 
-  defp start_event_loop?() do
-    Application.get_env(:la_famiglia, :start_event_loop, false)
-  end
-
-  defp worker_children() do
-    if start_event_loop? do
-      [LaFamiglia.EventQueue]
-    else
-      []
-    end
-  end
+  defp worker_children(true), do: [LaFamiglia.EventQueue]
+  defp worker_children(_), do: []
 end
