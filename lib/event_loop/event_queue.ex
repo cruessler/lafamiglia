@@ -5,11 +5,10 @@ defmodule LaFamiglia.EventQueue do
   messages:
 
   1. events coming from the webapp, e. g. new BuildingQueueItems. These events
-    are put in the queue. The returned tuple contains a timeout that lasts until
-    the first element of the queue is ready to be processed.
+    are put into the queue. The returned tuple contains a timeout that lasts
+    until the first element of the queue is ready to be processed.
   2. timeouts occurring whenever the first event of the queue is ready to be
-    processed. When that happens a message is sent to the event loop which in
-    turn handles the event.
+    processed. When that happens the event is handled.
   """
 
   use GenServer
