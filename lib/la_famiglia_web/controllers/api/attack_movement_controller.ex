@@ -3,7 +3,6 @@ defmodule LaFamigliaWeb.Api.AttackMovementController do
 
   alias LaFamiglia.Villa
   alias LaFamiglia.AttackMovement
-  alias LaFamiglia.Actions.Attack
 
   def create(conn, %{"attack_movement" => movement_params}) do
     movement_params =
@@ -17,18 +16,18 @@ defmodule LaFamigliaWeb.Api.AttackMovementController do
     changeset =
       AttackMovement.create(conn.assigns.current_villa_changeset, target, movement_params)
 
-    multi = Attack.attack(changeset)
-
-    case Repo.transaction(multi) do
-      {:error, :attack_movement, changeset, _} ->
+    case Repo.insert(changeset) do
+      {:error, changeset} ->
         conn
         |> put_status(:bad_request)
         |> render(LaFamiglia.ChangesetView, "error.json", changeset: changeset)
 
-      {:ok, %{attack_movement: movement}} ->
+      {:ok, attack_movement} ->
+        LaFamiglia.EventCallbacks.send_to_queue(attack_movement)
+
         conn
         |> put_status(:created)
-        |> render("create.json", movement: movement)
+        |> render("create.json", movement: attack_movement)
     end
   end
 

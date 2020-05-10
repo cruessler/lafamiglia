@@ -3,21 +3,24 @@ defmodule LaFamigliaWeb.BuildingQueueItemController do
 
   alias LaFamiglia.Building
   alias LaFamiglia.BuildingQueueItem
-  alias LaFamiglia.Actions.{Enqueue, Dequeue}
 
   def create(conn, %{"building_id" => building_id}) do
     building = Building.get(String.to_integer(building_id))
-    multi = Enqueue.enqueue(conn.assigns.current_villa_changeset, building)
+    changeset = BuildingQueueItem.enqueue(conn.assigns.current_villa_changeset, building)
 
-    case Repo.transaction(multi) do
-      {:error, :villa, changeset, _} ->
+    case Repo.update(changeset) do
+      {:error, changeset, _} ->
         [{_, {message, _}} | _] = changeset.errors
 
         conn
         |> put_flash(:info, message)
         |> redirect(to: Routes.villa_path(conn, :show, conn.assigns.current_villa.id))
 
-      {:ok, _villa} ->
+      {:ok, villa} ->
+        villa.building_queue_items
+        |> List.last()
+        |> LaFamiglia.EventCallbacks.send_to_queue()
+
         conn
         |> redirect(to: Routes.villa_path(conn, :show, conn.assigns.current_villa.id))
     end
@@ -25,10 +28,10 @@ defmodule LaFamigliaWeb.BuildingQueueItemController do
 
   def delete(conn, %{"id" => id}) do
     item = Repo.get_by!(BuildingQueueItem, id: id, villa_id: conn.assigns.current_villa.id)
-    multi = Dequeue.dequeue(conn.assigns.current_villa_changeset, item)
+    changeset = BuildingQueueItem.dequeue(conn.assigns.current_villa_changeset, item)
 
-    case Repo.transaction(multi) do
-      {:error, :villa, changeset} ->
+    case Repo.update(changeset) do
+      {:error, changeset} ->
         [{_, {message, _}} | _] = changeset.errors
 
         conn
@@ -36,6 +39,8 @@ defmodule LaFamigliaWeb.BuildingQueueItemController do
         |> redirect(to: Routes.villa_path(conn, :show, conn.assigns.current_villa.id))
 
       {:ok, _villa} ->
+        LaFamiglia.EventCallbacks.drop_from_queue(item)
+
         conn
         |> redirect(to: Routes.villa_path(conn, :show, conn.assigns.current_villa.id))
     end

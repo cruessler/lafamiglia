@@ -3,7 +3,6 @@ defmodule LaFamigliaWeb.AttackMovementController do
 
   alias LaFamiglia.Villa
   alias LaFamiglia.AttackMovement
-  alias LaFamiglia.Actions.Attack
 
   def new(conn, %{"target_id" => target_id}) do
     target = Repo.get!(Villa, target_id)
@@ -27,16 +26,16 @@ defmodule LaFamigliaWeb.AttackMovementController do
     changeset =
       AttackMovement.create(conn.assigns.current_villa_changeset, target, movement_params)
 
-    multi = Attack.attack(changeset)
-
-    case Repo.transaction(multi) do
-      {:error, :attack_movement, changeset, _} ->
+    case Repo.insert(changeset) do
+      {:error, changeset} ->
         conn
         |> assign(:changeset, changeset)
         |> assign(:target, target)
         |> render("new.html")
 
-      {:ok, _} ->
+      {:ok, attack_movement} ->
+        LaFamiglia.EventCallbacks.send_to_queue(attack_movement)
+
         conn
         |> redirect(to: Routes.villa_path(conn, :show, conn.assigns.current_villa.id))
     end
