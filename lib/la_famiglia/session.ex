@@ -14,7 +14,7 @@ defmodule LaFamiglia.Session do
   defp authenticate(player, password) do
     case player do
       nil -> false
-      _ -> Comeonin.Bcrypt.checkpw(password, player.hashed_password)
+      _ -> Bcrypt.verify_pass(password, player.hashed_password)
     end
   end
 end

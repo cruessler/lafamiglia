@@ -3,8 +3,6 @@ defmodule LaFamiglia.Player do
 
   alias Ecto.Multi
 
-  alias Comeonin.Bcrypt
-
   alias LaFamiglia.Repo
   alias LaFamiglia.Player
   alias LaFamiglia.Villa
@@ -62,7 +60,7 @@ defmodule LaFamiglia.Player do
     %{changes: changes} = changeset
 
     if Map.has_key?(changes, :password) do
-      hashed_password = changes.password |> Bcrypt.hashpwsalt()
+      hashed_password = changes.password |> Bcrypt.hash_pwd_salt()
 
       changeset
       |> delete_change(:password)

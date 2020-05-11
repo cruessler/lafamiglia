@@ -59,8 +59,7 @@ defmodule LaFamiglia.Mixfile do
       {:jason, "~> 1.0"},
       {:phoenix_html, "~> 2.5"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
-      # https://github.com/elixircnx/comeonin
-      {:comeonin, "~> 2.0"},
+      {:bcrypt_elixir, "~> 2.2"},
       {:plug_cowboy, "~> 2.1"},
       {:plug, "~> 1.7"},
       # https://github.com/thoughtbot/ex_machina/

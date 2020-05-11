@@ -3,7 +3,7 @@ defmodule LaFamiglia.Factory do
 
   alias LaFamiglia.{Building, Unit}
 
-  @hashed_password Comeonin.Bcrypt.hashpwsalt("password")
+  @hashed_password Bcrypt.hash_pwd_salt("password")
 
   def player_factory do
     %LaFamiglia.Player{
