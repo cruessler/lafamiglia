@@ -60,7 +60,7 @@ defmodule LaFamiglia.Mixfile do
       {:phoenix_html, "~> 2.5"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       # https://github.com/elixircnx/comeonin
-      {:comeonin, "~> 2.0"},
+      {:comeonin, "~> 5.3"},
       {:plug_cowboy, "~> 2.1"},
       {:plug, "~> 1.7"},
       # https://github.com/thoughtbot/ex_machina/
