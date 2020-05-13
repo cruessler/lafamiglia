@@ -7,7 +7,7 @@ defmodule Mix.Tasks.LaFamiglia.Postcompile do
 
   @source_path "lib/mechanics"
 
-  @template_path "web/static/elm/Mechanics"
+  @template_path "assets/elm/Mechanics"
 
   @template_mappings %{"units.ex" => "Units.elm.eex"}
 
@@ -21,17 +21,17 @@ defmodule Mix.Tasks.LaFamiglia.Postcompile do
 
       with {:ok, info_source} <- File.stat(source),
            {:ok, info_template} <- File.stat(template),
-           source_mtime = DateTime.from_erl(info_source.mtime),
-           template_mtime = DateTime.from_erl(info_template.mtime) do
+           {:ok, source_mtime} = NaiveDateTime.from_erl(info_source.mtime),
+           {:ok, template_mtime} = NaiveDateTime.from_erl(info_template.mtime) do
         # Compile the template if either itself or the corresponding source
         # file has been changed or if the target file does not exist.
         compile =
           case File.stat(target) do
             {:ok, info_target} ->
-              target_mtime = DateTime.from_erl(info_target.mtime)
+              {:ok, target_mtime} = NaiveDateTime.from_erl(info_target.mtime)
 
-              DateTime.compare(source_mtime, target_mtime) == :gt ||
-                DateTime.compare(template_mtime, target_mtime) == :gt
+              NaiveDateTime.compare(source_mtime, target_mtime) == :gt ||
+                NaiveDateTime.compare(template_mtime, target_mtime) == :gt
 
             _ ->
               true
@@ -44,9 +44,9 @@ defmodule Mix.Tasks.LaFamiglia.Postcompile do
 
           File.write(target, compiled_file)
 
-          Mix.shell().info("Running `elm format` on #{Path.basename(target)}")
+          Mix.shell().info("Running `elm-format` on #{Path.basename(target)}")
 
-          Mix.shell().cmd("elm format --yes #{target}")
+          Mix.shell().cmd("cd assets && npx elm-format --yes #{Path.join("..", target)}")
         else
           Mix.shell().info("Nothing to do for #{Path.basename(template)}")
         end

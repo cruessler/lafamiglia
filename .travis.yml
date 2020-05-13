@@ -30,6 +30,7 @@ matrix:
       script:
         - mix test
         - mix format --check-formatted
+        - mix la_famiglia.postcompile
         - MIX_ENV=integration mix integration.setup
         - cd assets
         - npm run deploy
