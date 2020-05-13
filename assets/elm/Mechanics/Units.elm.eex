@@ -1,8 +1,40 @@
-module Mechanics.Units exposing (all)
+module Mechanics.Units exposing (all, byId, decodeUnitNumbers)
 
+import Dict exposing (Dict)
+import Json.Decode as D
 import Unit exposing (Unit)
 
 
+all : List Unit
 all =
-  [ <%= for(u <- units, do: "Unit #{u.id} \"#{u.key}\" \"Unit #{u.id}\" #{u.speed}") |> Enum.join(",") %>
-  ]
+    [ <%= for(u <- units, do: "Unit #{u.id} \"#{u.key}\" \"Unit #{u.id}\" #{u.speed}") |> Enum.join(",") %>
+    ]
+
+
+byId : Unit.Id -> Maybe Unit
+byId id =
+    List.filter (\u -> u.id == id) all
+        |> List.head
+
+
+byKey : Unit.Key -> Maybe Unit
+byKey key =
+    List.filter (\u -> u.key == key) all
+        |> List.head
+
+
+decodeUnitNumbers : D.Decoder (Dict Unit.Id Int)
+decodeUnitNumbers =
+    let
+        parseKey ( k, v ) =
+            ( byKey k
+                |> Maybe.map .id
+                |> Maybe.withDefault 0
+            , v
+            )
+
+        transformDict =
+            Dict.toList >> List.map parseKey >> Dict.fromList
+    in
+    D.dict D.int
+        |> D.map transformDict
