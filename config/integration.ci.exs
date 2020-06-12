@@ -8,4 +8,6 @@ config :la_famiglia, LaFamigliaWeb.Endpoint,
 # Configure your database
 config :la_famiglia, LaFamiglia.Repo,
   adapter: Ecto.Adapters.Postgres,
-  database: "travis_ci_test"
+  username: "la_famiglia_test",
+  password: "la_famiglia_test",
+  database: "la_famiglia_test"

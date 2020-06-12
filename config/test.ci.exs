@@ -13,5 +13,7 @@ config :logger, level: :warn
 # Configure your database
 config :la_famiglia, LaFamiglia.Repo,
   adapter: Ecto.Adapters.Postgres,
-  database: "travis_ci_test",
+  username: "la_famiglia_test",
+  password: "la_famiglia_test",
+  database: "la_famiglia_test",
   pool: Ecto.Adapters.SQL.Sandbox
