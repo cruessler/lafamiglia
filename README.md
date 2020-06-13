@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/cruessler/lafamiglia.svg?branch=master)](https://travis-ci.org/cruessler/lafamiglia)
+[![Build Status](https://github.com/cruessler/lafamiglia/workflows/build/badge.svg)](https://github.com/cruessler/lafamiglia/actions?query=workflow%3Abuild)
 
 # La Famiglia
 
