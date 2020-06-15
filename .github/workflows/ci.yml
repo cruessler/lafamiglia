@@ -33,9 +33,13 @@ jobs:
 
     strategy:
       matrix:
-        otp: [ '20.0' ]
-        elixir: [ '1.8.2' ]
-        node: [ '10.x' ]
+        include:
+          - otp: '22.3'
+            elixir: '1.8.2'
+            node: '10.x'
+          - otp: '22.3'
+            elixir: '1.9.4'
+            node: '10.x'
 
     name: OTP ${{matrix.otp}}, Elixir ${{matrix.elixir}}, Node.js ${{ matrix.node }}
     steps:
