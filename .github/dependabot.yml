@@ -1,0 +1,28 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/assets"
+  schedule:
+    interval: monthly
+    time: "02:00"
+  open-pull-requests-limit: 2
+  ignore:
+  - dependency-name: "@babel/preset-env"
+    versions:
+    - 7.13.8
+- package-ecosystem: mix
+  directory: "/"
+  schedule:
+    interval: monthly
+    time: "02:00"
+  open-pull-requests-limit: 2
+  ignore:
+  - dependency-name: ex_machina
+    versions:
+    - 2.6.0
+- package-ecosystem: elm
+  directory: "/assets/elm"
+  schedule:
+    interval: monthly
+    time: "02:00"
+  open-pull-requests-limit: 2
