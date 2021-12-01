@@ -29,7 +29,7 @@
     "jest-puppeteer": "^4.4.0",
     "jquery": "^3.5.1",
     "mini-css-extract-plugin": "^1.6.0",
-    "node-sass": "^5.0.0",
+    "node-sass": "^6.0.1",
     "optimize-css-assets-webpack-plugin": "^5.0.4",
     "prettier": "^2.0.5",
     "puppeteer": "^10.4.0",
