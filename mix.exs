@@ -57,7 +57,7 @@ defmodule LaFamiglia.Mixfile do
       {:ecto_sql, "~> 3.0"},
       {:postgrex, "~> 0.13"},
       {:jason, "~> 1.0"},
-      {:phoenix_html, "~> 2.5"},
+      {:phoenix_html, "~> 3.2"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:bcrypt_elixir, "~> 2.2"},
       {:plug_cowboy, "~> 2.1"},
